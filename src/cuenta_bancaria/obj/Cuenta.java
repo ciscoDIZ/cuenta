@@ -155,10 +155,11 @@ public class Cuenta {
     
     public String getNumCuenta(){
         String entString,ofcString,conString,cueString;
+        entString = (ENTIDAD!=0)?""+ENTIDAD:"0000";
         ofcString = (OFICINA!=0)?""+OFICINA:"0000";
         conString = (CONTROL!=0)?""+CONTROL:"00";
         cueString = (CUENTA!=0)?""+CUENTA:"0000000000";
-        return IBAN+"-"+ENTIDAD+"-"+OFICINA+"-"+CONTROL+"-"+CUENTA;
+        return IBAN+"-"+entString+"-"+ofcString+"-"+conString+"-"+cueString;
     }
     
     public String mostrarDatos(){
