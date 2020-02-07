@@ -73,13 +73,7 @@ public class Cuenta {
             fechaStr = diaStr + "/" + mesStr + "/" + anioStr;
             String asuntoStr = asunto.toString().toLowerCase();
             String cuantiaStr = String.valueOf(cuantia);
-            int cuantiaInt = (int) cuantia;
-            String decimalesCuantia = "" + (cuantia - cuantiaInt);
-            decimalesCuantia = decimalesCuantia.substring(2, decimalesCuantia.length());
-            System.out.println("length de deciimales: " + decimalesCuantia.length());
-
             movimientosStr += fechaStr + "\t" + asuntoStr + "\t\t" + cuantiaStr + "\n";
-
             return movimientosStr;
         }
     }
@@ -219,13 +213,17 @@ public class Cuenta {
                     fechaInt += Integer.parseInt(fechaArray[i]);
                 }
             }
-            if (movimientos.containsKey(fechaInt)) {
+            try {
                 for (Movimiento movimiento : movimientos.get(fechaInt)) {
                     movimientosStr += movimiento;
                 }
-            } else {
+            } catch (Exception e) {
                 movimientosStr += "No existen movimientos para este filtro. Pr favor, compruebe que ha introducido correctamente la fecha.";
             }
+                
+            
+                
+            
         } else {
             movimientosStr = "Formato de fecha erróneo";
         }
