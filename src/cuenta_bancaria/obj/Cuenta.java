@@ -55,10 +55,34 @@ public class Cuenta {
 
         @Override
         public String toString() {
-            return "Movimiento{" + "asunto=" + asunto + ", cuantia=" + cuantia + ", fecha=" + fecha + '}';
+            String movimientosStr = "";
+            String fechaStr = String.valueOf(getFechaKey());
+            String anioStr, mesStr, diaStr;
+            if (fechaStr.length() == 8) {
+                anioStr = fechaStr.substring(0, 4);
+                mesStr = fechaStr.substring(4, 6);
+                diaStr = fechaStr.substring(6, 8);
+            } else {
+                anioStr = fechaStr.substring(0, 4);
+                mesStr = fechaStr.substring(4, 5);
+                mesStr = "0" + mesStr;
+                diaStr = fechaStr.substring(5, 6);
+                diaStr = "0" + diaStr;
+            }
+            fechaStr = diaStr + "/" + mesStr + "/" + anioStr;
+            String asuntoStr = asunto.toString().toLowerCase();
+            String cuantiaStr = String.valueOf(cuantia);
+            int cuantiaInt = (int) cuantia;
+            String decimalesCuantia = "" + (cuantia - cuantiaInt);
+            decimalesCuantia = decimalesCuantia.substring(2, decimalesCuantia.length());
+            System.out.println("length de deciimales: " + decimalesCuantia.length());
+            if (cuantiaStr.length() == 3 || (cuantiaStr.length() == 4 && decimalesCuantia.length() > 1)) {
+                movimientosStr += fechaStr + "\t" + asuntoStr + "\t" + cuantiaStr + "\n";
+            } else {
+                movimientosStr += fechaStr + "\t" + asuntoStr + "\t\t" + cuantiaStr + "\n";
+            }
+            return movimientosStr;
         }
-        
-        
     }
 
     private String titular;
@@ -128,7 +152,7 @@ public class Cuenta {
 
         return ret;
     }
-    
+
     @SuppressWarnings("NonPublicExported")
     public boolean setMovimiento(Movimiento.Asunto opt, double cuantia) {
         boolean ret = false;
@@ -145,6 +169,7 @@ public class Cuenta {
         }
         return ret;
     }
+
     @SuppressWarnings("NonPublicExported")
     public static Movimiento.Asunto getAsunto(int idx) {
         return asuntos[idx];
@@ -153,43 +178,38 @@ public class Cuenta {
     public double mostrarSaldo() {
         return saldo;
     }
-    
-    public String getNumCuenta(){
-        String entString,ofcString,conString,cueString;
-        entString = (ENTIDAD!=0)?""+ENTIDAD:"0000";
-        ofcString = (OFICINA!=0)?""+OFICINA:"0000";
-        conString = (CONTROL!=0)?""+CONTROL:"00";
-        cueString = (CUENTA!=0)?""+CUENTA:"0000000000";
-        return IBAN+"-"+entString+"-"+ofcString+"-"+conString+"-"+cueString;
+
+    public String getNumCuenta() {
+        String entString, ofcString, conString, cueString;
+        entString = (ENTIDAD != 0) ? "" + ENTIDAD : "0000";
+        ofcString = (OFICINA != 0) ? "" + OFICINA : "0000";
+        conString = (CONTROL != 0) ? "" + CONTROL : "00";
+        cueString = (CUENTA != 0) ? "" + CUENTA : "0000000000";
+        return IBAN + "-" + entString + "-" + ofcString + "-" + conString + "-" + cueString;
     }
-    
-    public String mostrarDatos(){
-        String movimientosStr="fecha\t\tAsunto\tCuantia\n";
-        String fechaStr;
-        for (Map.Entry<Integer, ArrayList<Movimiento>> en 
+
+    public String mostrarDatos() {
+        String movimientosStr = mostrarMovimientos();
+        return titular + "\n" + getNumCuenta() + "\n" + movimientosStr + "\nSaldo: " + saldo;
+    }
+
+    public String mostrarMovimientos() {
+        String movimientosStr = "Fecha\t\tAsunto\t\tCuantia\n";
+        for (Map.Entry<Integer, ArrayList<Movimiento>> en
                 : this.movimientos.entrySet()) {
-            String anioStr, mesStr, diaStr;
-            fechaStr = String.valueOf(en.getKey());
-            if(fechaStr.length() == 8){
-                anioStr = fechaStr.substring(0, 4);
-                mesStr = fechaStr.substring(4, 6);
-                diaStr = fechaStr.substring(6,8);
-            }else{
-                anioStr = fechaStr.substring(0, 4);
-                mesStr = fechaStr.substring(4, 5);
-                mesStr = "0"+mesStr;
-                diaStr = fechaStr.substring(5,6);
-                diaStr = "0"+diaStr;
-            }
-            
-            fechaStr = diaStr+"/"+mesStr+"/"+anioStr;
-            for(Movimiento m : en.getValue()){
-                movimientosStr += fechaStr+"\t"+m.asunto+"\t"+m.cuantia+"\n";
+            for (Movimiento m : en.getValue()) {
+                movimientosStr += m;
             }
         }
-        return titular+"\n"+getNumCuenta()+"\n"+movimientosStr+"\nSaldo: "+saldo;
+        return movimientosStr;
     }
-    
+    public String movimientosPorFecha(int fecha){
+        String movimientosStr = "Fecha\t\tAsunto\t\tCuantia\n";
+        for(Movimiento movimiento : movimientos.get(fecha)){
+            movimientosStr +=movimiento;
+        }
+        return movimientosStr;
+    }
     public String getIBAN() {
         return IBAN;
     }
