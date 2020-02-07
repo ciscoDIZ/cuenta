@@ -8,6 +8,7 @@ package cuenta_bancaria.obj;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -163,7 +164,30 @@ public class Cuenta {
     }
     
     public String mostrarDatos(){
-        return titular+"\n"+getNumCuenta()+"\nSaldo: "+saldo;
+        String movimientosStr="fecha\t\tAsunto\tCuantia\n";
+        String fechaStr;
+        for (Map.Entry<Integer, ArrayList<Movimiento>> en 
+                : this.movimientos.entrySet()) {
+            String anioStr, mesStr, diaStr;
+            fechaStr = String.valueOf(en.getKey());
+            if(fechaStr.length() == 8){
+                anioStr = fechaStr.substring(0, 4);
+                mesStr = fechaStr.substring(4, 6);
+                diaStr = fechaStr.substring(6,8);
+            }else{
+                anioStr = fechaStr.substring(0, 4);
+                mesStr = fechaStr.substring(4, 5);
+                mesStr = "0"+mesStr;
+                diaStr = fechaStr.substring(5,6);
+                diaStr = "0"+diaStr;
+            }
+            
+            fechaStr = diaStr+"/"+mesStr+"/"+anioStr;
+            for(Movimiento m : en.getValue()){
+                movimientosStr += fechaStr+"\t"+m.asunto+"\t"+m.cuantia+"\n";
+            }
+        }
+        return titular+"\n"+getNumCuenta()+"\n"+movimientosStr+"\nSaldo: "+saldo;
     }
     
     public String getIBAN() {
