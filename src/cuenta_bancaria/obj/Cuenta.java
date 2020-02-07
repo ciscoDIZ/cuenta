@@ -84,15 +84,15 @@ public class Cuenta {
     }
 
     public Cuenta(String titular, double saldo) {
-        this(titular, saldo, "ES00", 0000, 0000, 0000000000l);
+        this(titular, saldo, "ES00", 0, 0, 0l);
     }
 
     public Cuenta(String titular) {
-        this(titular, 0.0, "ES00", 0000, 0000, 0000000000l);
+        this(titular, 0.0, "ES00", 0, 0, 0l);
     }
 
     public Cuenta() {
-        this(null, 0.0, "ES00", 0000, 0000, 0000000000l);
+        this(null, 0.0, "ES00", 0, 0, 0l);
     }
 
     private boolean ingresar(double cuantia) {
