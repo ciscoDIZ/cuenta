@@ -77,7 +77,7 @@ public class Cuenta {
         this.IBAN = IBAN;
         this.ENTIDAD = ENTIDAD;
         this.OFICINA = OFICINA;
-        this.CONTROL = 00;
+        this.CONTROL = 0;
         this.CUENTA = CUENTA;
         movimientos = new HashMap<>();
         asuntos = Movimiento.Asunto.values();
@@ -154,6 +154,10 @@ public class Cuenta {
     }
     
     public String getNumCuenta(){
+        String entString,ofcString,conString,cueString;
+        ofcString = (OFICINA!=0)?""+OFICINA:"0000";
+        conString = (CONTROL!=0)?""+CONTROL:"00";
+        cueString = (CUENTA!=0)?""+CUENTA:"0000000000";
         return IBAN+"-"+ENTIDAD+"-"+OFICINA+"-"+CONTROL+"-"+CUENTA;
     }
     
