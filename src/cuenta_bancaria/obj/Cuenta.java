@@ -20,6 +20,7 @@ public class Cuenta {
 
         enum Asunto {
             INGRESO,
+            NOMINA,
             RETIRADA,
             PAGO,
         }
@@ -76,11 +77,9 @@ public class Cuenta {
             String decimalesCuantia = "" + (cuantia - cuantiaInt);
             decimalesCuantia = decimalesCuantia.substring(2, decimalesCuantia.length());
             System.out.println("length de deciimales: " + decimalesCuantia.length());
-            if (cuantiaStr.length() == 3 || (cuantiaStr.length() == 4 && decimalesCuantia.length() > 1)) {
-                movimientosStr += fechaStr + "\t" + asuntoStr + "\t" + cuantiaStr + "\n";
-            } else {
-                movimientosStr += fechaStr + "\t" + asuntoStr + "\t\t" + cuantiaStr + "\n";
-            }
+
+            movimientosStr += fechaStr + "\t" + asuntoStr + "\t\t" + cuantiaStr + "\n";
+
             return movimientosStr;
         }
     }
@@ -120,9 +119,9 @@ public class Cuenta {
         this(null, 0.0, "ES00", 0, 0, 0l);
     }
 
-    private boolean ingresar(double cuantia) {
+    private boolean ingresar(double cuantia, Movimiento.Asunto asunto) {
         boolean ret = false;
-        Movimiento m = new Movimiento(Movimiento.Asunto.INGRESO, cuantia);
+        Movimiento m = new Movimiento(asunto, cuantia);
         if (cuantia > 0) {
             if (movimientos.containsKey(m.getFechaKey())) {
                 saldo += cuantia;
@@ -158,7 +157,8 @@ public class Cuenta {
         boolean ret = false;
         switch (opt) {
             case INGRESO:
-                ingresar(cuantia);
+            case NOMINA:
+                ingresar(cuantia, opt);
                 break;
             case RETIRADA:
             case PAGO:
@@ -203,13 +203,36 @@ public class Cuenta {
         }
         return movimientosStr;
     }
-    public String movimientosPorFecha(int fecha){
+
+    public String movimientosPorFecha(String fecha) {
+        String[] fechaArray = fecha.split(" |/|-");
         String movimientosStr = "Fecha\t\tAsunto\t\tCuantia\n";
-        for(Movimiento movimiento : movimientos.get(fecha)){
-            movimientosStr +=movimiento;
+        if (fechaArray.length == 3) {
+            int fechaInt = Integer.parseInt(fechaArray[2]);
+            for (int i = fechaArray.length - 2; i >= 0; i--) {
+                int fechaHelper = Integer.parseInt(fechaArray[i]);
+                if (fechaHelper < 10) {
+                    fechaInt *= 10;
+                    fechaInt += Integer.parseInt(fechaArray[i]);
+                } else {
+                    fechaInt *= 100;
+                    fechaInt += Integer.parseInt(fechaArray[i]);
+                }
+            }
+            if (movimientos.containsKey(fechaInt)) {
+                for (Movimiento movimiento : movimientos.get(fechaInt)) {
+                    movimientosStr += movimiento;
+                }
+            } else {
+                movimientosStr += "No existen movimientos para este filtro. Pr favor, compruebe que ha introducido correctamente la fecha.";
+            }
+        } else {
+            movimientosStr = "Formato de fecha erróneo";
         }
+
         return movimientosStr;
     }
+
     public String getIBAN() {
         return IBAN;
     }
