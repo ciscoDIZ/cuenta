@@ -24,8 +24,8 @@ public class CuentaBancariaMain {
         Cuenta c1 = new Cuenta();
         
         c.setMovimiento(Cuenta.getAsunto(0), 10.55);
-        c.setMovimiento(Cuenta.getAsunto(1), 5.55);
-        c.setMovimiento(Cuenta.getAsunto(0), 100.55);
+        c.setMovimiento(Cuenta.getAsunto(2), 5.55);
+        c.setMovimiento(Cuenta.getAsunto(1), 800.55);
         System.out.println("datos c:\n"+c.mostrarDatos());
         System.out.println("ddatos c1\n"+c1.mostrarDatos());
         System.out.println(c.movimientosPorFecha("23-07-1984"));
