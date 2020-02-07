@@ -208,6 +208,9 @@ public class Cuenta {
 
     public String movimientosPorFecha(String fecha) {
         String[] fechaArray = fecha.split(" |/|-");
+        /**
+         * <TODO> implementar exclusion de fechas imposibles
+         */
         String movimientosStr = "Fecha\t\tAsunto\t\tCuantia\n";
         if (fechaArray.length == 3) {
             int fechaInt = Integer.parseInt(fechaArray[2]);
@@ -254,4 +257,5 @@ public class Cuenta {
     public long getCUENTA() {
         return CUENTA;
     }
+    
 }
