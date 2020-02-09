@@ -16,6 +16,48 @@ import java.util.Scanner;
  */
 public class CuentaBancariaMain {
 
+    public static Cuenta __ini__() throws InputMismatchException {
+        return __ini__(null, 0);
+    }
+
+    public static Cuenta __ini__(String titular, double saldo) throws InputMismatchException {
+        Cuenta c = new Cuenta(titular, saldo);
+        Scanner sc = new Scanner(System.in);
+        String iban;
+        int entidad;
+        int oficina;
+        long cuenta;
+        if (c.getTitular() == null) {
+            System.out.println("Aun no ha establecido un titular\n¿Desea hacerlo ahora? S\\n");
+            String opt = sc.nextLine().toLowerCase();
+            if (opt.equals("") || opt.equals("s")) {
+                System.out.println("introducir titular");
+                c.setTitular(sc.nextLine());
+            }
+        }
+        System.out.println("Aun no se ha establecido un número de cuenta."
+                + "\n¿Desea hacerlo ahora? S\\n");
+        String in = sc.nextLine().toLowerCase();
+        if (in.equals("") || in.equals("s")) {
+            System.out.println("introducir IBAN");
+            iban = sc.nextLine();
+            System.out.println("introducir entidad");
+            entidad = sc.nextInt();
+            System.out.println("introducir oficina");
+            oficina = sc.nextInt();
+            System.out.println("introducir cuenta");
+            cuenta = sc.nextLong();
+            c = new Cuenta(iban, entidad, oficina, cuenta, c);
+        } else {
+            c = new Cuenta();
+        }
+        return c;
+    }
+
+    public static Cuenta __ini__(String titular) throws InputMismatchException {
+        return CuentaBancariaMain.__ini__(titular, 0);
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -81,56 +123,13 @@ public class CuentaBancariaMain {
         } catch (InputMismatchException e) {
             System.out.println("Se ha equivocado en algun campo, ¿desea volver a intentarlo? S\\n");
             String respuesta = sc.nextLine().toLowerCase();
-            if(respuesta.equals("s") || respuesta.equals("")){
+            if (respuesta.equals("s") || respuesta.equals("")) {
                 __ini__();
-            }else{
+            } else {
                 System.out.println("ERROR critico");
             }
         }
         System.out.println(c.mostrarDatos());
         //TODO
     }
-
-    public static Cuenta __ini__() throws InputMismatchException {
-        return __ini__(null, 0);
-    }
-
-    public static Cuenta __ini__(String titular, double saldo) throws InputMismatchException {
-        Cuenta c = new Cuenta(titular, saldo);
-        Scanner sc = new Scanner(System.in);
-        String iban;
-        int entidad;
-        int oficina;
-        long cuenta;
-        if (c.getTitular() == null) {
-            System.out.println("Aun no ha establecido un titular\n¿Desea hacerlo ahora? S\\n");
-            String opt = sc.nextLine().toLowerCase();
-            if (opt.equals("") || opt.equals("s")) {
-                System.out.println("introducir titular");
-                c.setTitular(sc.nextLine());
-            }
-        }
-        System.out.println("Aun no se ha establecido un número de cuenta."
-                + "\n¿Desea hacerlo ahora? S\\n");
-        String in = sc.nextLine().toLowerCase();
-        if (in.equals("") || in.equals("s")) {
-            System.out.println("introducir IBAN");
-            iban = sc.nextLine();
-            System.out.println("introducir entidad");
-            entidad = sc.nextInt();
-            System.out.println("introducir oficina");
-            oficina = sc.nextInt();
-            System.out.println("introducir cuenta");
-            cuenta = sc.nextLong();
-            c = new Cuenta(iban, entidad, oficina, cuenta, c);
-        } else {
-            c = new Cuenta();
-        }
-        return c;
-    }
-
-    public static Cuenta __ini__(String titular) throws InputMismatchException {
-        return CuentaBancariaMain.__ini__(titular, 0);
-    }
-
 }
