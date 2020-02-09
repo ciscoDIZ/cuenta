@@ -8,6 +8,8 @@ package pruebas;
 import cuenta_bancaria.obj.Cuenta;
 import java.util.Calendar;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -17,7 +19,7 @@ public class Main {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        try {
+        /*try {
             Cuenta c = new Cuenta();
             System.out.println(c.validarFecha("23/7/2084"));
             System.out.println(c.mostrarDatos());
@@ -44,6 +46,9 @@ public class Main {
         } catch (Exception e) {
             System.out.println(e);
         }
-
+*/
+        Pattern ibanPattern = Pattern.compile("(ES[0-9]{2})");
+        Matcher m = ibanPattern.matcher("ES28");
+        System.out.println(m.matches());
     }
 }

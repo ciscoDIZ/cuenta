@@ -152,7 +152,7 @@ public class Cuenta {
     public Cuenta(String IBAN, int ENTIDAD, int OFICINA, long CUENTA,
             Cuenta toCopy) {
         this(toCopy.titular, toCopy.saldo, IBAN, ENTIDAD, OFICINA, CUENTA);
-        estado = estados[1];
+        estado = (!titular.equals("Usuario por defecto"))?estados[1]:estados[0];
     }
 
     private boolean ingresar(double cuantia, Movimiento.Asunto asunto)
@@ -223,7 +223,7 @@ public class Cuenta {
     }
 
     private boolean retirar(double cuantia, Movimiento.Asunto opt,
-            Calendar fecha)  {
+            Calendar fecha) {
         boolean ret = false;
         if (fecha != null) {
             Movimiento m = new Movimiento(opt, cuantia, fecha);
@@ -403,4 +403,8 @@ public class Cuenta {
         return saldo;
     }
 
+    public Estado getEstado() {
+        return estado;
+    }
+    
 }
