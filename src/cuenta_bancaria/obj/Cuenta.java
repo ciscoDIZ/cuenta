@@ -67,49 +67,62 @@ public class Cuenta {
         public String toString() {
             String movimientosStr = "";
             String fechaStr;
-            String anioStr = ""+fecha.get(Calendar.YEAR); 
-            String mesStr = ((fecha.get(Calendar.MONTH)+1) < 10)
-                    ?"0"+(fecha.get(Calendar.MONTH)+1)
-                    :""+(fecha.get(Calendar.MONTH)+1);
+            String anioStr = "" + fecha.get(Calendar.YEAR);
+            String mesStr = ((fecha.get(Calendar.MONTH) + 1) < 10)
+                    ? "0" + (fecha.get(Calendar.MONTH) + 1)
+                    : "" + (fecha.get(Calendar.MONTH) + 1);
             String diaStr = (fecha.get(Calendar.DATE) < 10)
-                    ?"0"+fecha.get(Calendar.DATE)
-                    :""+fecha.get(Calendar.DATE);
-           
+                    ? "0" + fecha.get(Calendar.DATE)
+                    : "" + fecha.get(Calendar.DATE);
+
             fechaStr = diaStr + "/" + mesStr + "/" + anioStr;
             String asuntoStr = asunto.toString().toLowerCase();
-            String cuantiaStr = String.valueOf(cuantia);
+            String cuantiaStr = String.format("%.2f", Double.parseDouble(String
+                    .valueOf(cuantia)));
             int cuantiaInt = (int) cuantia;
             String decimalesCuantia = "" + (cuantia - cuantiaInt);
             decimalesCuantia = decimalesCuantia.substring(2, decimalesCuantia
                     .length());
             System.out.println("length de deciimales: " + decimalesCuantia
                     .length());
-            if (cuantiaStr.length() == 3 || (cuantiaStr.length() == 4 
+            if (cuantiaStr.length() == 3 || (cuantiaStr.length() == 4
                     && decimalesCuantia.length() > 1)) {
-                movimientosStr += fechaStr + "\t" + asuntoStr + "\t" 
+                movimientosStr += fechaStr + "\t" + asuntoStr + "\t"
                         + cuantiaStr + "\n";
             } else {
-                movimientosStr += fechaStr + "\t" + asuntoStr + "\t\t" 
+                movimientosStr += fechaStr + "\t" + asuntoStr + "\t\t"
                         + cuantiaStr + "\n";
             }
             return movimientosStr;
         }
     }
 
+    public enum Estado {
+        INACTIVA,
+        ACTIVA,
+        RETENIDA,
+        BLOQUEADA
+    }
     private String titular;
     private HashMap<Integer, ArrayList<Movimiento>> movimientos;
     private double saldo;
+    private double disponible;
+    private double retenciones;
     private final String IBAN;
     private final int ENTIDAD;
     private final int OFICINA;
     private final byte CONTROL;
     private final long CUENTA;
     private static Movimiento.Asunto[] asuntos;
+    private static Estado[] estados;
+    private Estado estado;
 
     public Cuenta(String titular, double saldo, String IBAN, int ENTIDAD,
             int OFICINA, long CUENTA) {
         this.titular = titular;
         this.saldo = saldo;
+        disponible = saldo;
+        retenciones = 0.0;
         this.IBAN = IBAN.toUpperCase();
         this.ENTIDAD = ENTIDAD;
         this.OFICINA = OFICINA;
@@ -117,41 +130,61 @@ public class Cuenta {
         this.CUENTA = CUENTA;
         movimientos = new HashMap<>();
         asuntos = Movimiento.Asunto.values();
+        estados = Estado.values();
+        estado = estados[1];
     }
 
     public Cuenta(String titular, double saldo) {
         this(titular, saldo, "ES00", 0, 0, 0l);
+        estado = estados[0];
     }
 
     public Cuenta(String titular) {
         this(titular, 0.0, "ES00", 0, 0, 0l);
+        estado = estados[0];
     }
-    
+
     public Cuenta() {
         this("Usuario por defecto", 0.0, "ES00", 0, 0, 0l);
+        estado = estados[0];
     }
-    public Cuenta(String IBAN, int ENTIDAD, int OFICINA, long CUENTA
-            , Cuenta toCopy){
+
+    public Cuenta(String IBAN, int ENTIDAD, int OFICINA, long CUENTA,
+            Cuenta toCopy) {
         this(toCopy.titular, toCopy.saldo, IBAN, ENTIDAD, OFICINA, CUENTA);
+        estado = estados[1];
     }
-    private boolean ingresar(double cuantia, Movimiento.Asunto asunto) {
+
+    private boolean ingresar(double cuantia, Movimiento.Asunto asunto)
+            throws IllegalArgumentException {
         boolean ret = false;
-        Movimiento m = new Movimiento(asunto, cuantia);
-        if (cuantia > 0) {
-            if (movimientos.containsKey(m.getFechaKey())) {
-                saldo += cuantia;
-                ret = movimientos.get(m.getFechaKey()).add(m);
-            } else {
-                saldo += cuantia;
-                movimientos.put(m.getFechaKey(), new ArrayList<>());
-                ret = movimientos.get(m.getFechaKey()).add(m);
-            }
+        switch (estado) {
+            case ACTIVA:
+                Movimiento m = new Movimiento(asunto, cuantia);
+                if (cuantia > 0) {
+                    if (movimientos.containsKey(m.getFechaKey())) {
+                        saldo += cuantia;
+                        ret = movimientos.get(m.getFechaKey()).add(m);
+                    } else {
+                        saldo += cuantia;
+                        movimientos.put(m.getFechaKey(), new ArrayList<>());
+                        ret = movimientos.get(m.getFechaKey()).add(m);
+                    }
+                }
+                break;
+            case RETENIDA:
+
+                break;
+            case INACTIVA:
+                throw new IllegalArgumentException();
+            default:
         }
+
         return ret;
     }
 
-    private boolean ingresar(double cuantia, Movimiento.Asunto asunto
-            , Calendar fecha) {
+    private boolean ingresar(double cuantia, Movimiento.Asunto asunto,
+            Calendar fecha) {
         boolean ret = false;
         if (fecha != null) {
             Movimiento m = new Movimiento(asunto, cuantia, fecha);
@@ -168,11 +201,11 @@ public class Cuenta {
         } else {
             ingresar(cuantia, asunto);
         }
-
         return ret;
     }
 
-    private boolean retirar(double cuantia, Movimiento.Asunto opt) {
+    private boolean retirar(double cuantia, Movimiento.Asunto opt)
+            throws IllegalArgumentException {
         boolean ret = false;
         Movimiento m = new Movimiento(opt, cuantia);
         if (cuantia > 0) {
@@ -189,8 +222,8 @@ public class Cuenta {
         return ret;
     }
 
-    private boolean retirar(double cuantia, Movimiento.Asunto opt
-            , Calendar fecha) {
+    private boolean retirar(double cuantia, Movimiento.Asunto opt,
+            Calendar fecha)  {
         boolean ret = false;
         if (fecha != null) {
             Movimiento m = new Movimiento(opt, cuantia, fecha);
@@ -212,21 +245,27 @@ public class Cuenta {
 
     @SuppressWarnings("NonPublicExported")
     public boolean setMovimiento(Movimiento.Asunto opt, double cuantia,
-             Calendar fecha) {
+            Calendar fecha) throws IllegalArgumentException, Exception {
         boolean ret = false;
-        switch (opt) {
-            case INGRESO:
-            case NOMINA:
-                ingresar(cuantia, opt, fecha);
-                break;
-            case RETIRADA:
-            case PAGO:
-                retirar(cuantia, opt, fecha);
-                break;
-            default:
-                throw new AssertionError();
+        if (estado.equals(Estado.INACTIVA)) {
+            throw new IllegalArgumentException("Se debe inicializar la clase Cuenta");
+        } else {
+            switch (opt) {
+                case INGRESO:
+                case NOMINA:
+                    ret = ingresar(cuantia, opt, fecha);
+                    break;
+                case RETIRADA:
+                case PAGO:
+                    ret = retirar(cuantia, opt, fecha);
+                    break;
+                default:
+                    throw new AssertionError();
+            }
         }
+
         return ret;
+
     }
 
     @SuppressWarnings("NonPublicExported")
@@ -244,20 +283,22 @@ public class Cuenta {
         ofcString = (OFICINA != 0) ? "" + OFICINA : "0000";
         conString = (CONTROL != 0) ? "" + CONTROL : "00";
         cueString = (CUENTA != 0) ? "" + CUENTA : "0000000000";
-        return IBAN + "-" + entString + "-" + ofcString + "-" + conString + "-" 
+        return IBAN + "-" + entString + "-" + ofcString + "-" + conString + "-"
                 + cueString;
     }
 
     public String mostrarDatos() {
         String movimientosStr = mostrarMovimientos();
-        return titular + "\n" + getNumCuenta() + "\n" + movimientosStr 
-                + "\nSaldo: " + saldo;
+
+        return titular + "\n" + getNumCuenta() + "\n" + movimientosStr
+                + "\nSaldo: " + String.format("%.2f", Double.parseDouble(String
+                        .valueOf(saldo)));
     }
 
     public String mostrarMovimientos() {
         TreeMap<Integer, ArrayList<Movimiento>> movOrdenados;
         movOrdenados = new TreeMap<>(movimientos);
-       String movimientosStr = "Fecha\t\tAsunto\t\tCuantia\n";
+        String movimientosStr = "Fecha\t\tAsunto\t\tCuantia\n";
         for (Map.Entry<Integer, ArrayList<Movimiento>> en
                 : this.movimientos.entrySet()) {
             for (Movimiento m : en.getValue()) {
@@ -266,12 +307,17 @@ public class Cuenta {
         }
         return movimientosStr;
     }
-    public boolean validarFecha(String fecha){
-        Pattern p = Pattern.compile("^([1-2]?[0-9]?|3[0-1])[./-]([1-9]?|1[0-2])[./-]20[0-9]{2}");
+
+    public boolean validarFecha(String fecha) {
+        Pattern p = Pattern
+                .compile("(^([1-2]?[0-9]?|3[0-1])[.]([1-9]?|1[0-2])[.]((20[0-9]{2})|(19[0-9]{2})))"
+                        + "|(^([1-2]?[0-9]?|3[0-1])[/]([1-9]?|1[0-2])[/]((20[0-9]{2})|(19[0-9]{2})))"
+                        + "|(^([1-2]?[0-9]?|3[0-1])[-]([1-9]?|1[0-2])[-]((20[0-9]{2})|(19[0-9]{2})))");
         Matcher m = p.matcher(fecha);
-        boolean valido= m.matches();
+        boolean valido = m.matches();
         return valido;
     }
+
     public String movimientosPorFecha(String fecha) {
         String[] fechaArray = fecha.split("[.|/|-]");
         String movimientosStr = "Fecha\t\tAsunto\t\tCuantia\n";
@@ -309,12 +355,12 @@ public class Cuenta {
      * @return
      */
     @SuppressWarnings("NonPublicExported")
-    public String movimientosPorAsunto(Movimiento.Asunto asunto){
+    public String movimientosPorAsunto(Movimiento.Asunto asunto) {
         String movimientoStr = "Fecha\t\tAsunto\t\tCuantia\n";
         ArrayList<Movimiento> movimientosAsunto = new ArrayList<>();
         for (Map.Entry<Integer, ArrayList<Movimiento>> m : movimientos.entrySet()) {
-            for(Movimiento movimiento : m.getValue()){
-                if(movimiento.asunto.equals(asunto)){
+            for (Movimiento movimiento : m.getValue()) {
+                if (movimiento.asunto.equals(asunto)) {
                     movimientosAsunto.add(movimiento);
                 }
             }
@@ -324,6 +370,7 @@ public class Cuenta {
                 .reduce(movimientoStr, String::concat);
         return movimientoStr;
     }
+
     public String getIBAN() {
         return IBAN;
     }
