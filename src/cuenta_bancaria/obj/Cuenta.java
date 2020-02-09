@@ -21,25 +21,25 @@ public class Cuenta {
 
     private static class Movimiento {
 
-        enum Asunto {
+        enum TipoMovimiento {
             INGRESO,
             NOMINA,
             RETIRADA,
             PAGO,
         }
 
-        Asunto asunto;
+        TipoMovimiento tipo;
         double cuantia;
         Calendar fecha;
 
-        Movimiento(Asunto asunto, double cuantia) {
-            this.asunto = asunto;
+        Movimiento(TipoMovimiento asunto, double cuantia) {
+            this.tipo = asunto;
             this.cuantia = cuantia;
             fecha = Calendar.getInstance();
         }
 
-        Movimiento(Asunto asunto, double cuantia, Calendar fecha) {
-            this.asunto = asunto;
+        Movimiento(TipoMovimiento asunto, double cuantia, Calendar fecha) {
+            this.tipo = asunto;
             this.cuantia = cuantia;
             this.fecha = fecha;
         }
@@ -76,7 +76,7 @@ public class Cuenta {
                     : "" + fecha.get(Calendar.DATE);
 
             fechaStr = diaStr + "/" + mesStr + "/" + anioStr;
-            String asuntoStr = asunto.toString().toLowerCase();
+            String asuntoStr = tipo.toString().toLowerCase();
             String cuantiaStr = String.format("%.2f", Double.parseDouble(String
                     .valueOf(cuantia)));
             int cuantiaInt = (int) cuantia;
@@ -113,7 +113,7 @@ public class Cuenta {
     private final int OFICINA;
     private final byte CONTROL;
     private final long CUENTA;
-    private static Movimiento.Asunto[] asuntos;
+    private static Movimiento.TipoMovimiento[] tipos;
     private static Estado[] estados;
     private Estado estado;
 
@@ -129,7 +129,7 @@ public class Cuenta {
         this.CONTROL = 0;
         this.CUENTA = CUENTA;
         movimientos = new HashMap<>();
-        asuntos = Movimiento.Asunto.values();
+        tipos = Movimiento.TipoMovimiento.values();
         estados = Estado.values();
         estado = estados[1];
     }
@@ -152,42 +152,26 @@ public class Cuenta {
     public Cuenta(String IBAN, int ENTIDAD, int OFICINA, long CUENTA,
             Cuenta toCopy) {
         this(toCopy.titular, toCopy.saldo, IBAN, ENTIDAD, OFICINA, CUENTA);
-        estado = (!titular.equals("Usuario por defecto"))?estados[1]:estados[0];
+        estado = (!titular.equals("Usuario por defecto")) ? estados[1] : estados[0];
     }
 
-    private boolean ingresar(double cuantia, Movimiento.Asunto asunto)
-            throws IllegalArgumentException {
-        boolean ret = false;
-        switch (estado) {
-            case ACTIVA:
-                Movimiento m = new Movimiento(asunto, cuantia);
-                if (cuantia > 0) {
-                    if (movimientos.containsKey(m.getFechaKey())) {
-                        saldo += cuantia;
-                        ret = movimientos.get(m.getFechaKey()).add(m);
-                    } else {
-                        saldo += cuantia;
-                        movimientos.put(m.getFechaKey(), new ArrayList<>());
-                        ret = movimientos.get(m.getFechaKey()).add(m);
-                    }
-                }
-                break;
-            case RETENIDA:
-
-                break;
-            case INACTIVA:
-                throw new IllegalArgumentException();
-            default:
-        }
-
-        return ret;
-    }
-
-    private boolean ingresar(double cuantia, Movimiento.Asunto asunto,
+    private boolean ingresar(double cuantia, Movimiento.TipoMovimiento asunto,
             Calendar fecha) {
         boolean ret = false;
         if (fecha != null) {
             Movimiento m = new Movimiento(asunto, cuantia, fecha);
+
+            if (movimientos.containsKey(m.getFechaKey())) {
+                saldo += cuantia;
+                ret = movimientos.get(m.getFechaKey()).add(m);
+            } else {
+                saldo += cuantia;
+                movimientos.put(m.getFechaKey(), new ArrayList<>());
+                ret = movimientos.get(m.getFechaKey()).add(m);
+            }
+
+        } else {
+            Movimiento m = new Movimiento(asunto, cuantia);
             if (cuantia > 0) {
                 if (movimientos.containsKey(m.getFechaKey())) {
                     saldo += cuantia;
@@ -198,17 +182,28 @@ public class Cuenta {
                     ret = movimientos.get(m.getFechaKey()).add(m);
                 }
             }
-        } else {
-            ingresar(cuantia, asunto);
         }
         return ret;
     }
 
-    private boolean retirar(double cuantia, Movimiento.Asunto opt)
-            throws IllegalArgumentException {
+    private boolean retirar(double cuantia, Movimiento.TipoMovimiento opt,
+            Calendar fecha) {
         boolean ret = false;
-        Movimiento m = new Movimiento(opt, cuantia);
-        if (cuantia > 0) {
+        if (fecha != null) {
+            Movimiento m = new Movimiento(opt, cuantia, fecha);
+
+            if (movimientos.containsKey(m.getFechaKey())) {
+                saldo -= cuantia;
+                ret = movimientos.get(m.getFechaKey()).add(m);
+            } else {
+                saldo -= cuantia;
+                movimientos.put(m.getFechaKey(), new ArrayList<>());
+                ret = movimientos.get(m.getFechaKey()).add(m);
+            }
+
+        } else {
+            Movimiento m = new Movimiento(opt, cuantia);
+
             if (movimientos.containsKey(m.getFechaKey())) {
                 saldo -= cuantia;
                 ret = movimientos.get(m.getFechaKey()).add(m);
@@ -222,55 +217,31 @@ public class Cuenta {
         return ret;
     }
 
-    private boolean retirar(double cuantia, Movimiento.Asunto opt,
-            Calendar fecha) {
-        boolean ret = false;
-        if (fecha != null) {
-            Movimiento m = new Movimiento(opt, cuantia, fecha);
-            if (cuantia > 0) {
-                if (movimientos.containsKey(m.getFechaKey())) {
-                    saldo -= cuantia;
-                    ret = movimientos.get(m.getFechaKey()).add(m);
-                } else {
-                    saldo -= cuantia;
-                    movimientos.put(m.getFechaKey(), new ArrayList<>());
-                    ret = movimientos.get(m.getFechaKey()).add(m);
-                }
-            }
-        } else {
-            retirar(cuantia, opt);
-        }
-        return ret;
-    }
-
     @SuppressWarnings("NonPublicExported")
-    public boolean setMovimiento(Movimiento.Asunto opt, double cuantia,
-            Calendar fecha) throws IllegalArgumentException, Exception {
+    public boolean setMovimiento(Movimiento.TipoMovimiento tipo, double cuantia,
+            Calendar fecha) throws IllegalArgumentException, NumberFormatException {
         boolean ret = false;
         if (estado.equals(Estado.INACTIVA)) {
             throw new IllegalArgumentException("Se debe inicializar la clase Cuenta");
-        } else {
-            switch (opt) {
+        } else if (cuantia > 0) {
+            switch (tipo) {
                 case INGRESO:
                 case NOMINA:
-                    ret = ingresar(cuantia, opt, fecha);
+                    ret = ingresar(cuantia, tipo, fecha);
                     break;
                 case RETIRADA:
                 case PAGO:
-                    ret = retirar(cuantia, opt, fecha);
+                    ret = retirar(cuantia, tipo, fecha);
                     break;
                 default:
                     throw new AssertionError();
             }
+        } else {
+            throw new NumberFormatException();
         }
 
         return ret;
 
-    }
-
-    @SuppressWarnings("NonPublicExported")
-    public static Movimiento.Asunto getAsunto(int idx) {
-        return asuntos[idx];
     }
 
     public double mostrarSaldo() {
@@ -355,12 +326,12 @@ public class Cuenta {
      * @return
      */
     @SuppressWarnings("NonPublicExported")
-    public String movimientosPorAsunto(Movimiento.Asunto asunto) {
+    public String movimientosPorAsunto(Movimiento.TipoMovimiento asunto) {
         String movimientoStr = "Fecha\t\tAsunto\t\tCuantia\n";
         ArrayList<Movimiento> movimientosAsunto = new ArrayList<>();
         for (Map.Entry<Integer, ArrayList<Movimiento>> m : movimientos.entrySet()) {
             for (Movimiento movimiento : m.getValue()) {
-                if (movimiento.asunto.equals(asunto)) {
+                if (movimiento.tipo.equals(asunto)) {
                     movimientosAsunto.add(movimiento);
                 }
             }
@@ -393,6 +364,9 @@ public class Cuenta {
 
     public void setTitular(String titular) {
         this.titular = titular;
+        estado = (!getNumCuenta().equals("ES00-0000-0000-00-0000000000")
+                && !titular.equals("Usuario por defecto"))
+                ? estados[1] : estados[0];
     }
 
     public String getTitular() {
@@ -406,5 +380,9 @@ public class Cuenta {
     public Estado getEstado() {
         return estado;
     }
-    
+
+    @SuppressWarnings("NonPublicExported")
+    public static Movimiento.TipoMovimiento getTipo(int i) {
+        return tipos[i];
+    }
 }
