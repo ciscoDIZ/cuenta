@@ -118,20 +118,27 @@ public class Cuenta {
     private Estado estado;
 
     public Cuenta(String titular, double saldo, String IBAN, int ENTIDAD,
-            int OFICINA, long CUENTA) {
-        this.titular = titular;
-        this.saldo = saldo;
-        disponible = saldo;
-        retenciones = 0.0;
-        this.IBAN = IBAN.toUpperCase();
-        this.ENTIDAD = ENTIDAD;
-        this.OFICINA = OFICINA;
-        this.CONTROL = 0;
-        this.CUENTA = CUENTA;
-        movimientos = new HashMap<>();
-        tipos = Movimiento.TipoMovimiento.values();
-        estados = Estado.values();
-        estado = estados[1];
+            int OFICINA, long CUENTA) throws IllegalArgumentException {
+        Pattern ibanPatron = Pattern.compile("((ES[0-9]{2})|(ES00))-(([0-9]{4})|(0))-(([0-9]{4})|(0))-(([0-9]{2})|(0))-(([0-9]{10})|(0))");
+        String numCuentaString = IBAN + "-" + ENTIDAD + "-" + OFICINA + "-00-" + CUENTA;
+        Matcher m = ibanPatron.matcher(numCuentaString);
+        if (m.matches()) {
+            this.titular = titular;
+            this.saldo = saldo;
+            disponible = saldo;
+            retenciones = 0.0;
+            this.IBAN = IBAN.toUpperCase();
+            this.ENTIDAD = ENTIDAD;
+            this.OFICINA = OFICINA;
+            this.CONTROL = 0;
+            this.CUENTA = CUENTA;
+            movimientos = new HashMap<>();
+            tipos = Movimiento.TipoMovimiento.values();
+            estados = Estado.values();
+            estado = estados[1];
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     public Cuenta(String titular, double saldo) {
@@ -327,7 +334,7 @@ public class Cuenta {
      */
     @SuppressWarnings("NonPublicExported")
     public String movimientosPorAsunto(Movimiento.TipoMovimiento asunto) {
-        String movimientoStr = "Fecha\t\tAsunto\t\tCuantia\n";
+        String movimientoStr = "";
         ArrayList<Movimiento> movimientosAsunto = new ArrayList<>();
         for (Map.Entry<Integer, ArrayList<Movimiento>> m : movimientos.entrySet()) {
             for (Movimiento movimiento : m.getValue()) {
@@ -339,7 +346,7 @@ public class Cuenta {
         movimientoStr += movimientosAsunto.stream()
                 .map((m) -> m.toString())
                 .reduce(movimientoStr, String::concat);
-        return movimientoStr;
+        return "Fecha\t\tAsunto\t\tCuantia\n"+movimientoStr;
     }
 
     public String getIBAN() {
@@ -380,7 +387,8 @@ public class Cuenta {
     public Estado getEstado() {
         return estado;
     }
-    public static Estado getEstado(int i){
+
+    public static Estado getEstado(int i) {
         return estados[i];
     }
 

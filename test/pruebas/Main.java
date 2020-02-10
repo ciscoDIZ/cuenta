@@ -46,9 +46,9 @@ public class Main {
         } catch (Exception e) {
             System.out.println(e);
         }
-*/
-        Pattern ibanPattern = Pattern.compile("(ES[0-9]{2})");
-        Matcher m = ibanPattern.matcher("ES28");
+*/  
+         Pattern munCuenta = Pattern.compile("((ES[0-9]{2})|(ES00))-(([0-9]{4})|(0))-(([0-9]{4})|(0))-(([0-9]{2})|(0))-(([0-9]{10})|(0))");
+        Matcher m = munCuenta.matcher("ES00-0-0-0-0");
         System.out.println(m.matches());
     }
 }
