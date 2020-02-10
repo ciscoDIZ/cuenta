@@ -142,13 +142,20 @@ public class CuentaBancariaMain {
         String mensajeMenu = "";
         int opt = 0;
         boolean salir = false;
+        String mensajeBienvenida = null;
         while (!salir) {
+
             try {
+
                 if (c.getTitular().equals("Usuario por defecto")
                         && c.getNumCuenta().equals(
                                 "ES00-0000-0000-00-0000000000")) {
                     mensajeMenu = "1)Agregar usuario\n2)Agregar número de cuenta\n"
                             + "3)realizar ingreso\n4)realizar retirada\n5)salir\n";
+                    if (mensajeBienvenida == null) {
+                        mensajeBienvenida = "Bienvenido " + c.getTitular() + " su cuenta esta: " + c.getEstado();
+                        System.out.println(mensajeBienvenida);
+                    }
                     System.out.println(mensajeMenu);
                     opt = sc.nextInt();
                     sc.nextLine();
@@ -156,6 +163,7 @@ public class CuentaBancariaMain {
                         case 1:
                             System.out.println("intruducir titular");
                             c.setTitular(sc.nextLine());
+                           
                             break;
                         case 2:
                             System.out.println("introducir numero de cuenta válido");
@@ -203,6 +211,7 @@ public class CuentaBancariaMain {
                                 }
                             }
                             c = new Cuenta(iban, entidad, oficina, cuenta, c);
+                           
                             break;
                         case 3:
                             c.setMovimiento(Cuenta.getTipo(1), 0, null);
@@ -226,6 +235,9 @@ public class CuentaBancariaMain {
                         case 1:
                             System.out.println("intruducir titular");
                             c.setTitular(sc.nextLine());
+                             if (c.getEstado().equals(Cuenta.getEstado(1))) {
+                                mensajeBienvenida = null;
+                            }
                             break;
                         case 2:
                             c.setMovimiento(Cuenta.getTipo(1), 0, null);
@@ -294,6 +306,9 @@ public class CuentaBancariaMain {
                                 }
                             }
                             c = new Cuenta(iban, entidad, oficina, cuenta, c);
+                             if (c.getEstado().equals(Cuenta.getEstado(1))) {
+                                mensajeBienvenida = null;
+                            }
                             break;
                         case 2:
                             c.setMovimiento(Cuenta.getTipo(1), 0, null);
@@ -308,7 +323,12 @@ public class CuentaBancariaMain {
                             throw new AssertionError();
                     }
                 } else {
-                    System.out.println("");
+                    if (mensajeBienvenida == null) {
+                        mensajeBienvenida = "Bienvenido " + c.getTitular() + " su cuenta esta: " + c.getEstado();
+                        System.out.println(mensajeBienvenida);
+                    }
+                    System.out.println("into opt");
+                    opt = sc.nextInt();
                     switch (opt) {
                         case 1:
                             c.setMovimiento(Cuenta.getTipo(1), 0, null);

@@ -380,6 +380,9 @@ public class Cuenta {
     public Estado getEstado() {
         return estado;
     }
+    public static Estado getEstado(int i){
+        return estados[i];
+    }
 
     @SuppressWarnings("NonPublicExported")
     public static Movimiento.TipoMovimiento getTipo(int i) {
