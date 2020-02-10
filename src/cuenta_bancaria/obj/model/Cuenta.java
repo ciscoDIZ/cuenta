@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cuenta_bancaria.obj;
+package cuenta_bancaria.obj.model;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -151,10 +151,7 @@ public class Cuenta {
         estado = estados[0];
     }
 
-    public Cuenta() {
-        this("Usuario por defecto", 0.0, "ES00", 0, 0, 0l);
-        estado = estados[0];
-    }
+    
 
     public Cuenta(String IBAN, int ENTIDAD, int OFICINA, long CUENTA,
             Cuenta toCopy) {

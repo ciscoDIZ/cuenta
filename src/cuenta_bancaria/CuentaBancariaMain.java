@@ -5,11 +5,10 @@
  */
 package cuenta_bancaria;
 
-import cuenta_bancaria.obj.Cuenta;
+import cuenta_bancaria.obj.model.Cuenta;
 import java.util.Calendar;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -25,12 +24,12 @@ public class CuentaBancariaMain {
     public static Cuenta __ini__(Cuenta c) throws InputMismatchException {
 
         Scanner sc = new Scanner(System.in);
-
+        String titular = "";
         String iban;
         int entidad;
         int oficina;
         long cuenta;
-
+        
         if (c.getTitular().equals("Usuario por defecto")) {
             System.out.println("Aun no ha establecido un titular\n¿Desea hacerlo ahora? S\\n");
             String opt = sc.nextLine().toLowerCase();
@@ -45,6 +44,7 @@ public class CuentaBancariaMain {
                     + "\n¿Desea hacerlo ahora? S\\n");
             String in = sc.nextLine().toLowerCase();
             if (in.equals("") || in.equals("s")) {
+
                 System.out.println("introducir IBAN");
                 if (ibanPatron.matcher(iban = sc.nextLine().toUpperCase())
                         .matches()) {
@@ -52,6 +52,7 @@ public class CuentaBancariaMain {
                 } else {
                     throw new InputMismatchException("IBAN incorrecto");
                 }
+
                 System.out.println("introducir entidad");
 
                 if (entidadOficinaPatron.matcher(String.valueOf(entidad
@@ -75,7 +76,7 @@ public class CuentaBancariaMain {
                 } else {
                     throw new InputMismatchException("cuenta erronea");
                 }
-                c = new Cuenta(iban, entidad, oficina, cuenta, c);
+                c = new Cuenta(titular,0.0, iban, entidad, oficina, cuenta);
             } else {
                 throw new InputMismatchException();
             }
@@ -91,8 +92,8 @@ public class CuentaBancariaMain {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         Cuenta c = null;
-        String titular = "";
-        double saldo = 0;
+        String titular;
+        double saldo;
         String iban = "";
         int entidad = 0;
         int oficina = 0;
@@ -118,8 +119,7 @@ public class CuentaBancariaMain {
                     c = new Cuenta(args[0]);
                     break;
                 default:
-                    c = new Cuenta();
-                    break;
+                    throw new AssertionError();
             }
             if (c.getTitular().equals("Usuario por defecto")
                     || c.getIBAN().equals("ES00")
@@ -159,7 +159,7 @@ public class CuentaBancariaMain {
         }
         System.out.println(c.mostrarDatos());
         //TODO
-        String mensajeMenu = "";
+        String mensajeMenu;
         int opt = 0;
         boolean salir = false;
         String mensajeBienvenida = null;
@@ -361,7 +361,7 @@ public class CuentaBancariaMain {
                     opt = sc.nextInt();
                     switch (opt) {
                         case 1:
-                            
+
                             System.out.println("1)ingreso manual\n2)ingreso automatico");
                             opt = sc.nextInt();
                             switch (opt) {
@@ -394,7 +394,6 @@ public class CuentaBancariaMain {
                                 default:
                                     throw new AssertionError();
                             }
-
                             break;
                         case 2:
                             System.out.println("1)retirada manual\n2)retirada automatico");
@@ -447,7 +446,8 @@ public class CuentaBancariaMain {
                                 case 1:
                                 case 2:
                                 case 3:
-                                    System.out.println(c.movimientosPorAsunto(Cuenta.getTipo(movimiento)));
+                                    System.out.println(c.movimientosPorAsunto(
+                                            Cuenta.getTipo(movimiento)));
                                     break;
                                 default:
                                     throw new AssertionError();

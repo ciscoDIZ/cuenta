@@ -5,7 +5,7 @@
  */
 package pruebas;
 
-import cuenta_bancaria.obj.Cuenta;
+import cuenta_bancaria.obj.model.Cuenta;
 import java.util.Calendar;
 import java.util.Scanner;
 import java.util.regex.Matcher;
