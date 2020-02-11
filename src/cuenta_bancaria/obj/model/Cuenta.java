@@ -21,25 +21,41 @@ public class Cuenta {
 
     private static class Movimiento {
 
-        enum TipoMovimiento {
+        enum Asunto {
             INGRESO,
             NOMINA,
             RETIRADA,
             PAGO,
+            PERSONALIZADO
         }
 
-        TipoMovimiento tipo;
+        Asunto asunto;
+        String asuntoPers;
         double cuantia;
         Calendar fecha;
 
-        Movimiento(TipoMovimiento asunto, double cuantia) {
-            this.tipo = asunto;
+        public Movimiento() {
+        }
+
+        
+        Movimiento(Asunto asunto,String asuntoPers, double cuantia) {
+            this.asunto = asunto;
+            if(asunto.equals(Asunto.PERSONALIZADO)){
+                this.asuntoPers = asuntoPers;
+            }else{
+                this.asuntoPers = asuntoPers;
+            }
             this.cuantia = cuantia;
             fecha = Calendar.getInstance();
         }
-
-        Movimiento(TipoMovimiento asunto, double cuantia, Calendar fecha) {
-            this.tipo = asunto;
+        
+        Movimiento(Asunto asunto,String asuntoPers, double cuantia, Calendar fecha) {
+            this.asunto = asunto;
+            if(asunto.equals(Asunto.PERSONALIZADO)){
+                this.asuntoPers = asuntoPers;
+            }else{
+                this.asuntoPers = asuntoPers;
+            }
             this.cuantia = cuantia;
             this.fecha = fecha;
         }
@@ -76,7 +92,7 @@ public class Cuenta {
                     : "" + fecha.get(Calendar.DATE);
 
             fechaStr = diaStr + "/" + mesStr + "/" + anioStr;
-            String asuntoStr = tipo.toString().toLowerCase();
+            String asuntoStr = asunto.toString().toLowerCase();
             String cuantiaStr = String.format("%.2f", Double.parseDouble(String
                     .valueOf(cuantia)));
             int cuantiaInt = (int) cuantia;
@@ -113,7 +129,7 @@ public class Cuenta {
     private final int OFICINA;
     private final byte CONTROL;
     private final long CUENTA;
-    private static Movimiento.TipoMovimiento[] tipos;
+    private static Movimiento.Asunto[] tipos;
     private static Estado[] estados;
     private Estado estado;
 
@@ -133,7 +149,7 @@ public class Cuenta {
             this.CONTROL = 0;
             this.CUENTA = CUENTA;
             movimientos = new HashMap<>();
-            tipos = Movimiento.TipoMovimiento.values();
+            tipos = Movimiento.Asunto.values();
             estados = Estado.values();
             estado = estados[1];
         } else {
@@ -159,11 +175,11 @@ public class Cuenta {
         estado = (!titular.equals("Usuario por defecto")) ? estados[1] : estados[0];
     }
 
-    private boolean ingresar(double cuantia, Movimiento.TipoMovimiento asunto,
+    private boolean ingresar(double cuantia,String asuntoPers, Movimiento.Asunto asunto,
             Calendar fecha) {
         boolean ret = false;
         if (fecha != null) {
-            Movimiento m = new Movimiento(asunto, cuantia, fecha);
+            Movimiento m = new Movimiento(asunto, asuntoPers, cuantia, fecha);
 
             if (movimientos.containsKey(m.getFechaKey())) {
                 saldo += cuantia;
@@ -175,7 +191,7 @@ public class Cuenta {
             }
 
         } else {
-            Movimiento m = new Movimiento(asunto, cuantia);
+            Movimiento m = new Movimiento(asunto, asuntoPers,  cuantia);
             if (cuantia > 0) {
                 if (movimientos.containsKey(m.getFechaKey())) {
                     saldo += cuantia;
@@ -190,11 +206,11 @@ public class Cuenta {
         return ret;
     }
 
-    private boolean retirar(double cuantia, Movimiento.TipoMovimiento opt,
+    private boolean retirar(double cuantia,String asuntoPers, Movimiento.Asunto asunto,
             Calendar fecha) {
         boolean ret = false;
         if (fecha != null) {
-            Movimiento m = new Movimiento(opt, cuantia, fecha);
+            Movimiento m = new Movimiento(asunto,asuntoPers, cuantia, fecha);
 
             if (movimientos.containsKey(m.getFechaKey())) {
                 saldo -= cuantia;
@@ -206,7 +222,7 @@ public class Cuenta {
             }
 
         } else {
-            Movimiento m = new Movimiento(opt, cuantia);
+            Movimiento m = new Movimiento(asunto,asuntoPers, cuantia);
 
             if (movimientos.containsKey(m.getFechaKey())) {
                 saldo -= cuantia;
@@ -222,20 +238,20 @@ public class Cuenta {
     }
 
     @SuppressWarnings("NonPublicExported")
-    public boolean setMovimiento(Movimiento.TipoMovimiento tipo, double cuantia,
+    public boolean setMovimiento(Movimiento.Asunto asunto,String asuntoPers, double cuantia,
             Calendar fecha) throws IllegalArgumentException, NumberFormatException {
         boolean ret = false;
         if (estado.equals(Estado.INACTIVA)) {
             throw new IllegalArgumentException("Se debe inicializar la clase Cuenta");
         } else if (cuantia > 0) {
-            switch (tipo) {
+            switch (asunto) {
                 case INGRESO:
                 case NOMINA:
-                    ret = ingresar(cuantia, tipo, fecha);
+                    ret = ingresar(cuantia, asuntoPers, asunto, fecha);
                     break;
                 case RETIRADA:
                 case PAGO:
-                    ret = retirar(cuantia, tipo, fecha);
+                    ret = retirar(cuantia, asuntoPers, asunto, fecha);
                     break;
                 default:
                     throw new AssertionError();
@@ -330,12 +346,12 @@ public class Cuenta {
      * @return
      */
     @SuppressWarnings("NonPublicExported")
-    public String movimientosPorAsunto(Movimiento.TipoMovimiento asunto) {
+    public String movimientosPorAsunto(Movimiento.Asunto asunto) {
         String movimientoStr = "";
         ArrayList<Movimiento> movimientosAsunto = new ArrayList<>();
         for (Map.Entry<Integer, ArrayList<Movimiento>> m : movimientos.entrySet()) {
             for (Movimiento movimiento : m.getValue()) {
-                if (movimiento.tipo.equals(asunto)) {
+                if (movimiento.asunto.equals(asunto)) {
                     movimientosAsunto.add(movimiento);
                 }
             }
@@ -390,7 +406,7 @@ public class Cuenta {
     }
 
     @SuppressWarnings("NonPublicExported")
-    public static Movimiento.TipoMovimiento getTipo(int i) {
+    public static Movimiento.Asunto getTipo(int i) {
         return tipos[i];
     }
 }
