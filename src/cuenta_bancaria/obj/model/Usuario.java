@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * @author tote
  */
 public class Usuario {
-    public enum Sexo{
+    public static enum Sexo{
         MUJER,
         HOMBRE
     }
