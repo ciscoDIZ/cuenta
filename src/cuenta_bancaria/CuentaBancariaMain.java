@@ -94,13 +94,13 @@ public class CuentaBancariaMain {
     public static void main(String[] args) {
         Controller controller = new Controller();
         Scanner sc = new Scanner(System.in);
-        Cuenta c = null;
+        Cuenta cuenta = null;
         String titular;
         double saldo;
         String iban = "";
         int entidad = 0;
         int oficina = 0;
-        long cuenta = 0l;
+        long nCuenta = 0l;
         Calendar fecha;
         // try {
         switch (args.length) {
@@ -110,33 +110,29 @@ public class CuentaBancariaMain {
                 iban = args[2];
                 entidad = Integer.parseInt(args[3]);
                 oficina = Integer.parseInt(args[4]);
-                cuenta = Long.parseLong(args[5]);
-                c = new Cuenta(titular, saldo, iban, entidad, oficina, cuenta);
+                nCuenta = Long.parseLong(args[5]);
+                cuenta = new Cuenta(titular, saldo, iban, entidad, oficina, nCuenta);
                 break;
             case 2:
                 titular = args[0];
                 saldo = Double.parseDouble(args[1]);
-                c = new Cuenta(titular, saldo);
+                cuenta = new Cuenta(titular, saldo);
                 break;
             case 1:
-                c = new Cuenta(args[0]);
+                cuenta = new Cuenta(args[0]);
                 break;
             default:
-                c = new Cuenta("Usuario por defecto");
+                cuenta = new Cuenta("");
 
         }
-        if (c.getTitular().equals("Usuario por defecto")
-                || c.getIBAN().equals("ES00")
-                || c.getENTIDAD() == 0.0
-                || c.getOFICINA() == 0.0
-                || c.getCUENTA() == 0l) {
+        if (cuenta.getTitular().equals("")) {
             System.out.println("Hemos detectado que falta por introducir datos "
                     + "importantes en su cuenta. ¿Desea introducirlos ahora?\nS\\n");
             String opt = sc.nextLine().toLowerCase();
             if (opt.equals("") || opt.equals("s")) {
-                while (c.getEstado().equals(Cuenta.getEstado(0))) {
+                while (cuenta.getEstado().equals(Cuenta.getEstado(0))) {
                     try {
-                        c = controller.menuIniCuenta(c);
+                        cuenta = controller.menuIniCuenta(cuenta);
                     } catch (CuentaInactiva e) {
                     }
 
@@ -145,7 +141,7 @@ public class CuentaBancariaMain {
             }
         }
         
-        System.out.println(c.mostrarDatos());
+        System.out.println(cuenta.mostrarDatos());
         //TODO
         String mensajeMenu;
         int opt = 0;
@@ -159,7 +155,7 @@ public class CuentaBancariaMain {
                     + "\n7)salir";
             if (mensajeBienvenida == null) {
                 mensajeBienvenida = "Bienvenido la cuenta de "
-                        + c.getTitular() + " estado: " + c.getEstado().toString()
+                        + cuenta.getTitular() + " estado: " + cuenta.getEstado().toString()
                         .toLowerCase();
                 System.out.println(mensajeBienvenida);
                 System.out.println(opciones);
@@ -196,7 +192,7 @@ public class CuentaBancariaMain {
                         case 1:
                             System.out.println("introducir cuantia");
                             double cuantia = sc.nextDouble();
-                            c.setMovimiento(Cuenta.getTipo(opt), null, cuantia, fecha);
+                            cuenta.setMovimiento(Cuenta.getTipo(opt), null, cuantia, fecha);
                             break;
                         default:
                             throw new AssertionError();
@@ -230,19 +226,19 @@ public class CuentaBancariaMain {
                         case 3:
                             System.out.println("introducir cuantia");
                             double cuantia = sc.nextDouble();
-                            c.setMovimiento(Cuenta.getTipo(opt), null, cuantia, fecha);
+                            cuenta.setMovimiento(Cuenta.getTipo(opt), null, cuantia, fecha);
                             break;
                         default:
                             throw new AssertionError();
                     }
                     break;
                 case 3:
-                    System.out.println(c.mostrarDatos());
+                    System.out.println(cuenta.mostrarDatos());
                     break;
                 case 4:
                     System.out.println("Introducir fecha");
                     String fechaStr = sc.nextLine();
-                    System.out.println(c.movimientosPorFecha(fechaStr));
+                    System.out.println(cuenta.movimientosPorFecha(fechaStr));
                     break;
                 case 5:
                     System.out.println("seleccionar asunto");
@@ -253,7 +249,7 @@ public class CuentaBancariaMain {
                         case 1:
                         case 2:
                         case 3:
-                            System.out.println(c.movimientosPorAsunto(
+                            System.out.println(cuenta.movimientosPorAsunto(
                                     Cuenta.getTipo(movimiento)));
                             break;
                         default:
@@ -273,7 +269,7 @@ public class CuentaBancariaMain {
             }
         }
 
-        System.out.println(c.getEstado());
+        System.out.println(cuenta.getEstado());
     }
 
 }
