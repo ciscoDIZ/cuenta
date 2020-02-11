@@ -5,8 +5,11 @@
  */
 package pruebas;
 
+import cuenta_bancaria.exc.CuentaInactiva;
+import cuenta_bancaria.obj.controller.Controller;
 import cuenta_bancaria.obj.model.Cuenta;
 import java.util.Calendar;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,9 +49,27 @@ public class Main {
         } catch (Exception e) {
             System.out.println(e);
         }
-*/  
+         */ /*Cuenta.Movimiento movimiento = new Cuenta.Movimiento();
+        movimiento.cuantia = 10;
+        Cuenta.Movimiento movimiento1 = new Cuenta.Movimiento();
+        System.out.println(movimiento1.cuantia);
          Pattern munCuenta = Pattern.compile("((ES[0-9]{2})|(ES00))-(([0-9]{4})|(0))-(([0-9]{4})|(0))-(([0-9]{2})|(0))-(([0-9]{10})|(0))");
         Matcher m = munCuenta.matcher("ES00-0-0-0-0");
-        System.out.println(m.matches());
+        System.out.println(m.matches());*/
+        Controller controller = new Controller();
+        Cuenta cuenta = new Cuenta("nombre");
+        boolean salir = false;
+        while (!salir) {
+            try {
+                controller.menuIniCuenta(cuenta);
+            } catch (CuentaInactiva e) {
+                System.out.println("desea salir?");
+                String respuesta = sc.nextLine();
+                if(respuesta.equals("s")){
+                    salir=true;
+                }
+            }
+        }
+
     }
 }
