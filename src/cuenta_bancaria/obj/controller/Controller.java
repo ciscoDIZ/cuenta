@@ -7,7 +7,6 @@ package cuenta_bancaria.obj.controller;
 
 import cuenta_bancaria.exc.CuentaInactiva;
 import cuenta_bancaria.obj.model.Cuenta;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
