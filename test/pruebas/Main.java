@@ -8,6 +8,7 @@ package pruebas;
 import cuenta_bancaria.exc.CuentaInactiva;
 import cuenta_bancaria.obj.controller.Controller;
 import cuenta_bancaria.obj.model.Cuenta;
+import cuenta_bancaria.obj.model.Usuario;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.InputMismatchException;
@@ -24,9 +25,9 @@ public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
        try {
-            Cuenta c = new Cuenta(new ArrayList<>());
-            System.out.println(c.validarFecha("23/7/2084"));
-            System.out.println(c.mostrarDatos());
+           Cuenta c = new Cuenta(new ArrayList<>());
+            
+            
             Cuenta c1 = new Cuenta(new ArrayList<>());
             Calendar ca = Calendar.getInstance();
             ca.set(1984, 6, 23);

@@ -8,6 +8,7 @@ package cuenta_bancaria;
 import cuenta_bancaria.exc.CuentaInactiva;
 import cuenta_bancaria.obj.controller.Controller;
 import cuenta_bancaria.obj.model.Cuenta;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -32,7 +33,7 @@ public class CuentaBancariaMain {
     public static void main(String[] args) {
         Controller controller = new Controller();
         Scanner sc = new Scanner(System.in);
-        Cuenta cuenta = null;
+        Cuenta cuenta = new Cuenta(new ArrayList<>(), 1000, "ES34", 1234, 1234, 1234567890);
         String titular;
         double saldo;
         String iban;

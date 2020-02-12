@@ -122,7 +122,7 @@ public class Cuenta {
     }
     private String titular;
     private HashMap<Integer, ArrayList<Movimiento>> movimientos;
-    private final Usuario[] TITULARES;
+    private final  Usuario[] TITULARES;
     private double saldo;
     private double disponible;
     private double retenciones;
@@ -141,7 +141,12 @@ public class Cuenta {
         String numCuentaString = IBAN + "-" + ENTIDAD + "-" + OFICINA + "-00-" + CUENTA;
         Matcher m = ibanPatron.matcher(numCuentaString);
         if (m.matches()) {
-            this.TITULARES = (Usuario[])titulares.toArray();
+            Object[] titularesObj = titulares.toArray();
+            if(titularesObj instanceof Usuario[]){
+                this.TITULARES = (Usuario[])titularesObj;
+            }else{
+                throw new IllegalArgumentException();
+            }
             this.saldo = saldo;
             disponible = saldo;
             retenciones = 0.0;
