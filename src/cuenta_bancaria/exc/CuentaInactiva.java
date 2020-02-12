@@ -10,6 +10,10 @@ package cuenta_bancaria.exc;
  * @author tote
  */
 public class CuentaInactiva extends Exception{
+    /**
+     * Excepcion que se produce al detectar que se esta intntando acceder al 
+     * sistema con una cuenta inactiva
+     */
     public CuentaInactiva() {
         super();
     }

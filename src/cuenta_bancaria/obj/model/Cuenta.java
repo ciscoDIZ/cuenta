@@ -6,6 +6,7 @@
 package cuenta_bancaria.obj.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -99,7 +100,7 @@ public class Cuenta {
             String decimalesCuantia = "" + (cuantia - cuantiaInt);
             decimalesCuantia = decimalesCuantia.substring(2, decimalesCuantia
                     .length());
-            System.out.println("length de deciimales: " + decimalesCuantia
+            System.out.println("length de decimales: " + decimalesCuantia
                     .length());
             if (cuantiaStr.length() == 3 || (cuantiaStr.length() == 4
                     && decimalesCuantia.length() > 1)) {
@@ -121,6 +122,7 @@ public class Cuenta {
     }
     private String titular;
     private HashMap<Integer, ArrayList<Movimiento>> movimientos;
+    private final Usuario[] TITULARES;
     private double saldo;
     private double disponible;
     private double retenciones;
@@ -133,13 +135,13 @@ public class Cuenta {
     private static Estado[] estados;
     private Estado estado;
 
-    public Cuenta(String titular, double saldo, String IBAN, int ENTIDAD,
+    public Cuenta(ArrayList<Usuario> titulares, double saldo, String IBAN, int ENTIDAD,
             int OFICINA, long CUENTA) throws IllegalArgumentException {
         Pattern ibanPatron = Pattern.compile("((ES[0-9]{2})|(ES00))-(([0-9]{4})|(0))-(([0-9]{4})|(0))-(([0-9]{2})|(0))-(([0-9]{10})|(0))");
         String numCuentaString = IBAN + "-" + ENTIDAD + "-" + OFICINA + "-00-" + CUENTA;
         Matcher m = ibanPatron.matcher(numCuentaString);
         if (m.matches()) {
-            this.titular = titular;
+            this.TITULARES = (Usuario[])titulares.toArray();
             this.saldo = saldo;
             disponible = saldo;
             retenciones = 0.0;
@@ -157,13 +159,13 @@ public class Cuenta {
         }
     }
 
-    public Cuenta(String titular, double saldo) {
-        this(titular, saldo, "ES00", 0, 0, 0l);
+    public Cuenta(ArrayList<Usuario> titulares, double saldo) {
+        this(titulares, saldo, "ES00", 0, 0, 0l);
         estado = estados[0];
     }
 
-    public Cuenta(String titular) {
-        this(titular, 0.0, "ES00", 0, 0, 0l);
+    public Cuenta(ArrayList<Usuario> titulares) {
+        this(titulares, 0.0, "ES00", 0, 0, 0l);
         estado = estados[0];
     }
 
@@ -171,8 +173,9 @@ public class Cuenta {
 
     public Cuenta(String IBAN, int ENTIDAD, int OFICINA, long CUENTA,
             Cuenta toCopy) {
-        this(toCopy.titular, toCopy.saldo, IBAN, ENTIDAD, OFICINA, CUENTA);
-        estado = (!titular.equals("Usuario por defecto")) ? estados[1] : estados[0];
+        
+        this(((ArrayList<Usuario>)Arrays.asList(toCopy.TITULARES)), toCopy.saldo, IBAN, ENTIDAD, OFICINA, CUENTA);
+        estado = (!titular.equals("")) ? estados[1] : estados[0];
     }
 
     private boolean ingresar(double cuantia,String asuntoPers, Movimiento.Asunto asunto,
@@ -406,7 +409,7 @@ public class Cuenta {
     }
 
     @SuppressWarnings("NonPublicExported")
-    public static Movimiento.Asunto getTipo(int i) {
+    public static Movimiento.Asunto getAsunto(int i) {
         return tipos[i];
     }
 }
