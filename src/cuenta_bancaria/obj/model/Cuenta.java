@@ -141,11 +141,10 @@ public class Cuenta {
         String numCuentaString = IBAN + "-" + ENTIDAD + "-" + OFICINA + "-00-" + CUENTA;
         Matcher m = ibanPatron.matcher(numCuentaString);
         if (m.matches()) {
-            Object[] titularesObj = titulares.toArray();
-            if(titularesObj instanceof Usuario[]){
-                this.TITULARES = (Usuario[])titularesObj;
-            }else{
-                throw new IllegalArgumentException();
+            TITULARES = new Usuario[titulares.size()];
+            for (int i = 0; i < TITULARES.length; i++) {
+                TITULARES[i] = titulares.get(i);
+                
             }
             this.saldo = saldo;
             disponible = saldo;
