@@ -5,14 +5,13 @@
  */
 package cuenta_bancaria;
 
-import cuenta_bancaria.exc.CuentaInactiva;
+
 import cuenta_bancaria.exc.ExcepcionValidacionDNI;
 import cuenta_bancaria.obj.controller.Controller;
 import cuenta_bancaria.obj.model.Cuenta;
 import cuenta_bancaria.obj.model.Usuario;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
@@ -182,9 +181,12 @@ public class CuentaBancariaMain {
                     cuenta = new Cuenta(titular, 0.0, iban, entidad, oficina,
                             nCuenta);
                     cuenta.getTITULARES()[0].addCuenta(cuenta);
-                } catch (IllegalArgumentException e) {
-                } catch (ExcepcionValidacionDNI dni) {
-
+                } catch (IllegalArgumentException | ExcepcionValidacionDNI e) {
+                    if (e instanceof IllegalArgumentException){
+                        System.out.println("Campo erroneo");
+                    }else if (e instanceof ExcepcionValidacionDNI){
+                        System.out.println("DNI icorrecto");
+                    }
                 }
 
             }
