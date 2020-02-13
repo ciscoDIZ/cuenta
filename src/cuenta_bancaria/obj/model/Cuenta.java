@@ -14,6 +14,7 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 /**
  *
  * @author tote
@@ -120,7 +121,7 @@ public class Cuenta {
         RETENIDA,
         BLOQUEADA
     }
-    private String titular;
+  
     private HashMap<Integer, ArrayList<Movimiento>> movimientos;
     private final  Usuario[] TITULARES;
     private double saldo;
@@ -141,11 +142,9 @@ public class Cuenta {
         String numCuentaString = IBAN + "-" + ENTIDAD + "-" + OFICINA + "-00-" + CUENTA;
         Matcher m = ibanPatron.matcher(numCuentaString);
         if (m.matches()) {
-            Object[] titularesObj = titulares.toArray();
-            if(titularesObj instanceof Usuario[]){
-                this.TITULARES = (Usuario[])titularesObj;
-            }else{
-                throw new IllegalArgumentException();
+            TITULARES = new Usuario[titulares.size()];
+            for (int i = 0; i < TITULARES.length; i++) {
+                TITULARES[i] = titulares.get(i);
             }
             this.saldo = saldo;
             disponible = saldo;
@@ -177,12 +176,17 @@ public class Cuenta {
     
 
     public Cuenta(String IBAN, int ENTIDAD, int OFICINA, long CUENTA,
-            Cuenta toCopy) {
-        
-        this(((ArrayList<Usuario>)Arrays.asList(toCopy.TITULARES)), toCopy.saldo, IBAN, ENTIDAD, OFICINA, CUENTA);
-        estado = (!titular.equals("")) ? estados[1] : estados[0];
+            Cuenta toCopy) { 
+        this(((ArrayList<Usuario>)Arrays.asList(toCopy.TITULARES)), toCopy.saldo
+                , IBAN, ENTIDAD, OFICINA, CUENTA);
     }
 
+    public Cuenta(ArrayList<Usuario> titulares, Cuenta toCopy){
+        this(titulares, toCopy.saldo, toCopy.IBAN, toCopy.ENTIDAD, toCopy.OFICINA
+                , toCopy.CUENTA);
+    }
+    
+    
     private boolean ingresar(double cuantia,String asuntoPers, Movimiento.Asunto asunto,
             Calendar fecha) {
         boolean ret = false;
@@ -216,7 +220,7 @@ public class Cuenta {
 
     private boolean retirar(double cuantia,String asuntoPers, Movimiento.Asunto asunto,
             Calendar fecha) {
-        boolean ret = false;
+        boolean ret ;
         if (fecha != null) {
             Movimiento m = new Movimiento(asunto,asuntoPers, cuantia, fecha);
 
@@ -289,7 +293,7 @@ public class Cuenta {
     public String mostrarDatos() {
         String movimientosStr = mostrarMovimientos();
 
-        return titular + "\n" + getNumCuenta() + "\n" + movimientosStr
+        return  getNumCuenta() + "\n" + movimientosStr
                 + "\nSaldo: " + String.format("%.2f", Double.parseDouble(String
                         .valueOf(saldo)));
     }
@@ -298,11 +302,10 @@ public class Cuenta {
         TreeMap<Integer, ArrayList<Movimiento>> movOrdenados;
         movOrdenados = new TreeMap<>(movimientos);
         String movimientosStr = "Fecha\t\tAsunto\t\tCuantia\n";
-        for (Map.Entry<Integer, ArrayList<Movimiento>> en
-                : this.movimientos.entrySet()) {
-            for (Movimiento m : en.getValue()) {
-                movimientosStr += m.toString();
-            }
+        for (Map.Entry<Integer, ArrayList<Movimiento>> tm
+                : movOrdenados.entrySet()) {
+            movimientosStr = tm.getValue().stream().map((m) -> m.toString())
+                    .reduce(movimientosStr, String::concat);
         }
         return movimientosStr;
     }
@@ -357,13 +360,13 @@ public class Cuenta {
     public String movimientosPorAsunto(Movimiento.Asunto asunto) {
         String movimientoStr = "";
         ArrayList<Movimiento> movimientosAsunto = new ArrayList<>();
-        for (Map.Entry<Integer, ArrayList<Movimiento>> m : movimientos.entrySet()) {
-            for (Movimiento movimiento : m.getValue()) {
-                if (movimiento.asunto.equals(asunto)) {
-                    movimientosAsunto.add(movimiento);
-                }
-            }
-        }
+        movimientos.entrySet().forEach((m) -> {
+            m.getValue().stream().filter((movimiento) ->(movimiento.asunto
+                    .equals(asunto)))
+                    .forEachOrdered((movimiento) -> {
+                movimientosAsunto.add(movimiento);
+            });
+        });
         movimientoStr += movimientosAsunto.stream()
                 .map((m) -> m.toString())
                 .reduce(movimientoStr, String::concat);
@@ -390,16 +393,7 @@ public class Cuenta {
         return CUENTA;
     }
 
-    public void setTitular(String titular) {
-        this.titular = titular;
-        estado = (!getNumCuenta().equals("ES00-0000-0000-00-0000000000")
-                && !titular.equals("Usuario por defecto"))
-                ? estados[1] : estados[0];
-    }
-
-    public String getTitular() {
-        return titular;
-    }
+   
 
     public double getSaldo() {
         return saldo;
@@ -413,6 +407,30 @@ public class Cuenta {
         return estados[i];
     }
 
+    public double getDisponible() {
+        return disponible;
+    }
+
+    public void setDisponible(double disponible) {
+        this.disponible = disponible;
+    }
+
+    public double getRetenciones() {
+        return retenciones;
+    }
+
+    public void setRetenciones(double retenciones) {
+        this.retenciones = retenciones;
+    }
+
+    public void setEstado(Estado estado) {
+        this.estado = estado;
+    }
+
+    public Usuario[] getTITULARES() {
+        return TITULARES;
+    }
+    
     @SuppressWarnings("NonPublicExported")
     public static Movimiento.Asunto getAsunto(int i) {
         return tipos[i];

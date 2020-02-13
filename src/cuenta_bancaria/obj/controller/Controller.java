@@ -5,7 +5,9 @@
  */
 package cuenta_bancaria.obj.controller;
 
+import cuenta_bancaria.exc.ExcepcionValidacionDNI;
 import cuenta_bancaria.obj.model.Cuenta;
+import cuenta_bancaria.obj.model.DNI;
 import cuenta_bancaria.obj.model.Usuario;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -27,18 +29,23 @@ public class Controller {
     static Pattern ibanPatron = Pattern.compile("(ES[0-9]{2})");
     static Pattern entidadOficinaPatron = Pattern.compile("[0-9]{4}");
     static Pattern cuentaPatron = Pattern.compile("[0-9]{10}");
-    private Scanner sc;
-    private String titular;
+    private final Scanner sc;
     private String iban;
     private int entidad;
     private int oficina;
     private long cuenta;
+    private String nombre;
+    private String apellido1;
+    private String apellido2;
+    private int edad;
+    private DNI dni;
+    private Usuario.Sexo sexo;
+    
     /**
      * constructor unico y sin parámetros
      */
     public Controller() {
         sc = new Scanner(System.in);
-        titular = "";
         iban = "";
         entidad = 0;
         oficina = 0;
@@ -51,26 +58,20 @@ public class Controller {
      * en los atributos vinculados con dicho número. Por ese motivo, debe crear 
      * una instancia si el usuario no da parametros en el inicio de la 
      * aplicacion.
-     * @param c instancia de lase Cuenta inicializada con el parametro titular 
-     * en blanco.
+     *
      * @return 
-     * @throws IllegalArgumentException 
+     * @throws IllegalArgumentException en caso de introducir un campo incorrecto
      */
-    public Cuenta menuIniCuenta(Cuenta c) throws IllegalArgumentException {
+    public Object[] menuIniCuenta() throws IllegalArgumentException {
+        Object[] retorno = new Object[5];
         ArrayList<Usuario> titulares = new ArrayList<>();
-        if (c.getTitular().equals("")) {
-            
-            /*if (titular.equals("")) {
-                System.out.println("introducir titular");
-                titular = sc.nextLine();
-            }*/
-        }
+        retorno[0] = titulares;
         if (!ibanPatron.matcher(iban).matches()) {
             System.out.println("introducir IBAN");
             if (ibanPatron.matcher(iban = sc.nextLine().toUpperCase())
                     .matches()) {
                 System.out.println("OK");
-                c.setTitular(titular);
+                retorno[1] = (String)iban;
             } else {
                 throw new IllegalArgumentException("IBAN incorrecto");
             }
@@ -82,6 +83,7 @@ public class Controller {
             if (entidadOficinaPatron.matcher(String.valueOf(entidad
                     = sc.nextInt())).matches()) {
                 System.out.println("OK");
+                retorno[2] = (Integer)entidad;
             } else {
                 System.out.println("entidad incorrecta");
 
@@ -93,6 +95,7 @@ public class Controller {
             if (entidadOficinaPatron.matcher(String.valueOf(oficina
                     = sc.nextInt())).matches()) {
                 System.out.println("OK");
+                retorno[3] = (Integer)oficina;
             } else {
                 System.out.println("oficina incorrecta");
 
@@ -105,11 +108,50 @@ public class Controller {
             if (cuentaPatron.matcher(String.valueOf(cuenta = sc.nextLong()))
                     .matches()) {
                 System.out.println("OK");
+                retorno[4] = (Long)cuenta;
             } else {
                 System.out.println("cuenta incorrecta");
                 throw new IllegalArgumentException("cuenta erronea");
             }
         }
-        return new Cuenta(titulares, 0.0, iban, entidad, oficina, cuenta);
+        return retorno;
+    }
+    public ArrayList<Usuario> menuIniTitulares() throws AssertionError, ExcepcionValidacionDNI{
+        sc.nextLine();
+        ArrayList<Usuario> retorno = new ArrayList<>();
+        boolean salir = false;
+        while(!salir){
+            System.out.println("introducir nombre");
+            nombre = sc.nextLine();
+            System.out.println("introducir primer apellido");
+            apellido1 = sc.nextLine();
+            System.out.println("introducir segundo apellido");
+            apellido2 = sc.nextLine();
+            System.out.println("introducir edad");
+            edad = sc.nextInt();
+            sc.nextLine();
+            System.out.println("introducir dni");
+            String dniStr = sc.nextLine();
+            this.dni = new DNI(dniStr);
+            
+            System.out.println("1)Mujer\n2)Hombre");
+            int opt = sc.nextInt();
+            sc.nextLine();
+            switch (opt) {
+                case 1:
+                    sexo = Usuario.Sexo.MUJER;
+                    break;
+                case 2:
+                    sexo = Usuario.Sexo.HOMBRE;
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+            retorno.add(new Usuario(nombre, apellido1, apellido2, edad, dni, sexo, new ArrayList<>()));
+            System.out.println("¿Desea agregar otro titular?\nS/n");
+            String respuesta = sc.nextLine();
+            salir = !(respuesta.equals("s")||respuesta.equals(""));
+        }
+        return retorno;
     }
 }
