@@ -145,6 +145,7 @@ public class Cuenta {
             TITULARES = new Usuario[titulares.size()];
             for (int i = 0; i < TITULARES.length; i++) {
                 TITULARES[i] = titulares.get(i);
+                
             }
             this.saldo = saldo;
             disponible = saldo;
