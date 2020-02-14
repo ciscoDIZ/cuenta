@@ -58,4 +58,18 @@ public class DNI {
         return num + "" + letra;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return this.hashCode() == obj.hashCode(); 
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + this.letra;
+        hash = 97 * hash + this.num;
+        return hash;
+    }
+
+    
 }

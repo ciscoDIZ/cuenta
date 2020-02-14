@@ -124,7 +124,7 @@ public class Controller {
         return retorno;
     }
 
-    public HashSet<Usuario> menuIniTitulares() throws AssertionError,
+    public HashSet<Usuario> menuIniTitulares(Cuenta c) throws AssertionError,
             ExcepcionValidacionDNI {
         Pattern p = Pattern.compile("([X|Z]?[0-9]{8}[A-Z])"
                 + "|([X|Z]?[0-9]{8} [A-Z])"
@@ -164,7 +164,7 @@ public class Controller {
                 default:
                     throw new AssertionError();
             }
-            retorno.add(new Usuario(nombre, apellido1, apellido2, edad, dni, sexo, new ArrayList<>()));
+            retorno.add(new Usuario(nombre, apellido1, apellido2, edad, dni, sexo));
             System.out.println("¿Desea agregar otro titular?\nS/n");
             String respuesta = sc.nextLine();
             salir = !(respuesta.equals("s") || respuesta.equals(""));

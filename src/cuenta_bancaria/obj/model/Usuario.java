@@ -25,14 +25,15 @@ public class Usuario {
     private ArrayList<Cuenta> cuentas;
 
     public Usuario(String nombre, String apellido1, String apellido2, int edad
-            , DNI dni, Sexo sexo, ArrayList<Cuenta> cuentas) {
+            , DNI dni, Sexo sexo) {
         this.nombre = nombre;
         this.apellido1 = apellido1;
         this.apellido2 = apellido2;
         this.edad = edad;
         this.dni = dni;
         this.sexo = sexo;
-        this.cuentas = cuentas;
+        this.cuentas = new ArrayList<>();
+        
     }
     
     public boolean addCuenta(Cuenta c){
@@ -93,6 +94,15 @@ public class Usuario {
 
     public void setCuentas(ArrayList<Cuenta> cuentas) {
         this.cuentas = cuentas;
+    }
+
+    @Override
+    public String toString() {
+        String nCuentas = "";
+        for (Cuenta cuenta : cuentas) {
+            nCuentas += cuenta.getNumCuenta()+"\n";
+        }
+        return nombre + " " + apellido1 + " " + apellido2 + "\ndni: " + dni +"\ncuentas:"+nCuentas;
     }
      
     

@@ -6,15 +6,14 @@
 package cuenta_bancaria.obj.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -97,20 +96,8 @@ public class Cuenta {
             String asuntoStr = asunto.toString().toLowerCase();
             String cuantiaStr = String.format("%.2f", Double.parseDouble(String
                     .valueOf(cuantia)));
-            int cuantiaInt = (int) cuantia;
-            String decimalesCuantia = "" + (cuantia - cuantiaInt);
-            decimalesCuantia = decimalesCuantia.substring(2, decimalesCuantia
-                    .length());
-            //System.out.println("length de decimales: " + decimalesCuantia.length());
+            
             movimientosStr += fechaStr + "\t" + asuntoStr + "\t\t" + cuantiaStr + "\n";
-            /*if (cuantiaStr.length() == 3 || (cuantiaStr.length() == 4
-                    && decimalesCuantia.length() >= 1)) {
-                movimientosStr += fechaStr + "\t" + asuntoStr + "\t\t"
-                        + cuantiaStr + "\n";
-            } else {
-                movimientosStr += fechaStr + "\t" + asuntoStr + "\t"
-                        + cuantiaStr + "\n";
-            }*/
             return movimientosStr;
         }
     }
@@ -123,7 +110,7 @@ public class Cuenta {
     }
 
     private HashMap<Integer, ArrayList<Movimiento>> movimientos;
-    private final Map<String, Usuario> TITULARES;
+    private final HashMap<DNI, Usuario> TITULARES;
     private double saldo;
     private double disponible;
     private double retenciones;
@@ -143,8 +130,9 @@ public class Cuenta {
         Matcher m = ibanPatron.matcher(numCuentaString);
         if (m.matches()) {
             TITULARES = new HashMap(titulares.size());
-            for (Usuario titulare : titulares) {
-                TITULARES.put(titulare.getDni().toString(), titulare);
+            for (Usuario titular: titulares) {
+                
+                TITULARES.put(titular.getDni(), titular);
             }
             this.saldo = saldo;
             disponible = saldo;
@@ -175,7 +163,7 @@ public class Cuenta {
 
     public Cuenta(String IBAN, int ENTIDAD, int OFICINA, long CUENTA,
             Cuenta toCopy) {
-        this((Set)toCopy.TITULARES.values(), toCopy.saldo,
+        this(toCopy.TITULARES.values().stream().collect(Collectors.toSet()), toCopy.saldo,
                  IBAN, ENTIDAD, OFICINA, CUENTA);
         estado = estados[0];
     }
@@ -185,7 +173,11 @@ public class Cuenta {
                  toCopy.CUENTA);
         estado = estados[0];
     }
-
+    public void vincularCuenta(){
+        TITULARES.entrySet().forEach((entry) -> {
+            entry.getValue().addCuenta(this);
+        });
+    }
     private boolean ingresar(double cuantia, String asuntoPers, Movimiento.Asunto asunto,
             Calendar fecha) {
         boolean ret = false;
@@ -371,7 +363,13 @@ public class Cuenta {
                 .reduce(movimientoStr, String::concat);
         return "Fecha\t\tAsunto\t\tCuantia\n" + movimientoStr;
     }
-
+    public String mostrarTitular(){
+        String retorno = "";
+        for (Map.Entry<DNI, Usuario> entry : TITULARES.entrySet()) {
+            retorno+=entry.getValue().toString()+"\n";
+        }
+        return retorno;
+    }
     public String getIBAN() {
         return IBAN;
     }
@@ -424,7 +422,7 @@ public class Cuenta {
         this.estado = estado;
     }
 
-    public Map<String, Usuario> getTITULARES() {
+    public Map<DNI, Usuario> getTITULARES() {
         return TITULARES;
     }
 
