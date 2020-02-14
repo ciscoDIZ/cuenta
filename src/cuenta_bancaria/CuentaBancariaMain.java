@@ -33,7 +33,6 @@ public class CuentaBancariaMain {
         Scanner sc = new Scanner(System.in);
         Cuenta cuenta = null;
         ArrayList<Usuario> titular;
-        Double saldo;
         String iban;
         int entidad;
         int oficina;
@@ -52,7 +51,7 @@ public class CuentaBancariaMain {
                         String opciones = "1)realizar ingreso\n2)realizar retirada"
                                 + "\n3)mostrar datos\n4)búsqueda por fecha"
                                 + "\n5)búsqueda por asunto\n6)mostrar opciones"
-                                + "\n7)desactivar cuenta\n8)bloqueat cuenta\n9)salir";
+                                + "\n7)desactivar cuenta\n8)bloquear cuenta\n9)salir";
                         if (mensajeBienvenida == null) {
                             mensajeBienvenida = "Bienvenido la cuenta de "
                                     + " estado: " + cuenta.getEstado().toString()
@@ -179,12 +178,32 @@ public class CuentaBancariaMain {
                         }
                         break;
                     case INACTIVA:
-                        System.out.println("1)activar cuenta\n2)cambiar titular/es\n3)cambiar número cuenta");
+                        System.out.println("1)cambiar titular/es\n2)cambiar número cuenta\n3)activar cuenta");
                         opt = sc.nextInt();
                         switch (opt) {
                             case 1:
+                                try {
+                                    cuenta = new Cuenta(controller.menuIniTitulares(), cuenta);
+                                } catch (ExcepcionValidacionDNI | AssertionError e) {
+                                }
+
+                                break;
+                            case 2:
+                                try {
+                                    data = controller.menuIniCuenta();
+                                    iban = (String)data[1];
+                                    entidad = (Integer)data[2];
+                                    oficina = (Integer)data[3];
+                                    nCuenta = (Long)data[4];
+                                    cuenta = new Cuenta(iban, entidad, oficina, nCuenta, cuenta);
+                                } catch (IllegalArgumentException e) {
+                                }
+                                break;
+                            case 3:
                                 cuenta.setEstado(Cuenta.Estado.ACTIVA);
                                 System.out.println("Cuenta activa");
+                                break;
+                            default:
                                 break;
                         }
                         break;

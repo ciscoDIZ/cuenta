@@ -28,9 +28,9 @@ public class Controller {
      * metodo main de dicha clase y ejecutar cada método en en momento que se
      * precise.
      */
-    Pattern IBAN_PATRON = Pattern.compile("(ES[0-9]{2})");
-    Pattern ENTOF_PATRON = Pattern.compile("[0-9]{4}");
-    Pattern CUENTA_PATRON = Pattern.compile("[0-9]{10}");
+    private static final Pattern IBAN_PATRON = Pattern.compile("(ES[0-9]{2})");
+    private static final Pattern ENTOF_PATRON = Pattern.compile("[0-9]{4}");
+    private static final Pattern CUENTA_PATRON = Pattern.compile("[0-9]{10}");
     private static final Pattern NOMBRE_PATRON = Pattern.compile("([A-Z]{1})([a-z]{1,100})");
     private static final Pattern EDAD_PATRON = Pattern.compile("[0-9]{1,2}");
     private final Scanner sc;
@@ -171,12 +171,5 @@ public class Controller {
         return retorno;
     }
 
-    public Object[] menuCambiarTitular(Cuenta c) {
-        Object[] retorno = new Object[2];
-        return new Object[5];
-    }
-
-    public Object[] menuCambiarNumero(Cuenta c) {
-        return new Object[5];
-    }
+    
 }
