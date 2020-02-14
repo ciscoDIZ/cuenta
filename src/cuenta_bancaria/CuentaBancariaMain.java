@@ -52,7 +52,7 @@ public class CuentaBancariaMain {
                         String opciones = "1)realizar ingreso\n2)realizar retirada"
                                 + "\n3)mostrar datos\n4)búsqueda por fecha"
                                 + "\n5)búsqueda por asunto\n6)mostrar opciones"
-                                + "\n7)desactivar cuenta\n8)salir";
+                                + "\n7)desactivar cuenta\n8)bloqueat cuenta\n9)salir";
                         if (mensajeBienvenida == null) {
                             mensajeBienvenida = "Bienvenido la cuenta de "
                                     + " estado: " + cuenta.getEstado().toString()
@@ -60,9 +60,7 @@ public class CuentaBancariaMain {
                             System.out.println(mensajeBienvenida);
                             System.out.println(opciones);
                         }
-                        if(mensajeBienvenida != null){
-                            System.out.println("6)mostrar opciones");
-                        }
+
                         opt = sc.nextInt();
                         switch (opt) {
                             case 1:
@@ -167,23 +165,38 @@ public class CuentaBancariaMain {
                                 cuenta.setEstado(Cuenta.Estado.INACTIVA);
                                 break;
                             case 8:
+                                cuenta.setEstado(Cuenta.Estado.BLOQUEADA);
+                                break;
+                            case 9:
                                 salir = true;
                                 break;
                             default:
                                 throw new AssertionError();
 
                         }
-
+                        if (mensajeBienvenida != null && opt != 6) {
+                            System.out.println("6)mostrar opciones");
+                        }
                         break;
                     case INACTIVA:
-                        System.out.println("1)activar cuenta");
+                        System.out.println("1)activar cuenta\n2)cambiar titular/es\n3)cambiar número cuenta");
                         opt = sc.nextInt();
                         switch (opt) {
                             case 1:
                                 cuenta.setEstado(Cuenta.Estado.ACTIVA);
+                                System.out.println("Cuenta activa");
                                 break;
                         }
                         break;
+                    case BLOQUEADA:
+                        int cod = 1234;
+                        System.out.println("Su cuenta esta bloqueada, para desbloquearla ponga el codigo de deabloqueo");
+                        System.out.print(":");
+                        opt = sc.nextInt();
+                        if (cod == opt) {
+                            cuenta.setEstado(Cuenta.Estado.ACTIVA);
+                            System.out.println("Cuenta activa");
+                        }
                     default:
                         break;
                 }

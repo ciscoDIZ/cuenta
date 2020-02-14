@@ -102,11 +102,10 @@ public class Cuenta {
             decimalesCuantia = decimalesCuantia.substring(2, decimalesCuantia
                     .length());
             //System.out.println("length de decimales: " + decimalesCuantia.length());
-             movimientosStr += fechaStr + "\t" + asuntoStr + "\t"
-                        + cuantiaStr + "\n";
-           /* if (cuantiaStr.length() == 3 || (cuantiaStr.length() == 4
+             movimientosStr += fechaStr + "\t" + asuntoStr + "\t\t"+ cuantiaStr + "\n";
+           /*if (cuantiaStr.length() == 3 || (cuantiaStr.length() == 4
                     && decimalesCuantia.length() >= 1)) {
-                movimientosStr += fechaStr + "\t" + asuntoStr + "\t"
+                movimientosStr += fechaStr + "\t" + asuntoStr + "\t\t"
                         + cuantiaStr + "\n";
             } else {
                 movimientosStr += fechaStr + "\t" + asuntoStr + "\t"
