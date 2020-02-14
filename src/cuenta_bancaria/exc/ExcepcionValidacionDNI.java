@@ -11,6 +11,7 @@ package cuenta_bancaria.exc;
  */
 public class ExcepcionValidacionDNI extends Exception{
     public ExcepcionValidacionDNI() {
+        super();
     }
     public ExcepcionValidacionDNI(String message) {
         super(message);

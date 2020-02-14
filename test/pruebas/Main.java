@@ -5,14 +5,8 @@
  */
 package pruebas;
 
-import cuenta_bancaria.exc.CuentaInactiva;
-import cuenta_bancaria.obj.controller.Controller;
-import cuenta_bancaria.obj.model.Cuenta;
-import cuenta_bancaria.obj.model.Usuario;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import cuenta_bancaria.exc.ExcepcionValidacionDNI;
+import cuenta_bancaria.obj.model.DNI;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,7 +17,7 @@ import java.util.regex.Pattern;
 public class Main {
 
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+        /* Scanner sc = new Scanner(System.in);
        try {
            Cuenta c = new Cuenta(new ArrayList<>());
             
@@ -72,6 +66,25 @@ public class Main {
                 }
             }
         }*/
+        Pattern p = Pattern.compile("([X|Z]?[0-9]{8}[A-Z])"
+                + "|([X|Z]?[0-9]{8} [A-Z])"
+                + "|([X|Z]?[0-9]{8}-[A-Z])");
+        Matcher m = p.matcher("12345678Z");
+        String dniStr = null;
+        char[] LETRAS = {'T', 'R', 'W', 'A', 'G', 'M', 'Y', 'F',
+            'P', 'D', 'X', 'B', 'N', 'J', 'Z', 'S', 'Q', 'V', 'H', 'L', 'C', 'K', 'E'};
+        System.out.println(LETRAS[78716585 % LETRAS.length]);
+        while (m.find()) {
+            dniStr = m.group();
+        }
+         
+        try {
+            DNI dni = new DNI(dniStr);
+            System.out.println(dni);
+            
+        } catch (ExcepcionValidacionDNI e) {
+            System.out.println("DNI incorrecto");
+        }
 
     }
 }
