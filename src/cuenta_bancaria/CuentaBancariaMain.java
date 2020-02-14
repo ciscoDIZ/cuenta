@@ -9,9 +9,10 @@ import cuenta_bancaria.exc.ExcepcionValidacionDNI;
 import cuenta_bancaria.obj.controller.Controller;
 import cuenta_bancaria.obj.model.Cuenta;
 import cuenta_bancaria.obj.model.Usuario;
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -32,7 +33,7 @@ public class CuentaBancariaMain {
         Controller controller = new Controller();
         Scanner sc = new Scanner(System.in);
         Cuenta cuenta = null;
-        ArrayList<Usuario> titular;
+        HashSet<Usuario> titular;
         String iban;
         int entidad;
         int oficina;
@@ -183,7 +184,7 @@ public class CuentaBancariaMain {
                         switch (opt) {
                             case 1:
                                 try {
-                                    cuenta = new Cuenta(controller.menuIniTitulares(), cuenta);
+                                    cuenta = new Cuenta((Set)controller.menuIniTitulares(), cuenta);
                                 } catch (ExcepcionValidacionDNI | AssertionError e) {
                                 }
 
@@ -235,7 +236,7 @@ public class CuentaBancariaMain {
                         nCuenta = (Long) data[4];
                         cuenta = new Cuenta(titular, 0.0, iban, entidad, oficina,
                                 nCuenta);
-                        cuenta.getTITULARES()[0].addCuenta(cuenta);
+                        //cuenta.getTITULARES().get().addCuenta(cuenta);
                     } catch (IllegalArgumentException | ExcepcionValidacionDNI e) {
                         if (e instanceof IllegalArgumentException) {
                             System.out.println("Campo erroneo");

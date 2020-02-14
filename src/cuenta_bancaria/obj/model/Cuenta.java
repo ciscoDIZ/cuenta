@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -121,7 +123,7 @@ public class Cuenta {
     }
 
     private HashMap<Integer, ArrayList<Movimiento>> movimientos;
-    private final Usuario[] TITULARES;
+    private final Map<String, Usuario> TITULARES;
     private double saldo;
     private double disponible;
     private double retenciones;
@@ -134,16 +136,15 @@ public class Cuenta {
     private static Estado[] estados;
     private Estado estado;
 
-    public Cuenta(ArrayList<Usuario> titulares, double saldo, String IBAN, int ENTIDAD,
+    public Cuenta(Set<Usuario> titulares, double saldo, String IBAN, int ENTIDAD,
             int OFICINA, long CUENTA) throws IllegalArgumentException {
         Pattern ibanPatron = Pattern.compile("((ES[0-9]{2})|(ES00))-(([0-9]{4})|(0))-(([0-9]{4})|(0))-(([0-9]{2})|(0))-(([0-9]{10})|(0))");
         String numCuentaString = IBAN + "-" + ENTIDAD + "-" + OFICINA + "-00-" + CUENTA;
         Matcher m = ibanPatron.matcher(numCuentaString);
         if (m.matches()) {
-            TITULARES = new Usuario[titulares.size()];
-            for (int i = 0; i < TITULARES.length; i++) {
-                TITULARES[i] = titulares.get(i);
-
+            TITULARES = new HashMap(titulares.size());
+            for (Usuario titulare : titulares) {
+                TITULARES.put(titulare.getDni().toString(), titulare);
             }
             this.saldo = saldo;
             disponible = saldo;
@@ -162,24 +163,24 @@ public class Cuenta {
         }
     }
 
-    public Cuenta(ArrayList<Usuario> titulares, double saldo) {
+    public Cuenta(Set<Usuario> titulares, double saldo) {
         this(titulares, saldo, "ES00", 0, 0, 0l);
         estado = estados[0];
     }
 
-    public Cuenta(ArrayList<Usuario> titulares) {
+    public Cuenta(Set<Usuario> titulares) {
         this(titulares, 0.0, "ES00", 0, 0, 0l);
         estado = estados[0];
     }
 
     public Cuenta(String IBAN, int ENTIDAD, int OFICINA, long CUENTA,
             Cuenta toCopy) {
-        this(((ArrayList<Usuario>) Arrays.asList(toCopy.TITULARES)), toCopy.saldo,
+        this((Set)toCopy.TITULARES.values(), toCopy.saldo,
                  IBAN, ENTIDAD, OFICINA, CUENTA);
         estado = estados[0];
     }
 
-    public Cuenta(ArrayList<Usuario> titulares, Cuenta toCopy) {
+    public Cuenta(Set<Usuario> titulares, Cuenta toCopy) {
         this(titulares, toCopy.saldo, toCopy.IBAN, toCopy.ENTIDAD, toCopy.OFICINA,
                  toCopy.CUENTA);
         estado = estados[0];
@@ -423,7 +424,7 @@ public class Cuenta {
         this.estado = estado;
     }
 
-    public Usuario[] getTITULARES() {
+    public Map<String, Usuario> getTITULARES() {
         return TITULARES;
     }
 

@@ -10,6 +10,7 @@ import cuenta_bancaria.obj.model.Cuenta;
 import cuenta_bancaria.obj.model.DNI;
 import cuenta_bancaria.obj.model.Usuario;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,7 +71,7 @@ public class Controller {
      */
     public Object[] menuIniCuenta() throws IllegalArgumentException {
         Object[] retorno = new Object[5];
-        ArrayList<Usuario> titulares = new ArrayList<>();
+        HashSet<Usuario> titulares = new HashSet<>();
         retorno[0] = titulares;
         if (!IBAN_PATRON.matcher(iban).matches()) {
             System.out.println("introducir IBAN");
@@ -123,14 +124,14 @@ public class Controller {
         return retorno;
     }
 
-    public ArrayList<Usuario> menuIniTitulares() throws AssertionError,
+    public HashSet<Usuario> menuIniTitulares() throws AssertionError,
             ExcepcionValidacionDNI {
         Pattern p = Pattern.compile("([X|Z]?[0-9]{8}[A-Z])"
                 + "|([X|Z]?[0-9]{8} [A-Z])"
                 + "|([X|Z]?[0-9]{8}-[A-Z])");
 
         sc.nextLine();
-        ArrayList<Usuario> retorno = new ArrayList<>();
+        HashSet<Usuario> retorno = new HashSet<>();
         boolean salir = false;
         while (!salir) {
             System.out.println("introducir nombre");
