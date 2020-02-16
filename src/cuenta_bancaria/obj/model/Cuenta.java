@@ -6,10 +6,12 @@
 package cuenta_bancaria.obj.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,23 +41,22 @@ public class Cuenta {
         public Movimiento() {
         }
 
-        
-        Movimiento(Asunto asunto,String asuntoPers, double cuantia) {
+        Movimiento(Asunto asunto, String asuntoPers, double cuantia) {
             this.asunto = asunto;
-            if(asunto.equals(Asunto.PERSONALIZADO)){
+            if (asunto.equals(Asunto.PERSONALIZADO)) {
                 this.asuntoPers = asuntoPers;
-            }else{
+            } else {
                 this.asuntoPers = asuntoPers;
             }
             this.cuantia = cuantia;
             fecha = Calendar.getInstance();
         }
-        
-        Movimiento(Asunto asunto,String asuntoPers, double cuantia, Calendar fecha) {
+
+        Movimiento(Asunto asunto, String asuntoPers, double cuantia, Calendar fecha) {
             this.asunto = asunto;
-            if(asunto.equals(Asunto.PERSONALIZADO)){
+            if (asunto.equals(Asunto.PERSONALIZADO)) {
                 this.asuntoPers = asuntoPers;
-            }else{
+            } else {
                 this.asuntoPers = asuntoPers;
             }
             this.cuantia = cuantia;
@@ -97,22 +98,97 @@ public class Cuenta {
             String asuntoStr = asunto.toString().toLowerCase();
             String cuantiaStr = String.format("%.2f", Double.parseDouble(String
                     .valueOf(cuantia)));
-            int cuantiaInt = (int) cuantia;
-            String decimalesCuantia = "" + (cuantia - cuantiaInt);
-            decimalesCuantia = decimalesCuantia.substring(2, decimalesCuantia
-                    .length());
-            System.out.println("length de decimales: " + decimalesCuantia
-                    .length());
-            if (cuantiaStr.length() == 3 || (cuantiaStr.length() == 4
-                    && decimalesCuantia.length() > 1)) {
-                movimientosStr += fechaStr + "\t" + asuntoStr + "\t"
-                        + cuantiaStr + "\n";
-            } else {
-                movimientosStr += fechaStr + "\t" + asuntoStr + "\t\t"
-                        + cuantiaStr + "\n";
-            }
+
+            movimientosStr += fechaStr + "\t" + asuntoStr + "\t\t" + cuantiaStr + "\n";
             return movimientosStr;
         }
+    }
+
+    static class CCC {
+
+        private final String IBAN;
+        private final int ENTIDAD;
+        private final int OFICINA;
+        private final byte CONTROL;
+        private final int CUENTA;
+
+        public CCC() {
+
+            Random rnd = new Random();
+            IBAN = "ES25";
+            ENTIDAD = rnd.nextInt(9999 - 1000) + 1000;
+            OFICINA = rnd.nextInt(9999 - 1000) + 1000;
+            CUENTA = Math.abs(rnd.nextInt());
+            CONTROL = 0;
+        }
+
+        public CCC(String IBAN, int ENTIDAD, int OFICINA, int CUENTA) {
+            this.IBAN = IBAN;
+            this.ENTIDAD = ENTIDAD;
+            this.OFICINA = OFICINA;
+            CONTROL = 0;
+            this.CUENTA = CUENTA;
+        }
+
+        public CCC(int OFICINA) {
+            Random rnd = new Random();
+            IBAN = "ES25";
+            ENTIDAD = 3321;
+            this.OFICINA = OFICINA;
+            CONTROL = 0;
+            CUENTA = rnd.nextInt(Integer.MAX_VALUE - 1000000000) + 1000000000;
+        }
+
+        public String getNumCuenta() {
+            String entString, ofcString, conString, cueString;
+            entString = (ENTIDAD != 0) ? "" + ENTIDAD : "0000";
+            ofcString = (OFICINA != 0) ? "" + OFICINA : "0000";
+            conString = (CONTROL != 0) ? "" + CONTROL : "00";
+            cueString = (CUENTA != 0) ? "" + CUENTA : "0000000000";
+            return IBAN + "-" + entString + "-" + ofcString + "-" + conString + "-"
+                    + cueString;
+        }
+
+        public String getIBAN() {
+            return IBAN;
+        }
+
+        public int getENTIDAD() {
+            return ENTIDAD;
+        }
+
+        public int getOFICINA() {
+            return OFICINA;
+        }
+
+        public int getCONTROL() {
+            return CONTROL;
+        }
+
+        public long getCUENTA() {
+            return CUENTA;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 3;
+            hash = 79 * hash + Objects.hashCode(this.IBAN);
+            hash = 79 * hash + this.ENTIDAD;
+            hash = 79 * hash + this.OFICINA;
+            hash = 79 * hash + this.CONTROL;
+            hash = 79 * hash + this.CUENTA;
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            boolean retorno = false;
+            if (obj instanceof CCC) {
+                retorno = this.hashCode() == ((CCC) obj).hashCode();
+            }
+            return retorno;
+        }
+
     }
 
     public enum Estado {
@@ -121,74 +197,85 @@ public class Cuenta {
         RETENIDA,
         BLOQUEADA
     }
-  
+
     private HashMap<Integer, ArrayList<Movimiento>> movimientos;
-    private final  Usuario[] TITULARES;
+    private final HashMap<DNI, Usuario> TITULARES;
     private double saldo;
     private double disponible;
     private double retenciones;
-    private final String IBAN;
-    private final int ENTIDAD;
-    private final int OFICINA;
-    private final byte CONTROL;
-    private final long CUENTA;
+    private CCC ccc;
     private static Movimiento.Asunto[] tipos;
-    private static Estado[] estados;
+    private static Estado[] estados = Estado.values();
     private Estado estado;
 
-    public Cuenta(ArrayList<Usuario> titulares, double saldo, String IBAN, int ENTIDAD,
-            int OFICINA, long CUENTA) throws IllegalArgumentException {
-        Pattern ibanPatron = Pattern.compile("((ES[0-9]{2})|(ES00))-(([0-9]{4})|(0))-(([0-9]{4})|(0))-(([0-9]{2})|(0))-(([0-9]{10})|(0))");
-        String numCuentaString = IBAN + "-" + ENTIDAD + "-" + OFICINA + "-00-" + CUENTA;
-        Matcher m = ibanPatron.matcher(numCuentaString);
-        if (m.matches()) {
-            TITULARES = new Usuario[titulares.size()];
-            for (int i = 0; i < TITULARES.length; i++) {
-                TITULARES[i] = titulares.get(i);
-                
-            }
-            this.saldo = saldo;
-            disponible = saldo;
-            retenciones = 0.0;
-            this.IBAN = IBAN.toUpperCase();
-            this.ENTIDAD = ENTIDAD;
-            this.OFICINA = OFICINA;
-            this.CONTROL = 0;
-            this.CUENTA = CUENTA;
-            movimientos = new HashMap<>();
-            tipos = Movimiento.Asunto.values();
-            estados = Estado.values();
-            estado = estados[1];
-        } else {
-            throw new IllegalArgumentException();
-        }
+    public Cuenta(Set<Usuario> titulares, double saldo) throws IllegalArgumentException {
+        TITULARES = new HashMap(titulares.size());
+        titulares.forEach((titular) -> {
+            TITULARES.put(titular.getDni(), titular);
+        });
+        this.saldo = saldo;
+        disponible = saldo;
+        retenciones = 0.0;
+        ccc = new CCC();
+        movimientos = new HashMap<>();
+        tipos = Movimiento.Asunto.values();
+        estados = Estado.values();
+        estado = estados[1];
     }
 
-    public Cuenta(ArrayList<Usuario> titulares, double saldo) {
-        this(titulares, saldo, "ES00", 0, 0, 0l);
+    public Cuenta(Set<Usuario> titulares) {
+        Random rnd = new Random();
+        TITULARES = new HashMap(titulares.size());
+        titulares.forEach((titular) -> {
+            TITULARES.put(titular.getDni(), titular);
+        });
+        movimientos = new HashMap<>();
+        ccc = new CCC();
+        estados = Estado.values();
+        tipos = Movimiento.Asunto.values();
         estado = estados[0];
     }
 
-    public Cuenta(ArrayList<Usuario> titulares) {
-        this(titulares, 0.0, "ES00", 0, 0, 0l);
+    public Cuenta(String IBAN, int ENTIDAD, int OFICINA, int CUENTA,
+            Cuenta toCopy) {
+        TITULARES = new HashMap(toCopy.TITULARES.size());
+        toCopy.TITULARES.values().forEach((titular) -> {
+            TITULARES.put(titular.getDni(), titular);
+        });
+        ccc = new CCC(IBAN, ENTIDAD, OFICINA, CUENTA);
+        estados = Estado.values();
+        tipos =  Movimiento.Asunto.values();
         estado = estados[0];
     }
 
-    
-
-    public Cuenta(String IBAN, int ENTIDAD, int OFICINA, long CUENTA,
-            Cuenta toCopy) { 
-        this(((ArrayList<Usuario>)Arrays.asList(toCopy.TITULARES)), toCopy.saldo
-                , IBAN, ENTIDAD, OFICINA, CUENTA);
+    public Cuenta(Set<Usuario> titulares, Cuenta toCopy) {
+        TITULARES = new HashMap(titulares.size());
+        titulares.forEach((titular) -> {
+            TITULARES.put(titular.getDni(), titular);
+        });
+        ccc = new CCC(toCopy.ccc.IBAN, toCopy.ccc.ENTIDAD, 0, toCopy.ccc.OFICINA);
+        estados = Estado.values();
+        tipos =  Movimiento.Asunto.values();
+        estado = estados[0];
     }
 
-    public Cuenta(ArrayList<Usuario> titulares, Cuenta toCopy){
-        this(titulares, toCopy.saldo, toCopy.IBAN, toCopy.ENTIDAD, toCopy.OFICINA
-                , toCopy.CUENTA);
+    public void vincularCuenta() {
+        TITULARES.entrySet().forEach((entry) -> {
+            entry.getValue().addCuenta(this);
+        });
     }
-    
-    
-    private boolean ingresar(double cuantia,String asuntoPers, Movimiento.Asunto asunto,
+
+    @SuppressWarnings("NonPublicExported")
+    public static Cuenta.CCC getCCC(String IBAN, int ENTIDAD, int OFICINA, int CUENTA) {
+        return new CCC(IBAN, ENTIDAD, OFICINA, CUENTA);
+    }
+
+    @SuppressWarnings("NonPublicExported")
+    public Cuenta.CCC getCCC() {
+        return ccc;
+    }
+
+    private boolean ingresar(double cuantia, String asuntoPers, Movimiento.Asunto asunto,
             Calendar fecha) {
         boolean ret = false;
         if (fecha != null) {
@@ -204,7 +291,7 @@ public class Cuenta {
             }
 
         } else {
-            Movimiento m = new Movimiento(asunto, asuntoPers,  cuantia);
+            Movimiento m = new Movimiento(asunto, asuntoPers, cuantia);
             if (cuantia > 0) {
                 if (movimientos.containsKey(m.getFechaKey())) {
                     saldo += cuantia;
@@ -219,11 +306,11 @@ public class Cuenta {
         return ret;
     }
 
-    private boolean retirar(double cuantia,String asuntoPers, Movimiento.Asunto asunto,
+    private boolean retirar(double cuantia, String asuntoPers, Movimiento.Asunto asunto,
             Calendar fecha) {
-        boolean ret ;
+        boolean ret;
         if (fecha != null) {
-            Movimiento m = new Movimiento(asunto,asuntoPers, cuantia, fecha);
+            Movimiento m = new Movimiento(asunto, asuntoPers, cuantia, fecha);
 
             if (movimientos.containsKey(m.getFechaKey())) {
                 saldo -= cuantia;
@@ -235,7 +322,7 @@ public class Cuenta {
             }
 
         } else {
-            Movimiento m = new Movimiento(asunto,asuntoPers, cuantia);
+            Movimiento m = new Movimiento(asunto, asuntoPers, cuantia);
 
             if (movimientos.containsKey(m.getFechaKey())) {
                 saldo -= cuantia;
@@ -251,10 +338,10 @@ public class Cuenta {
     }
 
     @SuppressWarnings("NonPublicExported")
-    public boolean setMovimiento(Movimiento.Asunto asunto,String asuntoPers, double cuantia,
+    public boolean setMovimiento(Movimiento.Asunto asunto, String asuntoPers, double cuantia,
             Calendar fecha) throws IllegalArgumentException, NumberFormatException {
         boolean ret = false;
-        if (estado.equals(Estado.INACTIVA)) {
+        if (estado.equals(Estado.INACTIVA) || estado.equals(Estado.BLOQUEADA)) {
             throw new IllegalArgumentException("Se debe inicializar la clase Cuenta");
         } else if (cuantia > 0) {
             switch (asunto) {
@@ -282,19 +369,15 @@ public class Cuenta {
     }
 
     public String getNumCuenta() {
-        String entString, ofcString, conString, cueString;
-        entString = (ENTIDAD != 0) ? "" + ENTIDAD : "0000";
-        ofcString = (OFICINA != 0) ? "" + OFICINA : "0000";
-        conString = (CONTROL != 0) ? "" + CONTROL : "00";
-        cueString = (CUENTA != 0) ? "" + CUENTA : "0000000000";
-        return IBAN + "-" + entString + "-" + ofcString + "-" + conString + "-"
-                + cueString;
+
+        return ccc.getNumCuenta();
     }
 
-    public String mostrarDatos() {
+    public String mostrarDatos() {//necesario cambios
         String movimientosStr = mostrarMovimientos();
-
-        return  getNumCuenta() + "\n" + movimientosStr
+        String titulares = "";
+        titulares = TITULARES.values().stream().map((usuario) -> usuario.getNombreCompleto() + " ").reduce(titulares, String::concat);
+        return ccc.getNumCuenta() + "\nTitular/es: " + titulares + "\n" + movimientosStr
                 + "\nSaldo: " + String.format("%.2f", Double.parseDouble(String
                         .valueOf(saldo)));
     }
@@ -361,40 +444,24 @@ public class Cuenta {
     public String movimientosPorAsunto(Movimiento.Asunto asunto) {
         String movimientoStr = "";
         ArrayList<Movimiento> movimientosAsunto = new ArrayList<>();
-        movimientos.entrySet().forEach((m) -> {
-            m.getValue().stream().filter((movimiento) ->(movimiento.asunto
+        movimientos.entrySet().stream().forEach((m) -> {
+            m.getValue().stream().filter((movimiento) -> (movimiento.asunto
                     .equals(asunto)))
                     .forEachOrdered((movimiento) -> {
-                movimientosAsunto.add(movimiento);
-            });
+                        movimientosAsunto.add(movimiento);
+                    });
         });
         movimientoStr += movimientosAsunto.stream()
                 .map((m) -> m.toString())
                 .reduce(movimientoStr, String::concat);
-        return "Fecha\t\tAsunto\t\tCuantia\n"+movimientoStr;
+        return "Fecha\t\tAsunto\t\tCuantia\n" + movimientoStr;
     }
 
-    public String getIBAN() {
-        return IBAN;
+    public String mostrarTitular() {
+        String retorno = "";
+        retorno = TITULARES.entrySet().stream().map((entry) -> entry.getValue().toString() + "\n").reduce(retorno, String::concat);
+        return retorno;
     }
-
-    public int getENTIDAD() {
-        return ENTIDAD;
-    }
-
-    public int getOFICINA() {
-        return OFICINA;
-    }
-
-    public int getCONTROL() {
-        return CONTROL;
-    }
-
-    public long getCUENTA() {
-        return CUENTA;
-    }
-
-   
 
     public double getSaldo() {
         return saldo;
@@ -428,12 +495,29 @@ public class Cuenta {
         this.estado = estado;
     }
 
-    public Usuario[] getTITULARES() {
+    public Map<DNI, Usuario> getTITULARES() {
         return TITULARES;
     }
-    
+
     @SuppressWarnings("NonPublicExported")
     public static Movimiento.Asunto getAsunto(int i) {
         return tipos[i];
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean retorno = false;
+        if(obj instanceof Cuenta){
+            retorno = this.hashCode() == ((Cuenta) obj).hashCode();
+        }
+        return retorno;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 89 * hash + Objects.hashCode(this.ccc);
+        return hash;
+    }
+
 }

@@ -16,7 +16,7 @@ public class DNI {
     private char letra;
     private int num;
     private static final char[] LETRAS = {'T', 'R', 'W', 'A', 'G', 'M', 'Y', 'F',
-         'P', 'D', 'X', 'B', 'N', 'J', 'Z', 'S', 'Q', 'V', 'H', 'L', 'C', 'K'};
+        'P', 'D', 'X', 'B', 'N', 'J', 'Z', 'S', 'Q', 'V', 'H', 'L', 'C', 'K', 'E'};
 
     public DNI(char letra, int num) throws ExcepcionValidacionDNI {
         if (validar(letra, num)) {
@@ -26,18 +26,50 @@ public class DNI {
             throw new ExcepcionValidacionDNI();
         }
     }
-    public DNI(String dni){
-        String[] numDni = dni.split(" ");
-        letra = numDni[1].toUpperCase().charAt(0);
-        num = Integer.parseInt(numDni[0]);
+
+    public DNI(String dni) throws ExcepcionValidacionDNI {
+        String[] numDni = dni.split(" |-");
+        if (numDni.length < 2) {
+            if (validar(dni.substring(8,9).charAt(0)
+                    , Integer.parseInt(numDni[0].substring(0, 8)))) {
+                letra = dni.substring(8,9).charAt(0);
+                num = Integer.parseInt(dni.substring(0, 8));
+            }else{
+                throw new ExcepcionValidacionDNI();
+            }
+        } else {
+            if (validar(numDni[1].toUpperCase().charAt(0),
+                    Integer.parseInt(numDni[0]))) {
+                letra = numDni[1].toUpperCase().charAt(0);
+                num = Integer.parseInt(numDni[0]);
+            } else {
+                throw new ExcepcionValidacionDNI();
+            }
+        }
+
     }
+
     private boolean validar(char letra, int num) {
         return LETRAS[num % LETRAS.length] == letra;
     }
 
     @Override
     public String toString() {
-        return num +""+ letra;
+        return num + "" + letra;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this.hashCode() == obj.hashCode(); 
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + this.letra;
+        hash = 97 * hash + this.num;
+        return hash;
+    }
+
     
 }

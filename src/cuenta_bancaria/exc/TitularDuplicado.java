@@ -9,11 +9,13 @@ package cuenta_bancaria.exc;
  *
  * @author tote
  */
-public class ExcepcionValidacionDNI extends Exception{
-    public ExcepcionValidacionDNI() {
-        super();
+public class TitularDuplicado extends Exception{
+
+    public TitularDuplicado() {
     }
-    public ExcepcionValidacionDNI(String message) {
+    
+    public TitularDuplicado(String message) {
         super(message);
     }
+    
 }

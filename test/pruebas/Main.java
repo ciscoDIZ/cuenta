@@ -5,16 +5,16 @@
  */
 package pruebas;
 
-import cuenta_bancaria.exc.CuentaInactiva;
-import cuenta_bancaria.obj.controller.Controller;
+import cuenta_bancaria.exc.ExcepcionValidacionDNI;
+import cuenta_bancaria.exc.TitularDuplicado;
+import cuenta_bancaria.obj.model.Sucursal;
 import cuenta_bancaria.obj.model.Cuenta;
+import cuenta_bancaria.obj.model.DNI;
 import cuenta_bancaria.obj.model.Usuario;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.InputMismatchException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Random;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  *
@@ -23,55 +23,49 @@ import java.util.regex.Pattern;
 public class Main {
 
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-       try {
-           Cuenta c = new Cuenta(new ArrayList<>());
+        
+        HashMap<DNI, Usuario> mapa = new HashMap<>();
+        try {
+            DNI dni1 = new DNI("12345678Z");
+            DNI dni2 = new DNI("78716585M");
+            HashSet<Usuario> titulares = new HashSet();
+            titulares.add(new Usuario("Juanito", "de los palotes", "AAAAAAAA", 12, dni2, Usuario.Sexo.HOMBRE));
+            titulares.add(new Usuario("Pepito", "de los palotes", "AAAAAAAA", 12, dni1, Usuario.Sexo.HOMBRE));
+            Cuenta c = new Cuenta(titulares);
+            Cuenta c1 = new Cuenta(titulares, 0);
             
+            //System.out.println("salida de Sucursal.accederCuenta: "+Sucursal.accederCuenta(dni2,Cuenta.getCCC("ES23",1234,1234,123457890)));
+            Sucursal.darAltaCliente(new Usuario("Pepito", "de los palotes", "AAAAAAAA", 12, dni2, Usuario.Sexo.HOMBRE));
+            Sucursal.darAltaCliente(new Usuario("Juanito", "de los palotes", "AAAAAAAA", 12, dni1, Usuario.Sexo.HOMBRE));
+            DNI[] array = {dni1,dni2};
+            Sucursal.darAltaCuenta(array);
+            c.vincularCuenta();
+            System.out.println(Sucursal.buscarCliente(dni2));
+            System.out.println(Sucursal.buscarCliente(dni1));
+            Scanner sc = new Scanner(System.in);
+            System.out.println("intro num cuenta");
             
-            Cuenta c1 = new Cuenta(new ArrayList<>());
-            Calendar ca = Calendar.getInstance();
-            ca.set(1984, 6, 23);
-            System.out.println("volcado de ca: " + ca.get(Calendar.MONTH));
-            System.out.println("intro cuantida");
-            c.setMovimiento(Cuenta.getAsunto(0), null, sc.nextDouble(), null);
-            c.setMovimiento(Cuenta.getAsunto(0), null, 30.555, null);
-            c.setMovimiento(Cuenta.getAsunto(2), null, 5.552, ca);
-            c.setMovimiento(Cuenta.getAsunto(0), null, 89.002, ca);
-            c.setMovimiento(Cuenta.getAsunto(1), null, 800.555, null);
-            System.out.println("datos c:\n" + c.mostrarDatos());
-            System.out.println("ddatos c1\n" + c1.mostrarDatos());
-            String str1 = c.movimientosPorFecha("23/7/1984");
-            String str = c.movimientosPorFecha("8.2.2020");
-            System.out.println(c.mostrarDatos());
-            c.setMovimiento(Cuenta.getAsunto(1), null, 100, ca);
-            System.out.println(str1);
-            System.out.println(str);
-            System.out.println(c.movimientosPorAsunto(Cuenta.getAsunto(0)));
-            System.out.println(c.validarFecha("23/7/1984"));
-        } catch (IllegalArgumentException e) {
-            System.out.println(e);
+            String nCuenta = sc.nextLine();
+            String[] ncArray = nCuenta.split("-");
+            System.out.println("intro dni");
+            String dniStr = sc.nextLine();
+            Cuenta cuenta = Sucursal.accederCuenta(new DNI(dniStr), Cuenta.getCCC(ncArray[0], Integer.parseInt(ncArray[1]), Integer.parseInt(ncArray[2]), Integer.parseInt(ncArray[4])));
+            cuenta.setEstado(Cuenta.Estado.ACTIVA);
+            System.out.println(cuenta.mostrarDatos());
+            cuenta.setMovimiento(Cuenta.getAsunto(0), null, 100, null);
+            System.out.println("volcado cuenta: "+cuenta.mostrarMovimientos());
+            Cuenta cuenta1 = Sucursal.accederCuenta(new DNI(dniStr), Cuenta.getCCC(ncArray[0], Integer.parseInt(ncArray[1]), Integer.parseInt(ncArray[2]), Integer.parseInt(ncArray[4])));
+            System.out.println("volcado cuenta1: "+cuenta1.mostrarMovimientos());
+            System.out.println("volcado Banco.consulCuenta(DNI dni): "+Sucursal.consultCuenta(dni2));
+            //System.out.println(Sucursal.consultCuenta(nCuenta));
+        } catch (ExcepcionValidacionDNI | TitularDuplicado | IllegalArgumentException e ) {
+            
         }
-          /*Cuenta.Movimiento movimiento = new Cuenta.Movimiento();
-        movimiento.cuantia = 10;
-        Cuenta.Movimiento movimiento1 = new Cuenta.Movimiento();
-        System.out.println(movimiento1.cuantia);
-         Pattern munCuenta = Pattern.compile("((ES[0-9]{2})|(ES00))-(([0-9]{4})|(0))-(([0-9]{4})|(0))-(([0-9]{2})|(0))-(([0-9]{10})|(0))");
-        Matcher m = munCuenta.matcher("ES00-0-0-0-0");
-        System.out.println(m.matches());
-        /*Controller controller = new Controller();
-        Cuenta cuenta = new Cuenta("nombre");
-        boolean salir = false;
-        while (!salir) {
-            try {
-                controller.menuIniCuenta(cuenta);
-            } catch (IllegalArgumentException e) {
-                System.out.println("desea salir?");
-                String respuesta = sc.nextLine();
-                if(respuesta.equals("s")){
-                    salir=true;
-                }
-            }
-        }*/
-
+        
+        
+        Random rnd = new Random();
+        System.out.println(rnd.nextInt(9999-1000)+1000);
+        System.out.println();
+        
     }
 }
