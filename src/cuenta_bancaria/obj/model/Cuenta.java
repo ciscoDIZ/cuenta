@@ -16,7 +16,6 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 /**
  *
  * @author tote
@@ -54,11 +53,7 @@ public class Cuenta {
 
         Movimiento(Asunto asunto, String asuntoPers, double cuantia, Calendar fecha) {
             this.asunto = asunto;
-            if (asunto.equals(Asunto.PERSONALIZADO)) {
-                this.asuntoPers = asuntoPers;
-            } else {
-                this.asuntoPers = asuntoPers;
-            }
+            this.asuntoPers = asuntoPers;
             this.cuantia = cuantia;
             this.fecha = fecha;
         }
@@ -95,11 +90,14 @@ public class Cuenta {
                     : "" + fecha.get(Calendar.DATE);
 
             fechaStr = diaStr + "/" + mesStr + "/" + anioStr;
-            String asuntoStr = asunto.toString().toLowerCase();
+            String asuntoStr = (asuntoPers!=null)?asuntoPers:asunto
+                    .toString()
+                    .toLowerCase();
             String cuantiaStr = String.format("%.2f", Double.parseDouble(String
                     .valueOf(cuantia)));
 
-            movimientosStr += fechaStr + "\t" + asuntoStr + "\t\t" + cuantiaStr + "\n";
+            movimientosStr += fechaStr + "\t" + asuntoStr + "\t\t" + cuantiaStr 
+                    + "\n";
             return movimientosStr;
         }
     }
@@ -244,7 +242,7 @@ public class Cuenta {
         });
         ccc = new CCC(IBAN, ENTIDAD, OFICINA, CUENTA);
         estados = Estado.values();
-        tipos =  Movimiento.Asunto.values();
+        tipos = Movimiento.Asunto.values();
         estado = estados[0];
     }
 
@@ -255,7 +253,7 @@ public class Cuenta {
         });
         ccc = new CCC(toCopy.ccc.IBAN, toCopy.ccc.ENTIDAD, 0, toCopy.ccc.OFICINA);
         estados = Estado.values();
-        tipos =  Movimiento.Asunto.values();
+        tipos = Movimiento.Asunto.values();
         estado = estados[0];
     }
 
@@ -507,7 +505,7 @@ public class Cuenta {
     @Override
     public boolean equals(Object obj) {
         boolean retorno = false;
-        if(obj instanceof Cuenta){
+        if (obj instanceof Cuenta) {
             retorno = this.hashCode() == ((Cuenta) obj).hashCode();
         }
         return retorno;

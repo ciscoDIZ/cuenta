@@ -14,6 +14,7 @@ import cuenta_bancaria.obj.model.DNI;
 import cuenta_bancaria.obj.model.Usuario;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -36,7 +37,6 @@ public class CuentaBancariaMain {
         Controller controller = new Controller();
         Scanner sc = new Scanner(System.in);
         Cuenta cuenta = null;
-        HashSet<Usuario> titular;
         String iban;
         int entidad;
         int oficina;
@@ -44,64 +44,57 @@ public class CuentaBancariaMain {
         Calendar fecha;
         Object[] data;
         //TODO
-        String mensajeMenu;
         int opt;
         boolean salir = false;
         String mensajeBienvenida = null;
         String dniStr;
         String cccStr;
+        DNI dni;
+        String[] cccArray = new String[0];
         while (!salir) {
-            if (cuenta == null) {
-                System.out.println("1)dar de alta cliente\n2)dar de alta cuenta"
-                        + "\n3)consultar cuenta\n4)gestionar cuenta\n5)acceder cuenta");
-                opt = sc.nextInt();
-                switch (opt) {
-                    case 1:
-                        try {
+            try {
+                if (cuenta == null) {
+                    System.out.println("1)dar de alta cliente\n2)dar de alta cuenta"
+                            + "\n3)consultar cuenta\n4)gestionar cuenta\n5)acceder cuenta\n6)salir");
+                    opt = sc.nextInt();
+                    switch (opt) {
+                        case 1:
                             Object[] datos = controller.menuIniTitular();
                             Usuario u = new Usuario((String) datos[0], (String) datos[1],
-                                     (String) datos[2], (int) datos[3], (DNI) datos[4],
-                                     (Usuario.Sexo) datos[5]);
+                                    (String) datos[2], (int) datos[3], (DNI) datos[4],
+                                    (Usuario.Sexo) datos[5]);
                             Sucursal.darAltaCliente(u);
-
-                        } catch (ExcepcionValidacionDNI | TitularDuplicado e) {
-                        }
-                        break;
-                    case 2:
-                        try {
+                            break;
+                        case 2:
                             sc.nextLine();
                             System.out.println("introducir dni");
                             dniStr = sc.nextLine();
-                            DNI dni = new DNI(dniStr);
+                            dni = new DNI(dniStr);
                             Sucursal.darAltaCuenta(dni);
-                        } catch (ExcepcionValidacionDNI e) {
-
-                        }
-                        break;
-                    case 3:
-                        try {
+                            break;
+                        case 3:
                             sc.nextLine();
                             System.out.println("introducir dni");
                             dniStr = sc.nextLine();
-                            DNI dni = new DNI(dniStr);
+                            dni = new DNI(dniStr);
                             System.out.println(Sucursal.consultCuenta(dni));
-                        } catch (ExcepcionValidacionDNI e) {
-                        }
 
-                        break;
-                    case 4:
-                        try {
+                            break;
+                        case 4:
                             sc.nextLine();
                             System.out.println("introducir dni");
                             dniStr = sc.nextLine();
-                            System.out.println("intoducir ccc");
-                            cccStr = sc.nextLine();
-                            String[] cccArray = cccStr.split("-");
+                            while (cccArray.length != 5) {
+                                System.out.println("intoducir ccc");
+                                cccStr = sc.nextLine();
+                                cccArray = cccStr.split("-");
+                            }
                             iban = cccArray[0];
                             entidad = Integer.parseInt(cccArray[1]);
                             oficina = Integer.parseInt(cccArray[2]);
                             nCuenta = Integer.parseInt(cccArray[4]);
-                            cuenta = Sucursal.accederCuenta(new DNI(dniStr), Cuenta.getCCC(iban, entidad, oficina, nCuenta));
+                            cuenta = Sucursal.accederCuenta(new DNI(dniStr),
+                                     Cuenta.getCCC(iban, entidad, oficina, nCuenta));
                             if (cuenta.getEstado().equals(Cuenta.Estado.ACTIVA)) {
                                 System.out.println("1)desactivar cuenta");
                                 opt = sc.nextInt();
@@ -127,52 +120,47 @@ public class CuentaBancariaMain {
                                 }
                             }
                             cuenta = null;
-                        } catch (ExcepcionValidacionDNI | NumberFormatException e) {
-                        }
-                        break;
-                    case 5:
-                        try {
+                            break;
+                        case 5:
                             sc.nextLine();
                             System.out.println("introducir dni");
                             dniStr = sc.nextLine();
-                            System.out.println("intoducir ccc");
-                            cccStr = sc.nextLine();
-                            String[] cccArray = cccStr.split("-");
+                            while (cccArray.length != 5) {
+                                System.out.println("intoducir ccc");
+                                cccStr = sc.nextLine();
+                                cccArray = cccStr.split("-");
+                            }
                             iban = cccArray[0];
                             entidad = Integer.parseInt(cccArray[1]);
                             oficina = Integer.parseInt(cccArray[2]);
                             nCuenta = Integer.parseInt(cccArray[4]);
                             cuenta = Sucursal.accederCuenta(new DNI(dniStr), Cuenta.getCCC(iban, entidad, oficina, nCuenta));
-                        } catch (ExcepcionValidacionDNI | NumberFormatException e) {
-
-                        }
-                        break;
-                    default:
-                        throw new AssertionError();
-                }
-
-            } else if ((cuenta != null)) {
-                switch (cuenta.getEstado()) {
-                    case ACTIVA:
-                        String opciones = "1)realizar ingreso\n2)realizar retirada"
-                                + "\n3)mostrar datos\n4)búsqueda por fecha"
-                                + "\n5)búsqueda por asunto\n6)mostrar titular/es\n7)mostrar opciones"
-                                + "\n8)salir";
-                        if (mensajeBienvenida == null) {
-                            mensajeBienvenida = "Bienvenido la cuenta de "
-                                    + " estado: " + cuenta.getEstado().toString()
-                                            .toLowerCase();
-                            System.out.println(mensajeBienvenida);
-                            System.out.println(opciones);
-                        }
-
-                        opt = sc.nextInt();
-                        switch (opt) {
-                            case 1:
-
-                                System.out.println("1)ingreso manual\n2)ingreso automatico");
-                                opt = sc.nextInt();
-                                try {
+                            break;
+                        case 6:
+                            salir = true;
+                            break;
+                        default:
+                            throw new AssertionError();
+                    }
+                } else if ((cuenta != null)) {
+                    switch (cuenta.getEstado()) {
+                        case ACTIVA:
+                            String opciones = "1)realizar ingreso\n2)realizar retirada\n3)transferencias"
+                                    + "\n4)mostrar datos\n5)búsqueda por fecha"
+                                    + "\n6)búsqueda por asunto\n7)mostrar titular/es\n8)mostrar opciones"
+                                    + "\n9)salir";
+                            if (mensajeBienvenida == null) {
+                                mensajeBienvenida = "Bienvenido la cuenta de "
+                                        + " estado: " + cuenta.getEstado().toString()
+                                                .toLowerCase();
+                                System.out.println(mensajeBienvenida);
+                                System.out.println(opciones);
+                            }
+                            opt = sc.nextInt();
+                            switch (opt) {
+                                case 1:
+                                    System.out.println("1)ingreso manual\n2)ingreso automatico");
+                                    opt = sc.nextInt();
                                     switch (opt) {
                                         case 2:
                                             fecha = null;
@@ -203,106 +191,114 @@ public class CuentaBancariaMain {
                                         default:
                                             throw new AssertionError();
                                     }
-                                } catch (AssertionError | IllegalArgumentException e) {
-                                    if (e instanceof AssertionError){
-                                        System.out.println("opcion incorrecta");
-                                    }else{
-                                        System.out.println("campo incorrecto");
+                                    break;
+                                case 2:
+                                    System.out.println("1)retirada manual\n2)retirada automatico");
+                                    opt = sc.nextInt();
+                                    switch (opt) {
+                                        case 2:
+                                            fecha = null;
+                                            break;
+                                        case 1:
+                                            System.out.println("introducir dia");
+                                            int dia = sc.nextInt();
+                                            System.out.println("introducir mes");
+                                            int mes = sc.nextInt();
+                                            System.out.println("año");
+                                            int anio = sc.nextInt();
+                                            fecha = Calendar.getInstance();
+                                            fecha.set(anio, mes - 1, dia);
+                                            break;
+                                        default:
+                                            fecha = null;
                                     }
-                                }
+                                    System.out.println("seleccionar asunto");
+                                    System.out.println("2)retirada\n1)pago");
+                                    opt = sc.nextInt();
+                                    switch (opt) {
+                                        case 2:
+                                        case 3:
+                                            System.out.println("introducir cuantia");
+                                            double cuantia = sc.nextDouble();
+                                            cuenta.setMovimiento(Cuenta.getAsunto(opt), null, cuantia, fecha);
+                                            break;
+                                        default:
+                                            throw new AssertionError();
+                                    }
+                                    break;
+                                case 3:
+                                    System.out.println("introducir dni");
+                                    dniStr = sc.nextLine();
+                                    DNI dniOrigen = new DNI(dniStr);
+                                    System.out.println("introducir CCC destinatario");
+                                    cccStr = sc.nextLine();
+                                    cccArray = cccStr.split("-");
+                                    Object ccc = Cuenta.getCCC(cccArray[0],
+                                             Integer.parseInt(cccArray[1]),
+                                             Integer.parseInt(cccArray[2]),
+                                             Integer.parseInt(cccArray[4]));
+                                    System.out.println("introducir cuantia");
+                                    int cuantia = sc.nextInt();
+                                    Sucursal.transfererirFondos(dniOrigen, cuenta
+                                            .getCCC(), ccc, cuantia);
+                                    break;
+                                case 4:
+                                    System.out.println(cuenta.mostrarDatos());
+                                    break;
+                                case 5:
+                                    sc.nextLine();
+                                    System.out.println("Introducir fecha");
+                                    String fechaStr = sc.nextLine();
+                                    System.out.println(cuenta.movimientosPorFecha(fechaStr));
+                                    break;
+                                case 6:
+                                    System.out.println("seleccionar asunto");
+                                    System.out.println("0)ingreso\n1)nomina\n2)retirada\n3)pago");
+                                    int movimiento = sc.nextInt();
+                                    switch (movimiento) {
+                                        case 0:
+                                        case 1:
+                                        case 2:
+                                        case 3:
+                                            System.out.println(cuenta.movimientosPorAsunto(
+                                                    Cuenta.getAsunto(movimiento)));
+                                            break;
+                                        default:
+                                            throw new AssertionError();
+                                    }
 
-                                break;
-                            case 2:
-                                System.out.println("1)retirada manual\n2)retirada automatico");
-                                opt = sc.nextInt();
-                                switch (opt) {
-                                    case 2:
-                                        fecha = null;
-                                        break;
-                                    case 1:
-                                        System.out.println("introducir dia");
-                                        int dia = sc.nextInt();
-                                        System.out.println("introducir mes");
-                                        int mes = sc.nextInt();
-                                        System.out.println("año");
-                                        int anio = sc.nextInt();
-                                        fecha = Calendar.getInstance();
-                                        fecha.set(anio, mes - 1, dia);
-                                        break;
-                                    default:
-                                        fecha = null;
-                                }
-                                System.out.println("seleccionar asunto");
-                                System.out.println("2)retirada\n1)pago");
-                                opt = sc.nextInt();
-                                switch (opt) {
-                                    case 2:
-                                    case 3:
-                                        System.out.println("introducir cuantia");
-                                        double cuantia = sc.nextDouble();
-                                        cuenta.setMovimiento(Cuenta.getAsunto(opt), null, cuantia, fecha);
-                                        break;
-                                    default:
-                                        throw new AssertionError();
-                                }
-                                break;
-                            case 3:
-                                System.out.println(cuenta.mostrarDatos());
-                                break;
-                            case 4:
-                                sc.nextLine();
-                                System.out.println("Introducir fecha");
-                                String fechaStr = sc.nextLine();
-                                System.out.println(cuenta.movimientosPorFecha(fechaStr));
-                                break;
-                            case 5:
-                                System.out.println("seleccionar asunto");
-                                System.out.println("0)ingreso\n1)nomina\n2)retirada\n3)pago");
-                                int movimiento = sc.nextInt();
-                                switch (movimiento) {
-                                    case 0:
-                                    case 1:
-                                    case 2:
-                                    case 3:
-                                        System.out.println(cuenta.movimientosPorAsunto(
-                                                Cuenta.getAsunto(movimiento)));
-                                        break;
-                                    default:
-                                        throw new AssertionError();
-                                }
+                                    break;
+                                case 7:
+                                    System.out.println(cuenta.mostrarTitular());
+                                    break;
+                                case 8:
+                                    System.out.println(opciones);
+                                    break;
+                                case 9:
+                                    cuenta = null;
+                                    break;
+                                default:
+                                    throw new AssertionError();
 
-                                break;
-                            case 6:
-                                System.out.println(cuenta.mostrarTitular());
-                                break;
-                            case 7:
-                                System.out.println(opciones);
-                                break;
-                            case 8:
-                                cuenta = null;
-                                break;
-                            default:
-                                throw new AssertionError();
+                            }
+                            if (mensajeBienvenida != null && opt != 7) {
+                                System.out.println("7)mostrar opciones");
+                            }
 
-                        }
-                        if (mensajeBienvenida != null && opt != 7) {
-                            System.out.println("7)mostrar opciones");
-                        }
+                            break;
+                        case INACTIVA:
+                            System.out.println("1)cambiar titular/es\n2)cambiar número cuenta\n3)salir");
+                            opt = sc.nextInt();
+                            switch (opt) {
+                                case 1:
+                                    try {
+                                        cuenta = new Cuenta((Set) controller.menuIniTitulares(cuenta), cuenta);
+                                    } catch (ExcepcionValidacionDNI | AssertionError e) {
+                                    }
 
-                        break;
-                    case INACTIVA:
-                        System.out.println("1)cambiar titular/es\n2)cambiar número cuenta\n3)salir");
-                        opt = sc.nextInt();
-                        switch (opt) {
-                            case 1:
-                                try {
-                                    cuenta = new Cuenta((Set) controller.menuIniTitulares(cuenta), cuenta);
-                                } catch (ExcepcionValidacionDNI | AssertionError e) {
-                                }
+                                    break;
+                                case 2:
 
-                                break;
-                            case 2:
-                                try {
                                     data = controller.menuIniCuenta();
                                     iban = (String) data[1];
                                     entidad = (Integer) data[2];
@@ -310,173 +306,53 @@ public class CuentaBancariaMain {
                                     nCuenta = (Integer) data[4];
                                     cuenta = new Cuenta(iban, entidad, oficina, nCuenta, cuenta);
                                     cuenta.vincularCuenta();
-                                } catch (IllegalArgumentException e) {
-                                }
-                                break;
-                            case 3:
-                                cuenta = null;
-                                break;
-                            default:
-                                break;
-                        }
-                        break;
-                    case BLOQUEADA:
-                        int cod = 1234;
-                        System.out.println("Su cuenta esta bloqueada, para desbloquearla ponga el codigo de deabloqueo");
-                        System.out.print(":");
-                        opt = sc.nextInt();
-                        if (cod == opt) {
-                            cuenta.setEstado(Cuenta.Estado.ACTIVA);
-                            System.out.println("Cuenta activa");
-                        }
-                    default:
-                        break;
+
+                                    break;
+                                case 3:
+                                    cuenta = null;
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        case BLOQUEADA:
+                            int cod = 1234;
+                            System.out.println("Su cuenta esta bloqueada, para desbloquearla ponga el codigo de deabloqueo");
+                            System.out.print(":");
+                            opt = sc.nextInt();
+                            if (cod == opt) {
+                                cuenta.setEstado(Cuenta.Estado.ACTIVA);
+                                System.out.println("Cuenta activa");
+                            }
+                        default:
+                            break;
+                    }
+
+                } else {
+                    System.out.println("Hemos detectado que falta por introducir datos "
+                            + "importantes en su cuenta.");
+
                 }
 
-            } else {
-                System.out.println("Hemos detectado que falta por introducir datos "
-                        + "importantes en su cuenta.");
-
-            }
-
-        }
-    }
-
-    public static void menuCuentaActiva(Cuenta cuenta) {
-        Scanner sc = new Scanner(System.in);
-        int opt;
-        String mensajeBienvenida = null;
-        Calendar fecha;
-        boolean salir = false;
-        while (!salir) {
-            String opciones = "1)realizar ingreso\n2)realizar retirada"
-                    + "\n3)mostrar datos\n4)búsqueda por fecha"
-                    + "\n5)búsqueda por asunto\n6)mostrar opciones"
-                    + "\n7)desactivar cuenta\n8)bloquear cuenta\n9)salir";
-            if (mensajeBienvenida == null) {
-                mensajeBienvenida = "Bienvenido la cuenta de "
-                        + " estado: " + cuenta.getEstado().toString()
-                                .toLowerCase();
-                System.out.println(mensajeBienvenida);
-                System.out.println(opciones);
-            }
-
-            opt = sc.nextInt();
-            switch (opt) {
-                case 1:
-
-                    System.out.println("1)ingreso manual\n2)ingreso automatico");
-                    opt = sc.nextInt();
-                    switch (opt) {
-                        case 2:
-                            fecha = null;
-                            break;
-                        case 1:
-                            System.out.println("introducir dia");
-                            int dia = sc.nextInt();
-                            System.out.println("introducir mes");
-                            int mes = sc.nextInt();
-                            System.out.println("año");
-                            int anio = sc.nextInt();
-                            fecha = Calendar.getInstance();
-                            fecha.set(anio, mes - 1, dia);
-                            break;
-                        default:
-                            fecha = null;
-                    }
-                    System.out.println("seleccionar asunto");
-                    System.out.println("0)ingreso\n1)nomina");
-                    opt = sc.nextInt();
-                    switch (opt) {
-                        case 0:
-                        case 1:
-                            System.out.println("introducir cuantia");
-                            double cuantia = sc.nextDouble();
-                            cuenta.setMovimiento(Cuenta.getAsunto(opt), null, cuantia, fecha);
-                            break;
-                        default:
-                            throw new AssertionError();
-                    }
-                    break;
-                case 2:
-                    System.out.println("1)retirada manual\n2)retirada automatico");
-                    opt = sc.nextInt();
-                    switch (opt) {
-                        case 2:
-                            fecha = null;
-                            break;
-                        case 1:
-                            System.out.println("introducir dia");
-                            int dia = sc.nextInt();
-                            System.out.println("introducir mes");
-                            int mes = sc.nextInt();
-                            System.out.println("año");
-                            int anio = sc.nextInt();
-                            fecha = Calendar.getInstance();
-                            fecha.set(anio, mes - 1, dia);
-                            break;
-                        default:
-                            fecha = null;
-                    }
-                    System.out.println("seleccionar asunto");
-                    System.out.println("2)retirada\n1)pago");
-                    opt = sc.nextInt();
-                    switch (opt) {
-                        case 2:
-                        case 3:
-                            System.out.println("introducir cuantia");
-                            double cuantia = sc.nextDouble();
-                            cuenta.setMovimiento(Cuenta.getAsunto(opt), null, cuantia, fecha);
-                            break;
-                        default:
-                            throw new AssertionError();
-                    }
-                    break;
-                case 3:
-                    System.out.println(cuenta.mostrarDatos());
-                    break;
-                case 4:
+            } catch (AssertionError | ExcepcionValidacionDNI
+                    | IllegalArgumentException | InputMismatchException | TitularDuplicado | NullPointerException e) {
+                if (e instanceof AssertionError) {
+                    System.out.println("opcion incorrecta");
+                } else if (e instanceof ExcepcionValidacionDNI) {
+                    System.out.println("DNI incorrecto");
+                } else if (e instanceof IllegalArgumentException) {
+                    System.out.println("Campo incorrecto");
+                } else if (e instanceof InputMismatchException) {
+                    System.out.println("tipo incorrecto");
                     sc.nextLine();
-                    System.out.println("Introducir fecha");
-                    String fechaStr = sc.nextLine();
-                    System.out.println(cuenta.movimientosPorFecha(fechaStr));
-                    break;
-                case 5:
-                    System.out.println("seleccionar asunto");
-                    System.out.println("0)ingreso\n1)nomina\n2)retirada\n3)pago");
-                    int movimiento = sc.nextInt();
-                    switch (movimiento) {
-                        case 0:
-                        case 1:
-                        case 2:
-                        case 3:
-                            System.out.println(cuenta.movimientosPorAsunto(
-                                    Cuenta.getAsunto(movimiento)));
-                            break;
-                        default:
-                            throw new AssertionError();
-                    }
+                } else if (e instanceof TitularDuplicado) {
+                    System.out.println("este titular ya existe");
+                } else if (e instanceof NullPointerException) {
+                    System.out.println("imposible acceder cuenta");
+                }
 
-                    break;
-                case 6:
-                    System.out.println(opciones);
-                    break;
-                case 7:
-                    cuenta.setEstado(Cuenta.Estado.INACTIVA);
-                    break;
-                case 8:
-                    cuenta.setEstado(Cuenta.Estado.BLOQUEADA);
-                    break;
-                case 9:
-                    salir = true;
-                    break;
-                default:
-                    throw new AssertionError();
-
-            }
-            if (mensajeBienvenida != null && opt != 7) {
-                System.out.println("7)mostrar opciones");
             }
         }
     }
+
 }

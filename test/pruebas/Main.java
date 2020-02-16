@@ -39,6 +39,7 @@ public class Main {
             Sucursal.darAltaCliente(new Usuario("Juanito", "de los palotes", "AAAAAAAA", 12, dni1, Usuario.Sexo.HOMBRE));
             DNI[] array = {dni1,dni2};
             Sucursal.darAltaCuenta(array);
+            Sucursal.darAltaCuenta(dni1);
             c.vincularCuenta();
             System.out.println(Sucursal.buscarCliente(dni2));
             System.out.println(Sucursal.buscarCliente(dni1));
