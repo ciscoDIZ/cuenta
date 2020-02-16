@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 public class Controller {
 
     /**
-     * <h1>CLASE CUENTA</h1>
+     * <h1>CLASE CONTROLLER</h1>
      * Clase encargada de controlar todo lo que tenga que ver con el volcado de
      * datos en terminal. Adicionalmente, en determinados casos, tambien crea
      * instancias de la clase Cuenta. La forma de usarla es instanciandola en el

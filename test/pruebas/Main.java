@@ -5,13 +5,16 @@
  */
 package pruebas;
 
+import cuenta_bancaria.exc.ExcepcionValidacionDNI;
+import cuenta_bancaria.exc.TitularDuplicado;
+import cuenta_bancaria.obj.model.Banco;
 import cuenta_bancaria.obj.model.Cuenta;
 import cuenta_bancaria.obj.model.DNI;
 import cuenta_bancaria.obj.model.Usuario;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
+import java.util.Random;
+import java.util.Scanner;
 
 /**
  *
@@ -20,26 +23,48 @@ import java.util.Map.Entry;
 public class Main {
 
     public static void main(String[] args) {
-
+        
         HashMap<DNI, Usuario> mapa = new HashMap<>();
         try {
             DNI dni1 = new DNI("12345678Z");
             DNI dni2 = new DNI("78716585M");
             HashSet<Usuario> titulares = new HashSet();
-            titulares.add(new Usuario("juanito", "de los palotes", "AAAAAAAA", 12, dni2, Usuario.Sexo.HOMBRE));
-            titulares.add(new Usuario("juanito", "de los palotes", "AAAAAAAA", 12, dni1, Usuario.Sexo.HOMBRE));
+            titulares.add(new Usuario("Juanito", "de los palotes", "AAAAAAAA", 12, dni2, Usuario.Sexo.HOMBRE));
+            titulares.add(new Usuario("Pepito", "de los palotes", "AAAAAAAA", 12, dni1, Usuario.Sexo.HOMBRE));
             Cuenta c = new Cuenta(titulares);
-           
-            //System.out.println(c.mostrarTitular());
-            c = new Cuenta("ES23", 1234, 1234, 1234567890, c);
-            /* for (Usuario titulare : titulares) {
-                titulare.addCuenta(c);
-            }*/
+            Cuenta c1 = new Cuenta(titulares, 0);
+            
+            //System.out.println("salida de Banco.accederCuenta: "+Banco.accederCuenta(dni2,Cuenta.getCCC("ES23",1234,1234,123457890)));
+            Banco.darAltaCliente(new Usuario("Pepito", "de los palotes", "AAAAAAAA", 12, dni2, Usuario.Sexo.HOMBRE));
+            Banco.darAltaCliente(new Usuario("Juanito", "de los palotes", "AAAAAAAA", 12, dni1, Usuario.Sexo.HOMBRE));
+            DNI[] array = {dni1,dni2};
+            Banco.darAltaCuenta(array);
             c.vincularCuenta();
-            System.out.println(c.mostrarTitular());
-            System.out.println(dni1.equals(dni2));
-        } catch (Exception e) {
+            System.out.println(Banco.buscarCliente(dni2));
+            System.out.println(Banco.buscarCliente(dni1));
+            Scanner sc = new Scanner(System.in);
+            System.out.println("intro num cuenta");
+            
+            String nCuenta = sc.nextLine();
+            String[] ncArray = nCuenta.split("-");
+            System.out.println("intro dni");
+            String dniStr = sc.nextLine();
+            Cuenta cuenta = Banco.accederCuenta(new DNI(dniStr), Cuenta.getCCC(ncArray[0], Integer.parseInt(ncArray[1]), Integer.parseInt(ncArray[2]), Long.parseLong(ncArray[4])));
+            cuenta.setEstado(Cuenta.Estado.ACTIVA);
+            System.out.println(cuenta.mostrarDatos());
+            cuenta.setMovimiento(Cuenta.getAsunto(0), null, 100, null);
+            System.out.println("volcado cuenta: "+cuenta.mostrarMovimientos());
+            Cuenta cuenta1 = Banco.accederCuenta(new DNI(dniStr), Cuenta.getCCC(ncArray[0], Integer.parseInt(ncArray[1]), Integer.parseInt(ncArray[2]), Long.parseLong(ncArray[4])));
+            System.out.println("vvolcado cuenta1: "+cuenta1.mostrarMovimientos());
+            //System.out.println(Banco.consultCuenta(nCuenta));
+        } catch (ExcepcionValidacionDNI | TitularDuplicado | IllegalArgumentException e ) {
+            
         }
+        
+        
+        Random rnd = new Random();
+        System.out.println(rnd.nextInt(9999-1000)+1000);
+        System.out.println();
         
     }
 }

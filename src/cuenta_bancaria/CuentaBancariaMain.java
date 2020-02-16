@@ -236,12 +236,8 @@ public class CuentaBancariaMain {
                             data = controller.menuIniCuenta();
                         }
                         titular = controller.menuIniTitulares(cuenta);
-                        iban = (String) data[1];
-                        entidad = (Integer) data[2];
-                        oficina = (Integer) data[3];
-                        nCuenta = (Long) data[4];
-                        cuenta = new Cuenta(titular, 0.0, iban, entidad, oficina,
-                                nCuenta);
+                       
+                        cuenta = new Cuenta(titular, 0.0);
                         cuenta.vincularCuenta();
                         //cuenta.getTITULARES().get().addCuenta(cuenta);
                     } catch (IllegalArgumentException | ExcepcionValidacionDNI e) {

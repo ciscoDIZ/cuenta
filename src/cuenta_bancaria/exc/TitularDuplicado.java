@@ -9,6 +9,13 @@ package cuenta_bancaria.exc;
  *
  * @author tote
  */
-public class TitularDuplicado {
+public class TitularDuplicado extends Exception{
+
+    public TitularDuplicado() {
+    }
+    
+    public TitularDuplicado(String message) {
+        super(message);
+    }
     
 }

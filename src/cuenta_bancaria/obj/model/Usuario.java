@@ -6,6 +6,8 @@
 package cuenta_bancaria.obj.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Objects;
 
 /**
  *
@@ -22,7 +24,7 @@ public class Usuario {
     private int edad;
     private DNI dni;
     private Sexo sexo;
-    private ArrayList<Cuenta> cuentas;
+    private HashSet<Cuenta> cuentas;
 
     public Usuario(String nombre, String apellido1, String apellido2, int edad
             , DNI dni, Sexo sexo) {
@@ -32,10 +34,12 @@ public class Usuario {
         this.edad = edad;
         this.dni = dni;
         this.sexo = sexo;
-        this.cuentas = new ArrayList<>();
+        this.cuentas = new HashSet<>();
         
     }
-    
+    public String getNombreCompleto(){
+        return getNombre()+" "+getApellido1()+" "+getApellido2();
+    }
     public boolean addCuenta(Cuenta c){
         return cuentas.add(c);
     }
@@ -88,11 +92,11 @@ public class Usuario {
         this.sexo = sexo;
     }
 
-    public ArrayList<Cuenta> getCuentas() {
+    public HashSet<Cuenta> getCuentas() {
         return cuentas;
     }
 
-    public void setCuentas(ArrayList<Cuenta> cuentas) {
+    public void setCuentas(HashSet<Cuenta> cuentas) {
         this.cuentas = cuentas;
     }
 
@@ -104,6 +108,16 @@ public class Usuario {
         }
         return nombre + " " + apellido1 + " " + apellido2 + "\ndni: " + dni +"\ncuentas:"+nCuentas;
     }
-     
-    
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 89 * hash + this.dni.hashCode();
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this.hashCode() == ((Usuario)obj).hashCode();
+    }
 }
