@@ -5,9 +5,7 @@
  */
 package cuenta_bancaria.obj.model;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Objects;
 
 /**
  *
@@ -103,9 +101,8 @@ public class Usuario {
     @Override
     public String toString() {
         String nCuentas = "";
-        for (Cuenta cuenta : cuentas) {
-            nCuentas += cuenta.getNumCuenta()+"\n";
-        }
+        nCuentas = cuentas.stream().map((cuenta) -> cuenta.getNumCuenta()+"\n")
+                .reduce(nCuentas, String::concat);
         return nombre + " " + apellido1 + " " + apellido2 + "\ndni: " + dni +"\ncuentas:"+nCuentas;
     }
 
@@ -118,6 +115,10 @@ public class Usuario {
 
     @Override
     public boolean equals(Object obj) {
-        return this.hashCode() == ((Usuario)obj).hashCode();
+        boolean retrno = false;
+        if(obj instanceof Usuario){
+            retrno = this.hashCode() == ((Usuario)obj).hashCode();
+        }
+        return retrno;
     }
 }

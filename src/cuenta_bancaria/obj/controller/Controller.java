@@ -172,5 +172,52 @@ public class Controller {
         return retorno;
     }
 
-    
+    public Object[] menuIniTitular() throws AssertionError,
+            ExcepcionValidacionDNI {
+        Pattern p = Pattern.compile("([X|Z]?[0-9]{8}[A-Z])"
+                + "|([X|Z]?[0-9]{8} [A-Z])"
+                + "|([X|Z]?[0-9]{8}-[A-Z])");
+        Object[] retorno = new Object[6];
+        
+       
+            System.out.println("introducir nombre");
+            nombre = sc.nextLine();
+            retorno[0] = nombre;
+            System.out.println("introducir primer apellido");
+            apellido1 = sc.nextLine();
+            retorno[1] = apellido1;
+            System.out.println("introducir segundo apellido");
+            apellido2 = sc.nextLine();
+            retorno[2] = apellido2;
+            System.out.println("introducir edad");
+            edad = sc.nextInt();
+            retorno[3] = edad;
+            sc.nextLine();
+            System.out.println("introducir dni");
+            String dniStr = sc.nextLine();
+            
+            Matcher m = p.matcher(dniStr);
+            while (m.find()) {
+                dniStr = m.group();
+            }
+            this.dni = new DNI(dniStr);
+            retorno[4] = dni;
+            System.out.println("1)Mujer\n2)Hombre");
+            int opt = sc.nextInt();
+            sc.nextLine();
+            switch (opt) {
+                case 1:
+                    sexo = Usuario.Sexo.MUJER;
+                    break;
+                case 2:
+                    sexo = Usuario.Sexo.HOMBRE;
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+            retorno[5] = sexo;
+        
+        return retorno;
+    }
+
 }

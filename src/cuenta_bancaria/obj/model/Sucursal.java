@@ -6,19 +6,16 @@
 package cuenta_bancaria.obj.model;
 
 import cuenta_bancaria.exc.TitularDuplicado;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Map;
 
 /**
  *
  * @author tote
  */
-public class Banco {
+public class Sucursal {
     
     private static HashMap<Usuario,ArrayList<Cuenta>> clientes = new HashMap<>();
     
@@ -69,6 +66,18 @@ public class Banco {
         }
         return retorno;
     }
+    public static String consultCuenta(DNI dni){
+        String retorno="";
+        for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : clientes.entrySet()) {
+            if(entry.getKey().getDni().equals(dni)){
+                retorno = entry.getKey().getNombreCompleto()+"\n";
+                for (Cuenta cuenta : entry.getValue()) {
+                    retorno += cuenta.getNumCuenta()+"\n";
+                }
+            }
+        }
+        return retorno;
+    }
     public static Cuenta accederCuenta(DNI dni, Cuenta.CCC ccc){
         Cuenta c = null;
         for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : clientes.entrySet()) {
@@ -89,7 +98,7 @@ public class Banco {
     }
 
     public static void setClientes(HashMap<Usuario, ArrayList<Cuenta>> clientes) {
-        Banco.clientes = clientes;
+        Sucursal.clientes = clientes;
     }
     
 }

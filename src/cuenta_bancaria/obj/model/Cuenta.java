@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+
 
 /**
  *
@@ -110,7 +110,7 @@ public class Cuenta {
         private final int ENTIDAD;
         private final int OFICINA;
         private final byte CONTROL;
-        private final long CUENTA;
+        private final int CUENTA;
 
         public CCC() {
 
@@ -122,21 +122,21 @@ public class Cuenta {
             CONTROL = 0;
         }
 
-        public CCC(String IBAN, int ENTIDAD, int OFICINA, long CUENTA) {
+        public CCC(String IBAN, int ENTIDAD, int OFICINA, int CUENTA) {
             this.IBAN = IBAN;
             this.ENTIDAD = ENTIDAD;
             this.OFICINA = OFICINA;
             CONTROL = 0;
             this.CUENTA = CUENTA;
         }
-        
+
         public CCC(int OFICINA) {
             Random rnd = new Random();
             IBAN = "ES25";
             ENTIDAD = 3321;
             this.OFICINA = OFICINA;
             CONTROL = 0;
-            CUENTA = Math.abs(rnd.nextInt());
+            CUENTA = rnd.nextInt(Integer.MAX_VALUE - 1000000000) + 1000000000;
         }
 
         public String getNumCuenta() {
@@ -148,8 +148,7 @@ public class Cuenta {
             return IBAN + "-" + entString + "-" + ofcString + "-" + conString + "-"
                     + cueString;
         }
-        
-        
+
         public String getIBAN() {
             return IBAN;
         }
@@ -173,23 +172,23 @@ public class Cuenta {
         @Override
         public int hashCode() {
             int hash = 3;
-            hash = 41 * hash + Objects.hashCode(this.IBAN);
-            hash = 41 * hash + this.ENTIDAD;
-            hash = 41 * hash + this.OFICINA;
-            hash = 41 * hash + this.CONTROL;
-            hash = 41 * hash + (int) (this.CUENTA ^ (this.CUENTA >>> 32));
+            hash = 79 * hash + Objects.hashCode(this.IBAN);
+            hash = 79 * hash + this.ENTIDAD;
+            hash = 79 * hash + this.OFICINA;
+            hash = 79 * hash + this.CONTROL;
+            hash = 79 * hash + this.CUENTA;
             return hash;
         }
 
         @Override
         public boolean equals(Object obj) {
-            boolean retorno=false;
-            if(obj instanceof CCC){
-                retorno = this.hashCode() == ((CCC)obj).hashCode();
+            boolean retorno = false;
+            if (obj instanceof CCC) {
+                retorno = this.hashCode() == ((CCC) obj).hashCode();
             }
             return retorno;
         }
-        
+
     }
 
     public enum Estado {
@@ -206,14 +205,14 @@ public class Cuenta {
     private double retenciones;
     private CCC ccc;
     private static Movimiento.Asunto[] tipos;
-    private static Estado[] estados;
+    private static Estado[] estados = Estado.values();
     private Estado estado;
 
     public Cuenta(Set<Usuario> titulares, double saldo) throws IllegalArgumentException {
         TITULARES = new HashMap(titulares.size());
-        for (Usuario titular : titulares) {
+        titulares.forEach((titular) -> {
             TITULARES.put(titular.getDni(), titular);
-        }
+        });
         this.saldo = saldo;
         disponible = saldo;
         retenciones = 0.0;
@@ -227,24 +226,36 @@ public class Cuenta {
     public Cuenta(Set<Usuario> titulares) {
         Random rnd = new Random();
         TITULARES = new HashMap(titulares.size());
-        for (Usuario titular : titulares) {
-
+        titulares.forEach((titular) -> {
             TITULARES.put(titular.getDni(), titular);
-        }
+        });
         movimientos = new HashMap<>();
         ccc = new CCC();
         estados = Estado.values();
+        tipos = Movimiento.Asunto.values();
         estado = estados[0];
     }
 
-    public Cuenta(String IBAN, int ENTIDAD, int OFICINA, long CUENTA,
+    public Cuenta(String IBAN, int ENTIDAD, int OFICINA, int CUENTA,
             Cuenta toCopy) {
-        this(toCopy.TITULARES.values().stream().collect(Collectors.toSet()));
+        TITULARES = new HashMap(toCopy.TITULARES.size());
+        toCopy.TITULARES.values().forEach((titular) -> {
+            TITULARES.put(titular.getDni(), titular);
+        });
+        ccc = new CCC(IBAN, ENTIDAD, OFICINA, CUENTA);
+        estados = Estado.values();
+        tipos =  Movimiento.Asunto.values();
         estado = estados[0];
     }
 
     public Cuenta(Set<Usuario> titulares, Cuenta toCopy) {
-        this(titulares, toCopy.saldo);
+        TITULARES = new HashMap(titulares.size());
+        titulares.forEach((titular) -> {
+            TITULARES.put(titular.getDni(), titular);
+        });
+        ccc = new CCC(toCopy.ccc.IBAN, toCopy.ccc.ENTIDAD, 0, toCopy.ccc.OFICINA);
+        estados = Estado.values();
+        tipos =  Movimiento.Asunto.values();
         estado = estados[0];
     }
 
@@ -253,13 +264,17 @@ public class Cuenta {
             entry.getValue().addCuenta(this);
         });
     }
-    
-    public static Cuenta.CCC getCCC(String IBAN, int ENTIDAD, int OFICINA, long CUENTA){
-        return new CCC(IBAN,  ENTIDAD,  OFICINA,  CUENTA);
+
+    @SuppressWarnings("NonPublicExported")
+    public static Cuenta.CCC getCCC(String IBAN, int ENTIDAD, int OFICINA, int CUENTA) {
+        return new CCC(IBAN, ENTIDAD, OFICINA, CUENTA);
     }
-    public Cuenta.CCC getCCC(){
+
+    @SuppressWarnings("NonPublicExported")
+    public Cuenta.CCC getCCC() {
         return ccc;
     }
+
     private boolean ingresar(double cuantia, String asuntoPers, Movimiento.Asunto asunto,
             Calendar fecha) {
         boolean ret = false;
@@ -361,9 +376,7 @@ public class Cuenta {
     public String mostrarDatos() {//necesario cambios
         String movimientosStr = mostrarMovimientos();
         String titulares = "";
-        for (Usuario usuario : TITULARES.values()) {
-            titulares += usuario.getNombreCompleto() + " ";
-        }
+        titulares = TITULARES.values().stream().map((usuario) -> usuario.getNombreCompleto() + " ").reduce(titulares, String::concat);
         return ccc.getNumCuenta() + "\nTitular/es: " + titulares + "\n" + movimientosStr
                 + "\nSaldo: " + String.format("%.2f", Double.parseDouble(String
                         .valueOf(saldo)));
@@ -446,9 +459,7 @@ public class Cuenta {
 
     public String mostrarTitular() {
         String retorno = "";
-        for (Map.Entry<DNI, Usuario> entry : TITULARES.entrySet()) {
-            retorno += entry.getValue().toString() + "\n";
-        }
+        retorno = TITULARES.entrySet().stream().map((entry) -> entry.getValue().toString() + "\n").reduce(retorno, String::concat);
         return retorno;
     }
 
@@ -495,8 +506,18 @@ public class Cuenta {
 
     @Override
     public boolean equals(Object obj) {
+        boolean retorno = false;
+        if(obj instanceof Cuenta){
+            retorno = this.hashCode() == ((Cuenta) obj).hashCode();
+        }
+        return retorno;
+    }
 
-        return this.hashCode() == ((Cuenta) obj).hashCode();
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 89 * hash + Objects.hashCode(this.ccc);
+        return hash;
     }
 
 }
