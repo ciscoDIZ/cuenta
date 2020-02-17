@@ -42,7 +42,6 @@ public class CuentaBancariaMain {
         int nCuenta;
         Calendar fecha;
         Object[] data;
-        //TODO
         int opt;
         boolean salir = false;
         String mensajeBienvenida = null;

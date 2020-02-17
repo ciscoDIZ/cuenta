@@ -8,6 +8,7 @@ package cuenta_bancaria.obj.model;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
@@ -17,8 +18,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
- * @author tote
+ * La clase Cuenta genera almacena y hace consultas sobre una estructuta de datos
+ * @version 1.0
+ * @author Francisco A Domínguez Iceta
  */
 public class Cuenta {
 
@@ -205,7 +207,7 @@ public class Cuenta {
     }
 
     private HashMap<Integer, ArrayList<Movimiento>> movimientos;
-    private final HashMap<DNI, Usuario> TITULARES;
+    private final HashSet<Usuario> TITULARES;
     private double saldo;
     private double disponible;
     private double retenciones;
@@ -215,10 +217,7 @@ public class Cuenta {
     private Estado estado;
 
     public Cuenta(Set<Usuario> titulares, double saldo) throws IllegalArgumentException {
-        TITULARES = new HashMap(titulares.size());
-        titulares.forEach((titular) -> {
-            TITULARES.put(titular.getDni(), titular);
-        });
+        TITULARES = new HashSet<>(titulares);
         this.saldo = saldo;
         disponible = saldo;
         retenciones = 0.0;
@@ -231,10 +230,7 @@ public class Cuenta {
 
     public Cuenta(Set<Usuario> titulares) {
         Random rnd = new Random();
-        TITULARES = new HashMap(titulares.size());
-        titulares.forEach((titular) -> {
-            TITULARES.put(titular.getDni(), titular);
-        });
+        TITULARES = new HashSet(titulares);
         movimientos = new HashMap<>();
         ccc = new CCC();
         estados = Estado.values();
@@ -244,10 +240,7 @@ public class Cuenta {
 
     public Cuenta(String IBAN, int ENTIDAD, int OFICINA, int CUENTA,
             Cuenta toCopy) {
-        TITULARES = new HashMap(toCopy.TITULARES.size());
-        toCopy.TITULARES.values().forEach((titular) -> {
-            TITULARES.put(titular.getDni(), titular);
-        });
+        TITULARES = new HashSet(toCopy.TITULARES);
         ccc = new CCC(IBAN, ENTIDAD, OFICINA, CUENTA);
         estados = Estado.values();
         tipos = Movimiento.Asunto.values();
@@ -255,10 +248,7 @@ public class Cuenta {
     }
 
     public Cuenta(Set<Usuario> titulares, Cuenta toCopy) {
-        TITULARES = new HashMap(titulares.size());
-        titulares.forEach((titular) -> {
-            TITULARES.put(titular.getDni(), titular);
-        });
+        TITULARES = new HashSet<>(titulares);
         ccc = new CCC(toCopy.ccc.IBAN, toCopy.ccc.ENTIDAD, 0, toCopy.ccc.OFICINA);
         estados = Estado.values();
         tipos = Movimiento.Asunto.values();
@@ -266,8 +256,8 @@ public class Cuenta {
     }
 
     public void vincularCuenta() {
-        TITULARES.entrySet().forEach((entry) -> {
-            entry.getValue().addCuenta(this);
+        TITULARES.forEach((titular) -> {
+            titular.addCuenta(this);
         });
     }
 
@@ -382,7 +372,7 @@ public class Cuenta {
     public String mostrarDatos() {//necesario cambios
         String movimientosStr = mostrarMovimientos();
         String titulares = "";
-        titulares = TITULARES.values().stream().map((usuario) -> usuario.getNombreCompleto() + " ").reduce(titulares, String::concat);
+        titulares = TITULARES.stream().map((usuario) -> usuario.getNombreCompleto() + " ").reduce(titulares, String::concat);
         return ccc.getNumCuenta() + "\nTitular/es: " + titulares + "\n" + movimientosStr
                 + "\nSaldo: " + String.format("%.2f", Double.parseDouble(String
                         .valueOf(saldo)));
@@ -465,7 +455,7 @@ public class Cuenta {
 
     public String mostrarTitular() {
         String retorno = "";
-        retorno = TITULARES.entrySet().stream().map((entry) -> entry.getValue().toString() + "\n").reduce(retorno, String::concat);
+        retorno = TITULARES.stream().map((titular) -> titular.toString() + "\n").reduce(retorno, String::concat);
         return retorno;
     }
 
@@ -501,7 +491,7 @@ public class Cuenta {
         this.estado = estado;
     }
 
-    public Map<DNI, Usuario> getTITULARES() {
+    public HashSet<Usuario> getTITULARES() {
         return TITULARES;
     }
 
