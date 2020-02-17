@@ -35,9 +35,9 @@ public class Sucursal {
         HashSet<Usuario> titulares = new HashSet<>();
         for (DNI dni1 : dni) {
             if(clientes.containsKey(buscarCliente(dni1))){
-                for (Usuario usuario : clientes.keySet()) {
+                clientes.keySet().forEach((usuario) -> {
                     titulares.add(usuario);
-                }
+                });
             }
         }
         Cuenta c = new Cuenta(titulares);
@@ -71,9 +71,10 @@ public class Sucursal {
         for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : clientes.entrySet()) {
             if(entry.getKey().getDni().equals(dni)){
                 retorno = entry.getKey().getNombreCompleto()+"\n";
-                for (Cuenta cuenta : entry.getValue()) {
-                    retorno += cuenta.getNumCuenta()+"\n";
-                }
+                retorno = entry.getValue().stream()
+                        .map((cuenta) -> cuenta
+                        .getNumCuenta()+"\n")
+                        .reduce(retorno, String::concat);
             }
         }
         return retorno;
@@ -82,7 +83,8 @@ public class Sucursal {
         Cuenta c = null;
         for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : clientes.entrySet()) {
             for (Cuenta cuenta : entry.getValue()) {
-                if (entry.getKey().getDni().equals(dni) && cuenta.getCCC().equals(((Cuenta.CCC)ccc))){
+                if (entry.getKey().getDni().equals(dni) && cuenta.getCCC()
+                        .equals(((Cuenta.CCC)ccc))){
                     c =cuenta;
                 }
             }
@@ -101,20 +103,19 @@ public class Sucursal {
         return c;
 
     }
-    public static Cuenta cambiarTitularCuenta(DNI antiguo,DNI nuevo, Cuenta.CCC ccc){
+    public static Cuenta cambiarTitularCuenta(DNI antiguo,DNI nuevo, Object ccc){
         //TODO
         Cuenta c = accederCuenta(antiguo, ccc);
         return c;
     }
-    public static Cuenta cambiarCodigoCuenta(Cuenta.CCC ccc){
+    public static Cuenta cambiarCodigoCuenta(Object ccc){
         Cuenta c = null;
         //TODO
         return c;
     }
-    public static boolean transfererirFondos(DNI titOrigen, Cuenta.CCC origen
-            , Object destino, int cuantia){
+    public static boolean transfererirFondos(DNI titOrigen, Object origen, Object destino, int cuantia){
         boolean retorno = false;
-        Cuenta cOrigen = accederCuenta(titOrigen, origen);
+        Cuenta cOrigen = accederCuenta(titOrigen, ((Cuenta.CCC)origen));
         Cuenta cDestino = accederCuenta((Cuenta.CCC)destino);
         cOrigen.setMovimiento(Cuenta.getAsunto(2), "transferencia", cuantia, null);
         cDestino.setMovimiento(Cuenta.getAsunto(0), "transferencia", cuantia, null);

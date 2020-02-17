@@ -372,7 +372,9 @@ public class Cuenta {
     public String mostrarDatos() {//necesario cambios
         String movimientosStr = mostrarMovimientos();
         String titulares = "";
-        titulares = TITULARES.stream().map((usuario) -> usuario.getNombreCompleto() + " ").reduce(titulares, String::concat);
+        titulares = TITULARES.stream()
+                .map((usuario) -> usuario.getNombreCompleto() + " ")
+                .reduce(titulares, String::concat);
         return ccc.getNumCuenta() + "\nTitular/es: " + titulares + "\n" + movimientosStr
                 + "\nSaldo: " + String.format("%.2f", Double.parseDouble(String
                         .valueOf(saldo)));
@@ -384,7 +386,8 @@ public class Cuenta {
         String movimientosStr = "Fecha\t\tAsunto\t\tCuantia\n";
         for (Map.Entry<Integer, ArrayList<Movimiento>> tm
                 : movOrdenados.entrySet()) {
-            movimientosStr = tm.getValue().stream().map((m) -> m.toString())
+            movimientosStr = tm.getValue().stream()
+                    .map((m) -> m.toString())
                     .reduce(movimientosStr, String::concat);
         }
         return movimientosStr;
@@ -441,9 +444,10 @@ public class Cuenta {
         String movimientoStr = "";
         ArrayList<Movimiento> movimientosAsunto = new ArrayList<>();
         movimientos.entrySet().stream().forEach((m) -> {
-            m.getValue().stream().filter((movimiento) -> (movimiento.asunto
+            m.getValue().stream()
+                    .filter((movimiento) -> (movimiento.asunto
                     .equals(asunto)))
-                    .forEachOrdered((movimiento) -> {
+                    .forEach((movimiento) -> {
                         movimientosAsunto.add(movimiento);
                     });
         });
@@ -455,7 +459,9 @@ public class Cuenta {
 
     public String mostrarTitular() {
         String retorno = "";
-        retorno = TITULARES.stream().map((titular) -> titular.toString() + "\n").reduce(retorno, String::concat);
+        retorno = TITULARES.stream()
+                .map((titular) -> titular.toString() + "\n")
+                .reduce(retorno, String::concat);
         return retorno;
     }
 
