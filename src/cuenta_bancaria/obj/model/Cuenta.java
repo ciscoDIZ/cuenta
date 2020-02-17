@@ -74,7 +74,7 @@ public class Cuenta {
             }
             return ret;
         }
-
+        
         @Override
         public String toString() {
             String movimientosStr = "";
@@ -134,15 +134,6 @@ public class Cuenta {
             CONTROL = 0;
             CUENTA = rnd.nextInt(Integer.MAX_VALUE - 1000000000) + 1000000000;
         }
-        public long getLong(){
-            long retorno=0l;
-            retorno += ENTIDAD;
-            retorno *= 1000;
-            retorno += OFICINA;
-            retorno *= 1000000000;
-            retorno += CUENTA;
-            return retorno;
-        }
         public String getNumCuenta() {
             String entString, ofcString, conString, cueString;
             entString = (ENTIDAD != 0) ? "" + ENTIDAD : "0000";
@@ -152,7 +143,9 @@ public class Cuenta {
             return IBAN + "-" + entString + "-" + ofcString + "-" + conString + "-"
                     + cueString;
         }
-
+        public String soloNumString(){
+            return "00"+ENTIDAD+""+OFICINA+""+CUENTA;
+        }
         public String getIBAN() {
             return IBAN;
         }
@@ -266,7 +259,9 @@ public class Cuenta {
     public Cuenta.CCC getCCC() {
         return ccc;
     }
-
+    public String soloNumString(){
+        return ccc.soloNumString();
+    }
     private boolean ingresar(double cuantia, String asuntoPers, Movimiento.Asunto asunto,
             Calendar fecha) {
         boolean ret = false;

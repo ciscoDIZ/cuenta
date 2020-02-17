@@ -55,6 +55,10 @@ public class Main {
             System.out.println(cuenta.mostrarDatos());
             cuenta.setMovimiento(Cuenta.getAsunto(0), null, 100, null);
             System.out.println("volcado cuenta: "+cuenta.mostrarMovimientos());
+            System.out.println("volcado de soloNumString "+cuenta.soloNumString());
+            System.out.println("volcado de soloNumString (region A) "+cuenta.soloNumString().substring(0, 10));
+            System.out.println("volcado de soloNumString (region B) "+cuenta.soloNumString().substring(10,20));
+            System.out.println("volcado de ccc.soloNumString: "+cuenta.getCCC());
             Cuenta cuenta1 = Sucursal.accederCuenta(new DNI(dniStr), Cuenta.getCCC(ncArray[0], Integer.parseInt(ncArray[1]), Integer.parseInt(ncArray[2]), Integer.parseInt(ncArray[4])));
             System.out.println("volcado cuenta1: "+cuenta1.mostrarMovimientos());
             System.out.println("volcado Banco.consulCuenta(DNI dni): "+Sucursal.consultCuenta(dni2));
