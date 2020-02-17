@@ -5,6 +5,7 @@
  */
 package cuenta_bancaria;
 
+import cuenta_bancaria.exc.ExcepcionValidacionCCC;
 import cuenta_bancaria.exc.ExcepcionValidacionDNI;
 import cuenta_bancaria.exc.TitularDuplicado;
 import cuenta_bancaria.obj.controller.Controller;
@@ -40,6 +41,7 @@ public class CuentaBancariaMain {
         int entidad;
         int oficina;
         int nCuenta;
+        byte dc=0;
         Calendar fecha;
         Object[] data;
         int opt;
@@ -85,13 +87,16 @@ public class CuentaBancariaMain {
                             iban = "ES25";
                             entidad = 3321;
                             oficina = 2020;
+                            System.out.println("intoducir digito de control");
+                            System.out.print(iban+"-"+entidad+"-"+oficina+"-");
+                            dc = sc.nextByte();
                             System.out.println("intoducir nº cuenta");
-                            System.out.print(iban+"-"+entidad+"-"+oficina+"-00-");
+                            System.out.print(iban+"-"+entidad+"-"+oficina+"-"+dc+"-");
                             nCuentaStr = sc.nextLine();
                             System.out.println("");
                             nCuenta = Integer.parseInt(nCuentaStr);
                             cuenta = Sucursal.accederCuenta(new DNI(dniStr),
-                                    Cuenta.getCCC(iban, entidad, oficina, nCuenta));
+                                    Cuenta.getCCC(iban, entidad, oficina,dc, nCuenta));
                             if (cuenta.getEstado().equals(Cuenta.Estado.ACTIVA)) {
                                 System.out.println("1)desactivar cuenta\n2)salir");
                                 opt = sc.nextInt();
@@ -138,7 +143,7 @@ public class CuentaBancariaMain {
                             nCuentaStr = sc.nextLine();
                             System.out.println("");
                             nCuenta = Integer.parseInt(nCuentaStr);
-                            cuenta = Sucursal.accederCuenta(new DNI(dniStr), Cuenta.getCCC(iban, entidad, oficina, nCuenta));
+                            cuenta = Sucursal.accederCuenta(new DNI(dniStr), Cuenta.getCCC(iban, entidad, oficina,dc, nCuenta));
                             break;
                         case 6:
                             salir = true;
@@ -243,6 +248,7 @@ public class CuentaBancariaMain {
                                     Object ccc = Cuenta.getCCC(cccArray[0],
                                             Integer.parseInt(cccArray[1]),
                                             Integer.parseInt(cccArray[2]),
+                                            Byte.parseByte(cccArray[3]),
                                             Integer.parseInt(cccArray[4]));
                                     System.out.println("introducir cuantia");
                                     int cuantia = sc.nextInt();
@@ -308,8 +314,10 @@ public class CuentaBancariaMain {
                                     iban = (String) data[1];
                                     entidad = (Integer) data[2];
                                     oficina = (Integer) data[3];
-                                    nCuenta = (Integer) data[4];
-                                    cuenta = new Cuenta(iban, entidad, oficina, nCuenta, cuenta);
+                                    dc = (Byte)data[4];
+                                    nCuenta = (Integer) data[5];
+                                    cuenta = new Cuenta(iban, entidad, oficina
+                                            , dc, nCuenta, cuenta);
                                     cuenta.vincularCuenta();
 
                                     break;
@@ -340,7 +348,8 @@ public class CuentaBancariaMain {
                 }
 
             } catch (AssertionError | ExcepcionValidacionDNI
-                    | IllegalArgumentException | InputMismatchException | TitularDuplicado | NullPointerException e) {
+                    | IllegalArgumentException | InputMismatchException 
+                    | TitularDuplicado | ExcepcionValidacionCCC e) {
                 if (e instanceof AssertionError) {
                     System.out.println("opcion incorrecta");
                 } else if (e instanceof ExcepcionValidacionDNI) {
@@ -352,7 +361,9 @@ public class CuentaBancariaMain {
                     sc.nextLine();
                 } else if (e instanceof TitularDuplicado) {
                     System.out.println("este titular ya existe");
-                } 
+                } else if(e instanceof ExcepcionValidacionCCC){
+                    System.out.println("ccc no válido");
+                }
 
             }
         }

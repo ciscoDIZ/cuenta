@@ -31,6 +31,7 @@ public class Controller {
      */
     private static final Pattern IBAN_PATRON = Pattern.compile("(ES[0-9]{2})");
     private static final Pattern ENTOF_PATRON = Pattern.compile("[0-9]{4}");
+    private static final Pattern DC_PATRON = Pattern.compile("[0-9]{2}");
     private static final Pattern CUENTA_PATRON = Pattern.compile("[0-9]{10}");
     private static final Pattern NOMBRE_PATRON = Pattern.compile("([A-Z]{1})([a-z]{1,100})");
     private static final Pattern EDAD_PATRON = Pattern.compile("[0-9]{1,2}");
@@ -38,6 +39,7 @@ public class Controller {
     private String iban;
     private int entidad;
     private int oficina;
+    private byte dc;
     private long cuenta;
     private String nombre;
     private String apellido1;
@@ -110,12 +112,23 @@ public class Controller {
             }
 
         }
+        if(!DC_PATRON.matcher(String.valueOf(dc)).matches()){
+            System.out.println("introducir dc");
+            if(DC_PATRON.matcher(String.valueOf(dc = sc.nextByte())).matches()){
+                System.out.println("OK");
+                retorno[4] = (Byte)dc;
+            }else{
+                System.out.println("dc incorrecto");
+
+                throw new IllegalArgumentException("dc incorrecto");
+            }
+        }
         if (!CUENTA_PATRON.matcher(String.valueOf(cuenta)).matches()) {
             System.out.println("introducir cuenta");
             if (CUENTA_PATRON.matcher(String.valueOf(cuenta = sc.nextLong()))
                     .matches()) {
                 System.out.println("OK");
-                retorno[4] = (Long) cuenta;
+                retorno[5] = (Long) cuenta;
             } else {
                 System.out.println("cuenta incorrecta");
                 throw new IllegalArgumentException("cuenta erronea");

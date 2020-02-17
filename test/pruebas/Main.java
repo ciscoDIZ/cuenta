@@ -5,6 +5,7 @@
  */
 package pruebas;
 
+import cuenta_bancaria.exc.ExcepcionValidacionCCC;
 import cuenta_bancaria.exc.ExcepcionValidacionDNI;
 import cuenta_bancaria.exc.TitularDuplicado;
 import cuenta_bancaria.obj.model.Sucursal;
@@ -50,20 +51,23 @@ public class Main {
             String[] ncArray = nCuenta.split("-");
             System.out.println("intro dni");
             String dniStr = sc.nextLine();
-            Cuenta cuenta = Sucursal.accederCuenta(new DNI(dniStr), Cuenta.getCCC(ncArray[0], Integer.parseInt(ncArray[1]), Integer.parseInt(ncArray[2]), Integer.parseInt(ncArray[4])));
+            Cuenta cuenta = Sucursal.accederCuenta(new DNI(dniStr), Cuenta.getCCC(ncArray[0]
+                    , Integer.parseInt(ncArray[1]), Integer.parseInt(ncArray[2])
+                    ,Byte.parseByte(ncArray[3]), Integer.parseInt(ncArray[4])));
             cuenta.setEstado(Cuenta.Estado.ACTIVA);
             System.out.println(cuenta.mostrarDatos());
             cuenta.setMovimiento(Cuenta.getAsunto(0), null, 100, null);
             System.out.println("volcado cuenta: "+cuenta.mostrarMovimientos());
-            System.out.println("volcado de soloNumString "+cuenta.soloNumString());
-            System.out.println("volcado de soloNumString (region A) "+cuenta.soloNumString().substring(0, 10));
-            System.out.println("volcado de soloNumString (region B) "+cuenta.soloNumString().substring(10,20));
+            
             System.out.println("volcado de ccc.soloNumString: "+cuenta.getCCC());
-            Cuenta cuenta1 = Sucursal.accederCuenta(new DNI(dniStr), Cuenta.getCCC(ncArray[0], Integer.parseInt(ncArray[1]), Integer.parseInt(ncArray[2]), Integer.parseInt(ncArray[4])));
+            Cuenta cuenta1 = Sucursal.accederCuenta(new DNI(dniStr), Cuenta.getCCC(ncArray[0]
+                    , Integer.parseInt(ncArray[1]), Integer.parseInt(ncArray[2])
+                    ,Byte.parseByte(ncArray[3]), Integer.parseInt(ncArray[4])));
+            
             System.out.println("volcado cuenta1: "+cuenta1.mostrarMovimientos());
             System.out.println("volcado Banco.consulCuenta(DNI dni): "+Sucursal.consultCuenta(dni2));
             //System.out.println(Sucursal.consultCuenta(nCuenta));
-        } catch (ExcepcionValidacionDNI | TitularDuplicado | IllegalArgumentException e ) {
+        } catch (ExcepcionValidacionDNI | TitularDuplicado | IllegalArgumentException | ExcepcionValidacionCCC e ) {
             
         }
         

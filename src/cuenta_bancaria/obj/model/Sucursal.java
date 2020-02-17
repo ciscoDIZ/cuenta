@@ -16,9 +16,13 @@ import java.util.Map;
  * @author tote
  */
 public class Sucursal {
-    
+    public static enum UsuarioTipo{
+        OPERADOR,
+        CLIENTE
+    }
     private static HashMap<Usuario,ArrayList<Cuenta>> clientes = new HashMap<>();
-    
+    private static UsuarioTipo[] tipos = UsuarioTipo.values();
+    private UsuarioTipo tipo;
     
     public static boolean darAltaCliente(Usuario c) throws TitularDuplicado{
         boolean retorno = false;
