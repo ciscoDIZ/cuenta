@@ -78,11 +78,11 @@ public class Sucursal {
         }
         return retorno;
     }
-    public static Cuenta accederCuenta(DNI dni, Cuenta.CCC ccc){
+    public static Cuenta accederCuenta(DNI dni, Object ccc){
         Cuenta c = null;
         for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : clientes.entrySet()) {
             for (Cuenta cuenta : entry.getValue()) {
-                if (entry.getKey().getDni().equals(dni) && cuenta.getCCC().equals(ccc)){
+                if (entry.getKey().getDni().equals(dni) && cuenta.getCCC().equals(((Cuenta.CCC)ccc))){
                     c =cuenta;
                 }
             }

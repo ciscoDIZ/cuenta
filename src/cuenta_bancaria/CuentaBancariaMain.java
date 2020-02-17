@@ -13,7 +13,6 @@ import cuenta_bancaria.obj.model.Cuenta;
 import cuenta_bancaria.obj.model.DNI;
 import cuenta_bancaria.obj.model.Usuario;
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.Set;
@@ -32,7 +31,7 @@ public class CuentaBancariaMain {
     /**
      * @param args the command line arguments
      */
-    @SuppressWarnings("null")
+    @SuppressWarnings({"null", "UnusedAssignment"})
     public static void main(String[] args) {
         Controller controller = new Controller();
         Scanner sc = new Scanner(System.in);
@@ -48,7 +47,7 @@ public class CuentaBancariaMain {
         boolean salir = false;
         String mensajeBienvenida = null;
         String dniStr;
-        String cccStr;
+        String nCuentaStr;
         DNI dni;
         String[] cccArray = new String[0];
         while (!salir) {
@@ -84,29 +83,31 @@ public class CuentaBancariaMain {
                             sc.nextLine();
                             System.out.println("introducir dni");
                             dniStr = sc.nextLine();
-                            while (cccArray.length != 5) {
-                                System.out.println("intoducir ccc");
-                                cccStr = sc.nextLine();
-                                cccArray = cccStr.split("-");
-                            }
-                            iban = cccArray[0];
-                            entidad = Integer.parseInt(cccArray[1]);
-                            oficina = Integer.parseInt(cccArray[2]);
-                            nCuenta = Integer.parseInt(cccArray[4]);
+                            iban = "ES25";
+                            entidad = 3321;
+                            oficina = 2020;
+                            System.out.println("intoducir nº cuenta");
+                            System.out.print(iban+"-"+entidad+"-"+oficina+"-00-");
+                            nCuentaStr = sc.nextLine();
+                            System.out.println("");
+                            nCuenta = Integer.parseInt(nCuentaStr);
                             cuenta = Sucursal.accederCuenta(new DNI(dniStr),
-                                     Cuenta.getCCC(iban, entidad, oficina, nCuenta));
+                                    Cuenta.getCCC(iban, entidad, oficina, nCuenta));
                             if (cuenta.getEstado().equals(Cuenta.Estado.ACTIVA)) {
-                                System.out.println("1)desactivar cuenta");
+                                System.out.println("1)desactivar cuenta\n2)salir");
                                 opt = sc.nextInt();
                                 switch (opt) {
                                     case 1:
                                         cuenta.setEstado(Cuenta.Estado.INACTIVA);
                                         break;
+                                    case 2:
+                                        cuenta = null;
+                                        break;
                                     default:
                                         throw new AssertionError();
                                 }
                             } else if (cuenta.getEstado().equals(Cuenta.Estado.INACTIVA)) {
-                                System.out.println("1)activar cuenta\n2)bloquear cuenta");
+                                System.out.println("1)activar cuenta\n2)bloquear cuenta\n3)salir");
                                 opt = sc.nextInt();
                                 switch (opt) {
                                     case 1:
@@ -114,6 +115,10 @@ public class CuentaBancariaMain {
                                         break;
                                     case 2:
                                         cuenta.setEstado(Cuenta.Estado.BLOQUEADA);
+                                        break;
+                                    case 3:
+
+                                        cuenta = null;
                                         break;
                                     default:
                                         throw new AssertionError();
@@ -125,15 +130,15 @@ public class CuentaBancariaMain {
                             sc.nextLine();
                             System.out.println("introducir dni");
                             dniStr = sc.nextLine();
-                            while (cccArray.length != 5) {
-                                System.out.println("intoducir ccc");
-                                cccStr = sc.nextLine();
-                                cccArray = cccStr.split("-");
-                            }
-                            iban = cccArray[0];
-                            entidad = Integer.parseInt(cccArray[1]);
-                            oficina = Integer.parseInt(cccArray[2]);
-                            nCuenta = Integer.parseInt(cccArray[4]);
+
+                            iban = "ES25";
+                            entidad = 3321;
+                            oficina = 2020;
+                            System.out.println("intoducir nº cuenta");
+                            System.out.print(iban+"-"+entidad+"-"+oficina+"-00-");
+                            nCuentaStr = sc.nextLine();
+                            System.out.println("");
+                            nCuenta = Integer.parseInt(nCuentaStr);
                             cuenta = Sucursal.accederCuenta(new DNI(dniStr), Cuenta.getCCC(iban, entidad, oficina, nCuenta));
                             break;
                         case 6:
@@ -155,6 +160,8 @@ public class CuentaBancariaMain {
                                                 .toLowerCase();
                                 System.out.println(mensajeBienvenida);
                                 System.out.println(opciones);
+                            } else {
+                                System.out.println("8)mostrar opciones");
                             }
                             opt = sc.nextInt();
                             switch (opt) {
@@ -227,16 +234,17 @@ public class CuentaBancariaMain {
                                     }
                                     break;
                                 case 3:
+                                    sc.nextLine();
                                     System.out.println("introducir dni");
                                     dniStr = sc.nextLine();
                                     DNI dniOrigen = new DNI(dniStr);
                                     System.out.println("introducir CCC destinatario");
-                                    cccStr = sc.nextLine();
-                                    cccArray = cccStr.split("-");
+                                    nCuentaStr = sc.nextLine();
+                                    cccArray = nCuentaStr.split("-");
                                     Object ccc = Cuenta.getCCC(cccArray[0],
-                                             Integer.parseInt(cccArray[1]),
-                                             Integer.parseInt(cccArray[2]),
-                                             Integer.parseInt(cccArray[4]));
+                                            Integer.parseInt(cccArray[1]),
+                                            Integer.parseInt(cccArray[2]),
+                                            Integer.parseInt(cccArray[4]));
                                     System.out.println("introducir cuantia");
                                     int cuantia = sc.nextInt();
                                     Sucursal.transfererirFondos(dniOrigen, cuenta
@@ -276,13 +284,11 @@ public class CuentaBancariaMain {
                                     break;
                                 case 9:
                                     cuenta = null;
+
                                     break;
                                 default:
                                     throw new AssertionError();
 
-                            }
-                            if (mensajeBienvenida != null && opt != 7) {
-                                System.out.println("7)mostrar opciones");
                             }
 
                             break;
@@ -347,9 +353,7 @@ public class CuentaBancariaMain {
                     sc.nextLine();
                 } else if (e instanceof TitularDuplicado) {
                     System.out.println("este titular ya existe");
-                } else if (e instanceof NullPointerException) {
-                    System.out.println("imposible acceder cuenta");
-                }
+                } 
 
             }
         }

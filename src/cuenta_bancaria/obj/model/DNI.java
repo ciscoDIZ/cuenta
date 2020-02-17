@@ -60,7 +60,11 @@ public class DNI {
 
     @Override
     public boolean equals(Object obj) {
-        return this.hashCode() == obj.hashCode(); 
+        boolean retorno = false;
+        if(obj instanceof DNI){
+            retorno = this.hashCode() == obj.hashCode();
+        }
+        return retorno;
     }
 
     @Override
@@ -70,6 +74,8 @@ public class DNI {
         hash = 97 * hash + this.num;
         return hash;
     }
-
+    public int getInt(){
+        return num;
+    }
     
 }

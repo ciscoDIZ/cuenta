@@ -37,10 +37,10 @@ public class Main {
             //System.out.println("salida de Sucursal.accederCuenta: "+Sucursal.accederCuenta(dni2,Cuenta.getCCC("ES23",1234,1234,123457890)));
             Sucursal.darAltaCliente(new Usuario("Pepito", "de los palotes", "AAAAAAAA", 12, dni2, Usuario.Sexo.HOMBRE));
             Sucursal.darAltaCliente(new Usuario("Juanito", "de los palotes", "AAAAAAAA", 12, dni1, Usuario.Sexo.HOMBRE));
-            DNI[] array = {dni1,dni2};
-            Sucursal.darAltaCuenta(array);
+            //DNI[] array = {dni1,dni2};
             Sucursal.darAltaCuenta(dni1);
-            c.vincularCuenta();
+            Sucursal.darAltaCuenta(dni2);
+            
             System.out.println(Sucursal.buscarCliente(dni2));
             System.out.println(Sucursal.buscarCliente(dni1));
             Scanner sc = new Scanner(System.in);

@@ -114,9 +114,9 @@ public class Cuenta {
 
             Random rnd = new Random();
             IBAN = "ES25";
-            ENTIDAD = rnd.nextInt(9999 - 1000) + 1000;
-            OFICINA = rnd.nextInt(9999 - 1000) + 1000;
-            CUENTA = Math.abs(rnd.nextInt());
+            ENTIDAD = 3321;
+            OFICINA = 2020;
+            CUENTA = rnd.nextInt(Integer.MAX_VALUE - 1000000000) + 1000000000;
             CONTROL = 0;
         }
 
@@ -136,7 +136,15 @@ public class Cuenta {
             CONTROL = 0;
             CUENTA = rnd.nextInt(Integer.MAX_VALUE - 1000000000) + 1000000000;
         }
-
+        public long getLong(){
+            long retorno=0l;
+            retorno += ENTIDAD;
+            retorno *= 1000;
+            retorno += OFICINA;
+            retorno *= 1000000000;
+            retorno += CUENTA;
+            return retorno;
+        }
         public String getNumCuenta() {
             String entString, ofcString, conString, cueString;
             entString = (ENTIDAD != 0) ? "" + ENTIDAD : "0000";
