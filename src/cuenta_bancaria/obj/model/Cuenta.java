@@ -44,11 +44,7 @@ public class Cuenta {
 
         Movimiento(Asunto asunto, String asuntoPers, double cuantia) {
             this.asunto = asunto;
-            if (asunto.equals(Asunto.PERSONALIZADO)) {
-                this.asuntoPers = asuntoPers;
-            } else {
-                this.asuntoPers = asuntoPers;
-            }
+            this.asuntoPers =asuntoPers;
             this.cuantia = cuantia;
             fecha = Calendar.getInstance();
         }
