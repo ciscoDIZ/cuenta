@@ -11,8 +11,8 @@ package cuenta_bancaria.obj.model;
  */
 public class Operador extends Usuario{
 
-    public Operador(String nombre, String apellido1, String apellido2, int edad, DNI dni, Sexo sexo) {
-        super(nombre, apellido1, apellido2, edad, dni, sexo);
+    public Operador(String nombre, String apellido1, String apellido2, int edad, Sexo sexo) {
+        super(nombre, apellido1, apellido2, edad, sexo);
     }
     
 }

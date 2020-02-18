@@ -21,17 +21,17 @@ public abstract class Usuario {
     protected String apellido1;
     protected String apellido2;
     protected int edad;
-    protected DNI dni;
+    
     protected Sexo sexo;
     
 
     public Usuario(String nombre, String apellido1, String apellido2, int edad
-            , DNI dni, Sexo sexo) {
+            , Sexo sexo) {
         this.nombre = nombre;
         this.apellido1 = apellido1;
         this.apellido2 = apellido2;
         this.edad = edad;
-        this.dni = dni;
+        
         this.sexo = sexo;
         
         
@@ -73,13 +73,7 @@ public abstract class Usuario {
         this.edad = edad;
     }
 
-    public DNI getDni() {
-        return dni;
-    }
-
-    public void setDni(DNI dni) {
-        this.dni = dni;
-    }
+   
 
     public Sexo getSexo() {
         return sexo;
@@ -95,12 +89,7 @@ public abstract class Usuario {
 
     
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 89 * hash + this.dni.hashCode();
-        return hash;
-    }
+
 
     @Override
     public boolean equals(Object obj) {

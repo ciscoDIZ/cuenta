@@ -21,13 +21,15 @@ public class Sucursal {
         OPERADOR,
         CLIENTE
     }
-    private static HashMap<Usuario,ArrayList<Cuenta>> clientes = new HashMap<>();
+    private static HashMap<Cliente,ArrayList<Cuenta>> clientes = new HashMap<>();
+    private static HashSet<Operador> operadores = new HashSet<>();
     private static UsuarioTipo[] tipos = UsuarioTipo.values();
     private UsuarioTipo tipo;
     
     public static boolean darAltaCliente(Cliente c) throws TitularDuplicado{
         boolean retorno = false;
         if(!clientes.containsKey(c)){
+            
             clientes.put(c, new ArrayList<>());
             retorno= true;
         }else{
@@ -52,9 +54,9 @@ public class Sucursal {
         }
         return retorno;
     }
-    public static Usuario buscarCliente(DNI dni){
-       Usuario u = null;
-       for (Usuario usuario : clientes.keySet()) {
+    public static Cliente buscarCliente(DNI dni){
+       Cliente u = null;
+       for (Cliente usuario : clientes.keySet()) {
             if(usuario.getDni().equals(dni)){
                 u = usuario;
             }
@@ -63,7 +65,7 @@ public class Sucursal {
     }
     public static String consultCuenta(String nCuenta){
         String retorno="";
-        for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : clientes.entrySet()) {
+        for (Map.Entry<Cliente, ArrayList<Cuenta>> entry : clientes.entrySet()) {
             retorno = entry.getValue().stream()
                     .filter((c) -> c.getNumCuenta().equals(nCuenta))
                     .findFirst()
@@ -73,7 +75,7 @@ public class Sucursal {
     }
     public static String consultCuenta(DNI dni){
         String retorno="";
-        for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : clientes.entrySet()) {
+        for (Map.Entry<Cliente, ArrayList<Cuenta>> entry : clientes.entrySet()) {
             if(entry.getKey().getDni().equals(dni)){
                 retorno = entry.getKey().getNombreCompleto()+"\n";
                 retorno = entry.getValue().stream()
@@ -86,7 +88,7 @@ public class Sucursal {
     }
     public static Cuenta accederCuenta(DNI dni, Object ccc){
         Cuenta c = null;
-        for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : clientes.entrySet()) {
+        for (Map.Entry<Cliente, ArrayList<Cuenta>> entry : clientes.entrySet()) {
             for (Cuenta cuenta : entry.getValue()) {
                 if (entry.getKey().getDni().equals(dni) && cuenta.getCCC()
                         .equals(((Cuenta.CCC)ccc))){
@@ -98,7 +100,7 @@ public class Sucursal {
     }
     private static Cuenta accederCuenta(Cuenta.CCC ccc){
         Cuenta c = null;
-        for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : clientes.entrySet()) {
+        for (Map.Entry<Cliente, ArrayList<Cuenta>> entry : clientes.entrySet()) {
             for (Cuenta cuenta : entry.getValue()) {
                 if (cuenta.getCCC().equals(ccc)){
                     c =cuenta;
@@ -130,11 +132,11 @@ public class Sucursal {
         return true;
     }
 
-    public static HashMap<Usuario, ArrayList<Cuenta>> getClientes() {
+    public static HashMap<Cliente, ArrayList<Cuenta>> getClientes() {
         return clientes;
     }
 
-    public static void setClientes(HashMap<Usuario, ArrayList<Cuenta>> clientes) {
+    public static void setClientes(HashMap<Cliente, ArrayList<Cuenta>> clientes) {
         Sucursal.clientes = clientes;
     }
     
