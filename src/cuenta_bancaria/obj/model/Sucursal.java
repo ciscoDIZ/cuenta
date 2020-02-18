@@ -144,7 +144,7 @@ public class Sucursal {
         return c;
     }
 
-    public static boolean transfererirFondos(Object titOrigen, Object origen, Object destino, int cuantia) {
+    public static boolean transfererirFondos(Cliente.DNI titOrigen, Cuenta.CCC origen, Object destino, double cuantia) {
         boolean retorno = false;
         Cuenta cOrigen = accederCuenta(titOrigen, ((Cuenta.CCC) origen));
         Cuenta cDestino = accederCuenta((Cuenta.CCC) destino);

@@ -29,18 +29,19 @@ public class Cuenta {
 
     private static class Movimiento {
 
-        enum Asunto {
+        protected enum Asunto {
             INGRESO,
             NOMINA,
             RETIRADA,
             PAGO,
-            PERSONALIZADO
+            PERSONALIZADO,
+            TRANSFERENCIA
         }
 
-        Asunto asunto;
-        String asuntoPers;
-        double cuantia;
-        Calendar fecha;
+        protected Asunto asunto;
+        protected String asuntoPers;
+        protected double cuantia;
+        protected Calendar fecha;
 
         public Movimiento() {
         }
@@ -58,7 +59,28 @@ public class Cuenta {
             this.cuantia = cuantia;
             this.fecha = fecha;
         }
+        private static class Trasnferencia extends Movimiento{
+            CCC origen;
+            CCC destino;
 
+            public Trasnferencia(CCC origen, CCC destino) {
+                this.origen = origen;
+                this.destino = destino;
+            }
+
+            public Trasnferencia(CCC origen, CCC destino, Asunto asunto, String asuntoPers, double cuantia) {
+                super(asunto, asuntoPers, cuantia);
+                this.origen = origen;
+                this.destino = destino;
+            }
+
+            public Trasnferencia(CCC origen, CCC destino, Asunto asunto, String asuntoPers, double cuantia, Calendar fecha) {
+                super(asunto, asuntoPers, cuantia, fecha);
+                this.origen = origen;
+                this.destino = destino;
+            }
+            
+        }
         int getFechaKey() {
             int ret = fecha.get(Calendar.YEAR);
             if (fecha.get(Calendar.MONTH) > 9) {
@@ -395,6 +417,8 @@ public class Cuenta {
                 case PAGO:
                     ret = retirar(cuantia, asuntoPers, asunto, fecha);
                     break;
+                case TRANSFERENCIA:
+                    
                 default:
                     throw new AssertionError();
             }

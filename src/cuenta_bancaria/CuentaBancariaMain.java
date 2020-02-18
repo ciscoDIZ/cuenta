@@ -242,7 +242,8 @@ public class CuentaBancariaMain {
                                     sc.nextLine();
                                     System.out.println("introducir dni");
                                     dniStr = sc.nextLine();
-                                    Object dniOrigen = Cliente.getDninstance(dniStr);
+                                    
+                                    
                                     System.out.println("introducir CCC destinatario");
                                     nCuentaStr = sc.nextLine();
                                     cccArray = nCuentaStr.split("-");
@@ -253,7 +254,7 @@ public class CuentaBancariaMain {
                                             Integer.parseInt(cccArray[4]));
                                     System.out.println("introducir cuantia");
                                     int cuantia = sc.nextInt();
-                                    Sucursal.transfererirFondos(dniOrigen, cuenta
+                                    Sucursal.transfererirFondos(Cliente.getDninstance(dniStr), cuenta
                                             .getCCC(), ccc, cuantia);
                                     break;
                                 case 4:
