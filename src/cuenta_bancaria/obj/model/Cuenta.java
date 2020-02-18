@@ -273,7 +273,7 @@ public class Cuenta {
     }
 
     private HashMap<Integer, ArrayList<Movimiento>> movimientos;
-    private final HashSet<Usuario> TITULARES;
+    private final HashSet<Cliente> TITULARES;
     private double saldo;
     private double disponible;
     private double retenciones;
@@ -282,7 +282,7 @@ public class Cuenta {
     private static Estado[] estados = Estado.values();
     private Estado estado;
 
-    public Cuenta(Set<Usuario> titulares, double saldo) throws IllegalArgumentException {
+    public Cuenta(Set<Cliente> titulares, double saldo) throws IllegalArgumentException {
         TITULARES = new HashSet<>(titulares);
         this.saldo = saldo;
         disponible = saldo;
@@ -294,7 +294,7 @@ public class Cuenta {
         estado = estados[1];
     }
 
-    public Cuenta(Set<Usuario> titulares) {
+    public Cuenta(Set<Cliente> titulares) {
         Random rnd = new Random();
         TITULARES = new HashSet(titulares);
         movimientos = new HashMap<>();
@@ -313,7 +313,7 @@ public class Cuenta {
         estado = estados[0];
     }
 
-    public Cuenta(Set<Usuario> titulares, Cuenta toCopy) 
+    public Cuenta(Set<Cliente> titulares, Cuenta toCopy) 
             throws ExcepcionValidacionCCC{
         TITULARES = new HashSet<>(titulares);
         ccc = new CCC(toCopy.ccc.IBAN, toCopy.ccc.ENTIDAD, toCopy.ccc.OFICINA, toCopy.ccc.DC, toCopy.ccc.OFICINA);
@@ -565,7 +565,7 @@ public class Cuenta {
         this.estado = estado;
     }
 
-    public HashSet<Usuario> getTITULARES() {
+    public HashSet<Cliente> getTITULARES() {
         return TITULARES;
     }
 

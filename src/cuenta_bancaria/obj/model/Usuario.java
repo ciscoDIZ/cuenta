@@ -11,18 +11,19 @@ import java.util.HashSet;
  *
  * @author tote
  */
-public class Usuario {
+public abstract class Usuario {
+    
     public static enum Sexo{
         MUJER,
         HOMBRE
     }
-    private String nombre;
-    private String apellido1;
-    private String apellido2;
-    private int edad;
-    private DNI dni;
-    private Sexo sexo;
-    private HashSet<Cuenta> cuentas;
+    protected String nombre;
+    protected String apellido1;
+    protected String apellido2;
+    protected int edad;
+    protected DNI dni;
+    protected Sexo sexo;
+    
 
     public Usuario(String nombre, String apellido1, String apellido2, int edad
             , DNI dni, Sexo sexo) {
@@ -32,15 +33,13 @@ public class Usuario {
         this.edad = edad;
         this.dni = dni;
         this.sexo = sexo;
-        this.cuentas = new HashSet<>();
+        
         
     }
     public String getNombreCompleto(){
         return getNombre()+" "+getApellido1()+" "+getApellido2();
     }
-    public boolean addCuenta(Cuenta c){
-        return cuentas.add(c);
-    }
+    
 
     public String getNombre() {
         return nombre;
@@ -90,21 +89,11 @@ public class Usuario {
         this.sexo = sexo;
     }
 
-    public HashSet<Cuenta> getCuentas() {
-        return cuentas;
-    }
+    
 
-    public void setCuentas(HashSet<Cuenta> cuentas) {
-        this.cuentas = cuentas;
-    }
+    
 
-    @Override
-    public String toString() {
-        String nCuentas = "";
-        nCuentas = cuentas.stream().map((cuenta) -> cuenta.getNumCuenta()+"\n")
-                .reduce(nCuentas, String::concat);
-        return nombre + " " + apellido1 + " " + apellido2 + "\ndni: " + dni +"\ncuentas:"+nCuentas;
-    }
+    
 
     @Override
     public int hashCode() {

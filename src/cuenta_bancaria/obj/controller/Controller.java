@@ -6,10 +6,10 @@
 package cuenta_bancaria.obj.controller;
 
 import cuenta_bancaria.exc.ExcepcionValidacionDNI;
+import cuenta_bancaria.obj.model.Cliente;
 import cuenta_bancaria.obj.model.Cuenta;
 import cuenta_bancaria.obj.model.DNI;
 import cuenta_bancaria.obj.model.Usuario;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -177,7 +177,7 @@ public class Controller {
                 default:
                     throw new AssertionError();
             }
-            retorno.add(new Usuario(nombre, apellido1, apellido2, edad, dni, sexo));
+            retorno.add(new Cliente(nombre, apellido1, apellido2, edad, dni, sexo));
             System.out.println("¿Desea agregar otro titular?\nS/n");
             String respuesta = sc.nextLine();
             salir = !(respuesta.equals("s") || respuesta.equals(""));

@@ -8,6 +8,7 @@ package pruebas;
 import cuenta_bancaria.exc.ExcepcionValidacionCCC;
 import cuenta_bancaria.exc.ExcepcionValidacionDNI;
 import cuenta_bancaria.exc.TitularDuplicado;
+import cuenta_bancaria.obj.model.Cliente;
 import cuenta_bancaria.obj.model.Sucursal;
 import cuenta_bancaria.obj.model.Cuenta;
 import cuenta_bancaria.obj.model.DNI;
@@ -29,15 +30,15 @@ public class Main {
         try {
             DNI dni1 = new DNI("12345678Z");
             DNI dni2 = new DNI("78716585M");
-            HashSet<Usuario> titulares = new HashSet();
-            titulares.add(new Usuario("Juanito", "de los palotes", "AAAAAAAA", 12, dni2, Usuario.Sexo.HOMBRE));
-            titulares.add(new Usuario("Pepito", "de los palotes", "AAAAAAAA", 12, dni1, Usuario.Sexo.HOMBRE));
+            HashSet<Cliente> titulares = new HashSet();
+            titulares.add(new Cliente("Juanito", "de los palotes", "AAAAAAAA", 12, dni2, Usuario.Sexo.HOMBRE));
+            titulares.add(new Cliente("Pepito", "de los palotes", "AAAAAAAA", 12, dni1, Usuario.Sexo.HOMBRE));
             Cuenta c = new Cuenta(titulares);
             Cuenta c1 = new Cuenta(titulares, 0);
             
             //System.out.println("salida de Sucursal.accederCuenta: "+Sucursal.accederCuenta(dni2,Cuenta.getCCC("ES23",1234,1234,123457890)));
-            Sucursal.darAltaCliente(new Usuario("Pepito", "de los palotes", "AAAAAAAA", 12, dni2, Usuario.Sexo.HOMBRE));
-            Sucursal.darAltaCliente(new Usuario("Juanito", "de los palotes", "AAAAAAAA", 12, dni1, Usuario.Sexo.HOMBRE));
+            Sucursal.darAltaCliente(new Cliente("Pepito", "de los palotes", "AAAAAAAA", 12, dni2, Usuario.Sexo.HOMBRE));
+            Sucursal.darAltaCliente(new Cliente("Juanito", "de los palotes", "AAAAAAAA", 12, dni1, Usuario.Sexo.HOMBRE));
             //DNI[] array = {dni1,dni2};
             Sucursal.darAltaCuenta(dni1);
             Sucursal.darAltaCuenta(dni2);

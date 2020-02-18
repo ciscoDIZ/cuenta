@@ -9,6 +9,7 @@ import cuenta_bancaria.exc.ExcepcionValidacionCCC;
 import cuenta_bancaria.exc.ExcepcionValidacionDNI;
 import cuenta_bancaria.exc.TitularDuplicado;
 import cuenta_bancaria.obj.controller.Controller;
+import cuenta_bancaria.obj.model.Cliente;
 import cuenta_bancaria.obj.model.Sucursal;
 import cuenta_bancaria.obj.model.Cuenta;
 import cuenta_bancaria.obj.model.DNI;
@@ -60,10 +61,10 @@ public class CuentaBancariaMain {
                     switch (opt) {
                         case 1:
                             Object[] datos = controller.menuIniTitular();
-                            Usuario u = new Usuario((String) datos[0], (String) datos[1],
+                            Usuario u = new Cliente((String) datos[0], (String) datos[1],
                                     (String) datos[2], (int) datos[3], (DNI) datos[4],
                                     (Usuario.Sexo) datos[5]);
-                            Sucursal.darAltaCliente(u);
+                            Sucursal.darAltaCliente((Cliente)u);
                             break;
                         case 2:
                             sc.nextLine();
@@ -90,6 +91,7 @@ public class CuentaBancariaMain {
                             System.out.println("intoducir digito de control");
                             System.out.print(iban+"-"+entidad+"-"+oficina+"-");
                             dc = sc.nextByte();
+                            sc.nextLine();
                             System.out.println("intoducir nº cuenta");
                             System.out.print(iban+"-"+entidad+"-"+oficina+"-"+dc+"-");
                             nCuentaStr = sc.nextLine();

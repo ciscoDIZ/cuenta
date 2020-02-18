@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -24,7 +25,7 @@ public class Sucursal {
     private static UsuarioTipo[] tipos = UsuarioTipo.values();
     private UsuarioTipo tipo;
     
-    public static boolean darAltaCliente(Usuario c) throws TitularDuplicado{
+    public static boolean darAltaCliente(Cliente c) throws TitularDuplicado{
         boolean retorno = false;
         if(!clientes.containsKey(c)){
             clientes.put(c, new ArrayList<>());
@@ -34,13 +35,13 @@ public class Sucursal {
         }
         return retorno;
     }
-    public static boolean darAltaCuenta( DNI... dni){
+    public static boolean darAltaCuenta(DNI... dni){
         boolean retorno = false;
-        HashSet<Usuario> titulares = new HashSet<>();
+        HashSet<Cliente> titulares = new HashSet<>();
         for (DNI dni1 : dni) {
             if(clientes.containsKey(buscarCliente(dni1))){
                 clientes.keySet().forEach((usuario) -> {
-                    titulares.add(usuario);
+                    titulares.add((Cliente)usuario);
                 });
             }
         }
