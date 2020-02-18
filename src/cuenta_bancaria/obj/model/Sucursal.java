@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  *
@@ -23,8 +22,8 @@ public class Sucursal {
         CLIENTE
     }
     private static HashMap<Usuario, ArrayList<Cuenta>> clientes = new HashMap<>();
-    
-    private static UsuarioTipo[] tipos = UsuarioTipo.values();
+
+    private static final UsuarioTipo[] TIPOS = UsuarioTipo.values();
     private UsuarioTipo tipo;
 
     public static boolean darAltaCliente(Cliente c) throws TitularDuplicado {
@@ -38,7 +37,10 @@ public class Sucursal {
         }
         return retorno;
     }
-
+    public static boolean darAltaOp(Operador o){
+        boolean retorno = false;
+        return retorno;
+    }
     public static boolean darAltaCuenta(Object... dni) {
         boolean retorno = false;
         HashSet<Cliente> titulares = new HashSet<>();
@@ -60,8 +62,10 @@ public class Sucursal {
     public static Cliente buscarCliente(Object dni) {
         Cliente u = null;
         for (Usuario usuario : clientes.keySet()) {
-            if (((Cliente) usuario).getDni().equals((Cliente.DNI) dni)) {
-                u = (Cliente) usuario;
+            if (usuario instanceof Cliente) {
+                if (((Cliente) usuario).getDni().equals((Cliente.DNI) dni)) {
+                    u = (Cliente) usuario;
+                }
             }
         }
         return u;
@@ -86,7 +90,7 @@ public class Sucursal {
         Cliente cliente = null;
         for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : clientes.entrySet()) {
             if (entry.getKey() instanceof Cliente) {
-                if (((Cliente)entry.getKey()).getDni().equals(dni)) {
+                if (((Cliente) entry.getKey()).getDni().equals(dni)) {
                     retorno = entry.getKey().getNombreCompleto() + "\n";
                     retorno = entry.getValue().stream()
                             .map((cuenta) -> cuenta
@@ -103,13 +107,13 @@ public class Sucursal {
         Cuenta c = null;
         for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : clientes.entrySet()) {
             for (Cuenta cuenta : entry.getValue()) {
-                if(entry.getKey() instanceof Cliente){
-                    if (((Cliente)entry.getKey()).getDni().equals(dni) && cuenta.getCCC()
-                        .equals(((Cuenta.CCC) ccc))) {
-                    c = cuenta;
+                if (entry.getKey() instanceof Cliente) {
+                    if (((Cliente) entry.getKey()).getDni().equals(dni) && cuenta.getCCC()
+                            .equals(((Cuenta.CCC) ccc))) {
+                        c = cuenta;
+                    }
                 }
-                }
-                
+
             }
         }
         return c;

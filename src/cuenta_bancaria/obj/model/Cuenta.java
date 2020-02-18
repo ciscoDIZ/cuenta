@@ -119,17 +119,17 @@ public class Cuenta {
             ENTIDAD = 3321;
             OFICINA = 2020;
             CUENTA = rnd.nextInt(Integer.MAX_VALUE - 1000000000) + 1000000000;
-            DC = genDC();
+            DC = genDC(ENTIDAD, OFICINA, CUENTA);
         }
 
-        public CCC(String IBAN, int ENTIDAD, int OFICINA, byte DC, int CUENTA) throws ExcepcionValidacionCCC{
-            if(validarDC(ENTIDAD, OFICINA, DC, CUENTA)){
-            this.IBAN = IBAN;
-            this.ENTIDAD = ENTIDAD;
-            this.OFICINA = OFICINA;
-            this.CUENTA = CUENTA;
-            this.DC = genDC();
-            }else{
+        public CCC(String IBAN, int ENTIDAD, int OFICINA, byte DC, int CUENTA) throws ExcepcionValidacionCCC {
+            if (validarDC(ENTIDAD, OFICINA, DC, CUENTA)) {
+                this.IBAN = IBAN;
+                this.ENTIDAD = ENTIDAD;
+                this.OFICINA = OFICINA;
+                this.CUENTA = CUENTA;
+                this.DC = genDC(ENTIDAD, OFICINA, CUENTA);
+            } else {
                 throw new ExcepcionValidacionCCC();
             }
         }
@@ -140,7 +140,7 @@ public class Cuenta {
             ENTIDAD = 3321;
             this.OFICINA = OFICINA;
             CUENTA = rnd.nextInt(Integer.MAX_VALUE - 1000000000) + 1000000000;
-            DC = genDC();
+            DC = genDC(ENTIDAD, this.OFICINA, CUENTA);
         }
 
         public String getNumCuenta() {
@@ -153,76 +153,54 @@ public class Cuenta {
                     + cueString;
         }
 
-        private String soloNumString() {
-            return "00" + ENTIDAD + "" + OFICINA + "" + CUENTA;
+        private boolean validarDC(int ENTIDAD, int OFICINA, byte DC, int CUENTA) {
+            byte dc = genDC(ENTIDAD, OFICINA, CUENTA);
+
+            return dc == DC;
         }
 
-        private boolean validarDC(int ENTIDAD, int OFICINA, byte DC, int CUENTA) {
+        private byte genDC(int ENTIDAD, int OFICINA, int CUENTA) {
             byte dc;
             int sumatorio = 0;
             int resto;
-            String regA = "00"+ENTIDAD+""+OFICINA;
-            String regB = ""+CUENTA;
+            String regA = "00" + ENTIDAD + "" + OFICINA;
+            String regB = "" + CUENTA;
             for (int i = 0; i < regA.length(); i++) {
                 sumatorio += ((regA.charAt(i) - '0') * PRODUCTOS[i]);
             }
             resto = 11 - (sumatorio % 11);
-            if (resto == 10) {
-                dc = 1;
-                dc *= 10;
-            } else if (resto == 11) {
-                dc = 0;
-            } else {
-                dc = (byte) resto;
-                dc *= 10;
+            switch (resto) {
+                case 10:
+                    dc = 1;
+                    dc *= 10;
+                    break;
+                case 11:
+                    dc = 0;
+                    break;
+                default:
+                    dc = (byte) resto;
+                    dc *= 10;
+                    break;
             }
             sumatorio = 0;
             for (int i = 0; i < regB.length(); i++) {
                 sumatorio += ((regB.charAt(i) - '0') * PRODUCTOS[i]);
             }
             resto = 11 - (sumatorio % 11);
-            if (resto == 10) {
-                dc += 1;
-            } else if (resto == 11) {
-                dc += 0;
-            } else {
-                dc += (byte) resto;
-            }
-            return dc==DC;
-        }
-        private byte genDC() {
-            byte dc;
-            int sumatorio = 0;
-            int resto;
-            String regA = soloNumString().substring(0, 10);
-            String regB = soloNumString().substring(10, 20);
-            for (int i = 0; i < regA.length(); i++) {
-                sumatorio += ((regA.charAt(i) - '0') * PRODUCTOS[i]);
-            }
-            resto = 11 - (sumatorio % 11);
-            if (resto == 10) {
-                dc = 1;
-                dc *= 10;
-            } else if (resto == 11) {
-                dc = 0;
-            } else {
-                dc = (byte) resto;
-                dc *= 10;
-            }
-            sumatorio = 0;
-            for (int i = 0; i < regB.length(); i++) {
-                sumatorio += ((regB.charAt(i) - '0') * PRODUCTOS[i]);
-            }
-            resto = 11 - (sumatorio % 11);
-            if (resto == 10) {
-                dc += 1;
-            } else if (resto == 11) {
-                dc += 0;
-            } else {
-                dc += (byte) resto;
+            switch (resto) {
+                case 10:
+                    dc += 1;
+                    break;
+                case 11:
+                    dc += 0;
+                    break;
+                default:
+                    dc += (byte) resto;
+                    break;
             }
             return dc;
         }
+
         public String getIBAN() {
             return IBAN;
         }
@@ -305,7 +283,7 @@ public class Cuenta {
     }
 
     public Cuenta(String IBAN, int ENTIDAD, int OFICINA, byte DC, int CUENTA,
-            Cuenta toCopy) throws ExcepcionValidacionCCC{
+            Cuenta toCopy) throws ExcepcionValidacionCCC {
         TITULARES = new HashSet(toCopy.TITULARES);
         ccc = new CCC(IBAN, ENTIDAD, OFICINA, DC, CUENTA);
         estados = Estado.values();
@@ -313,8 +291,8 @@ public class Cuenta {
         estado = estados[0];
     }
 
-    public Cuenta(Set<Cliente> titulares, Cuenta toCopy) 
-            throws ExcepcionValidacionCCC{
+    public Cuenta(Set<Cliente> titulares, Cuenta toCopy)
+            throws ExcepcionValidacionCCC {
         TITULARES = new HashSet<>(titulares);
         ccc = new CCC(toCopy.ccc.IBAN, toCopy.ccc.ENTIDAD, toCopy.ccc.OFICINA, toCopy.ccc.DC, toCopy.ccc.OFICINA);
         estados = Estado.values();
@@ -329,8 +307,8 @@ public class Cuenta {
     }
 
     @SuppressWarnings("NonPublicExported")
-    public static Cuenta.CCC getCCC(String IBAN, int ENTIDAD, int OFICINA
-            , byte DC, int CUENTA)throws ExcepcionValidacionCCC{
+    public static Cuenta.CCC getCCC(String IBAN, int ENTIDAD, int OFICINA,
+             byte DC, int CUENTA) throws ExcepcionValidacionCCC {
         return new CCC(IBAN, ENTIDAD, OFICINA, DC, CUENTA);
     }
 

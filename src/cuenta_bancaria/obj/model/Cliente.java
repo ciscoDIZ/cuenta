@@ -85,15 +85,20 @@ public class Cliente extends Usuario {
     }
     private HashSet<Cuenta> cuentas;
     private DNI dni;
+    private int codAcceso;
+    private final String NOMBRE_USUARIO;
 
     public Cliente(String nombre, String apellido1, String apellido2, int edad, Object dni, Sexo sexo) {
         super(nombre, apellido1, apellido2, edad, sexo);
         this.cuentas = new HashSet<>();
         this.dni = (Cliente.DNI)dni;
+        NOMBRE_USUARIO = this.dni.toString();
     }
+    @SuppressWarnings("NonPublicExported")
     public Cliente.DNI getDni(){
         return dni;
     }
+    @SuppressWarnings("NonPublicExported")
     public static Cliente.DNI getDninstance(String dni) throws ExcepcionValidacionDNI{
         return new Cliente.DNI(dni);
     }

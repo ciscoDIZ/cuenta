@@ -5,7 +5,7 @@
  */
 package cuenta_bancaria.obj.model;
 
-import java.util.HashSet;
+
 import java.util.Objects;
 
 /**
