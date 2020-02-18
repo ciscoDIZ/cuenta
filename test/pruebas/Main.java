@@ -11,7 +11,7 @@ import cuenta_bancaria.exc.TitularDuplicado;
 import cuenta_bancaria.obj.model.Cliente;
 import cuenta_bancaria.obj.model.Sucursal;
 import cuenta_bancaria.obj.model.Cuenta;
-import cuenta_bancaria.obj.model.DNI;
+
 import cuenta_bancaria.obj.model.Usuario;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,7 +26,7 @@ public class Main {
 
     public static void main(String[] args) {
         
-        HashMap<DNI, Usuario> mapa = new HashMap<>();
+        /*HashMap<DNI, Usuario> mapa = new HashMap<>();
         try {
             DNI dni1 = new DNI("12345678Z");
             DNI dni2 = new DNI("78716585M");
@@ -76,6 +76,6 @@ public class Main {
         Random rnd = new Random();
         System.out.println(rnd.nextInt(9999-1000)+1000);
         System.out.println();
-        
+        */
     }
 }

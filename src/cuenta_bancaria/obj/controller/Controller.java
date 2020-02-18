@@ -8,7 +8,6 @@ package cuenta_bancaria.obj.controller;
 import cuenta_bancaria.exc.ExcepcionValidacionDNI;
 import cuenta_bancaria.obj.model.Cliente;
 import cuenta_bancaria.obj.model.Cuenta;
-import cuenta_bancaria.obj.model.DNI;
 import cuenta_bancaria.obj.model.Usuario;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -45,7 +44,7 @@ public class Controller {
     private String apellido1;
     private String apellido2;
     private int edad;
-    private DNI dni;
+    private Object dni;
     private Usuario.Sexo sexo;
 
     /**
@@ -162,7 +161,7 @@ public class Controller {
             while (m.find()) {
                 dniStr = m.group();
             }
-            this.dni = new DNI(dniStr);
+            this.dni = Cliente.getDninstance(dniStr);
 
             System.out.println("1)Mujer\n2)Hombre");
             int opt = sc.nextInt();
@@ -213,7 +212,7 @@ public class Controller {
             while (m.find()) {
                 dniStr = m.group();
             }
-            this.dni = new DNI(dniStr);
+            this.dni = Cliente.getDninstance(dniStr);
             retorno[4] = dni;
             System.out.println("1)Mujer\n2)Hombre");
             int opt = sc.nextInt();

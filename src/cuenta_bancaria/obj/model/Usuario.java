@@ -6,40 +6,39 @@
 package cuenta_bancaria.obj.model;
 
 import java.util.HashSet;
+import java.util.Objects;
 
 /**
  *
  * @author tote
  */
 public abstract class Usuario {
-    
-    public static enum Sexo{
+
+    public static enum Sexo {
         MUJER,
-        HOMBRE
+        HOMBRE;
     }
     protected String nombre;
     protected String apellido1;
     protected String apellido2;
     protected int edad;
-    
-    protected Sexo sexo;
-    
 
-    public Usuario(String nombre, String apellido1, String apellido2, int edad
-            , Sexo sexo) {
+    protected Sexo sexo;
+
+    public Usuario(String nombre, String apellido1, String apellido2, int edad,
+             Sexo sexo) {
         this.nombre = nombre;
         this.apellido1 = apellido1;
         this.apellido2 = apellido2;
         this.edad = edad;
-        
+
         this.sexo = sexo;
-        
-        
+
     }
-    public String getNombreCompleto(){
-        return getNombre()+" "+getApellido1()+" "+getApellido2();
+
+    public String getNombreCompleto() {
+        return getNombre() + " " + getApellido1() + " " + getApellido2();
     }
-    
 
     public String getNombre() {
         return nombre;
@@ -73,8 +72,6 @@ public abstract class Usuario {
         this.edad = edad;
     }
 
-   
-
     public Sexo getSexo() {
         return sexo;
     }
@@ -83,20 +80,24 @@ public abstract class Usuario {
         this.sexo = sexo;
     }
 
-    
-
-    
-
-    
-
-
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 97 * hash + Objects.hashCode(this.nombre);
+        hash = 97 * hash + Objects.hashCode(this.apellido1);
+        hash = 97 * hash + Objects.hashCode(this.apellido2);
+        hash = 97 * hash + this.edad;
+        hash = 97 * hash + Objects.hashCode(this.sexo);
+        return hash;
+    }
 
     @Override
     public boolean equals(Object obj) {
-        boolean retrno = false;
+        boolean retorno = false;
         if(obj instanceof Usuario){
-            retrno = this.hashCode() == ((Usuario)obj).hashCode();
+            retorno = ((Usuario)obj).hashCode() == this.hashCode();
         }
-        return retrno;
+        return true;
     }
+
 }

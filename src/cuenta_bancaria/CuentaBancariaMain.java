@@ -12,7 +12,6 @@ import cuenta_bancaria.obj.controller.Controller;
 import cuenta_bancaria.obj.model.Cliente;
 import cuenta_bancaria.obj.model.Sucursal;
 import cuenta_bancaria.obj.model.Cuenta;
-import cuenta_bancaria.obj.model.DNI;
 import cuenta_bancaria.obj.model.Usuario;
 import java.util.Calendar;
 import java.util.InputMismatchException;
@@ -50,7 +49,7 @@ public class CuentaBancariaMain {
         String mensajeBienvenida = null;
         String dniStr;
         String nCuentaStr;
-        DNI dni;
+        Object dni;
         String[] cccArray = new String[0];
         while (!salir) {
             try {
@@ -62,7 +61,7 @@ public class CuentaBancariaMain {
                         case 1:
                             Object[] datos = controller.menuIniTitular();
                             Usuario u = new Cliente((String) datos[0], (String) datos[1],
-                                    (String) datos[2], (int) datos[3], (DNI) datos[4],
+                                    (String) datos[2], (int) datos[3],  datos[4],
                                     (Usuario.Sexo) datos[5]);
                             Sucursal.darAltaCliente((Cliente)u);
                             break;
@@ -70,14 +69,14 @@ public class CuentaBancariaMain {
                             sc.nextLine();
                             System.out.println("introducir dni");
                             dniStr = sc.nextLine();
-                            dni = new DNI(dniStr);
+                            dni = Cliente.getDninstance(dniStr);
                             Sucursal.darAltaCuenta(dni);
                             break;
                         case 3:
                             sc.nextLine();
                             System.out.println("introducir dni");
                             dniStr = sc.nextLine();
-                            dni = new DNI(dniStr);
+                            dni = Cliente.getDninstance(dniStr);
                             System.out.println(Sucursal.consultCuenta(dni));
 
                             break;
@@ -97,7 +96,7 @@ public class CuentaBancariaMain {
                             nCuentaStr = sc.nextLine();
                             System.out.println("");
                             nCuenta = Integer.parseInt(nCuentaStr);
-                            cuenta = Sucursal.accederCuenta(new DNI(dniStr),
+                            cuenta = Sucursal.accederCuenta(Cliente.getDninstance(dniStr),
                                     Cuenta.getCCC(iban, entidad, oficina,dc, nCuenta));
                             if (cuenta.getEstado().equals(Cuenta.Estado.ACTIVA)) {
                                 System.out.println("1)desactivar cuenta\n2)salir");
@@ -145,7 +144,7 @@ public class CuentaBancariaMain {
                             nCuentaStr = sc.nextLine();
                             System.out.println("");
                             nCuenta = Integer.parseInt(nCuentaStr);
-                            cuenta = Sucursal.accederCuenta(new DNI(dniStr), Cuenta.getCCC(iban, entidad, oficina,dc, nCuenta));
+                            cuenta = Sucursal.accederCuenta(Cliente.getDninstance(dniStr), Cuenta.getCCC(iban, entidad, oficina,dc, nCuenta));
                             break;
                         case 6:
                             salir = true;
@@ -243,7 +242,7 @@ public class CuentaBancariaMain {
                                     sc.nextLine();
                                     System.out.println("introducir dni");
                                     dniStr = sc.nextLine();
-                                    DNI dniOrigen = new DNI(dniStr);
+                                    Object dniOrigen = Cliente.getDninstance(dniStr);
                                     System.out.println("introducir CCC destinatario");
                                     nCuentaStr = sc.nextLine();
                                     cccArray = nCuentaStr.split("-");
