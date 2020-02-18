@@ -10,9 +10,11 @@ package cuenta_bancaria.obj.model;
  * @author tote
  */
 public class Operador extends Usuario{
-
-    public Operador(String nombre, String apellido1, String apellido2, int edad, Sexo sexo) {
-        super(nombre, apellido1, apellido2, edad, sexo);
+    private final int ID;
+    
+    public Operador(String nombre, String apellido1, String apellido2, int edad, Sexo sexo,int pin, int ID) {
+        super(nombre, apellido1, apellido2, edad, sexo, pin);
+        this.ID = ID;
     }
     
 }

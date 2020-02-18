@@ -22,18 +22,16 @@ public abstract class Usuario {
     protected String apellido1;
     protected String apellido2;
     protected int edad;
-
     protected Sexo sexo;
-
+    protected int pin;
     public Usuario(String nombre, String apellido1, String apellido2, int edad,
-             Sexo sexo) {
+             Sexo sexo, int pin) {
         this.nombre = nombre;
         this.apellido1 = apellido1;
         this.apellido2 = apellido2;
         this.edad = edad;
-
         this.sexo = sexo;
-
+        this.pin = pin;
     }
 
     public String getNombreCompleto() {
