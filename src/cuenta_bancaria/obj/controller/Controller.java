@@ -176,7 +176,7 @@ public class Controller {
                 default:
                     throw new AssertionError();
             }
-            retorno.add(new Cliente(nombre, apellido1, apellido2, edad, dni, sexo));
+            retorno.add(new Cliente(nombre, apellido1, apellido2, edad, dni, sexo,0));
             System.out.println("¿Desea agregar otro titular?\nS/n");
             String respuesta = sc.nextLine();
             salir = !(respuesta.equals("s") || respuesta.equals(""));

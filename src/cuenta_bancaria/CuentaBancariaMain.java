@@ -62,8 +62,8 @@ public class CuentaBancariaMain {
                             Object[] datos = controller.menuIniTitular();
                             Usuario u = new Cliente((String) datos[0], (String) datos[1],
                                     (String) datos[2], (int) datos[3],  datos[4],
-                                    (Usuario.Sexo) datos[5]);
-                            Sucursal.darAltaCliente((Cliente)u);
+                                    (Usuario.Sexo) datos[5],0);
+                            Sucursal.darAltaUsuario((Cliente)u);
                             break;
                         case 2:
                             sc.nextLine();

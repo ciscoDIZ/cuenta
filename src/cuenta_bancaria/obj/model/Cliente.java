@@ -88,8 +88,8 @@ public class Cliente extends Usuario {
     private int codAcceso;
     private final String NOMBRE_USUARIO;
 
-    public Cliente(String nombre, String apellido1, String apellido2, int edad, Object dni, Sexo sexo) {
-        super(nombre, apellido1, apellido2, edad, sexo);
+    public Cliente(String nombre, String apellido1, String apellido2, int edad, Object dni, Sexo sexo, int pin) {
+        super(nombre, apellido1, apellido2, edad, sexo, pin);
         this.cuentas = new HashSet<>();
         this.dni = (Cliente.DNI)dni;
         NOMBRE_USUARIO = this.dni.toString();
@@ -114,6 +114,18 @@ public class Cliente extends Usuario {
         return cuentas;
     }
 
+    public int getCodAcceso() {
+        return codAcceso;
+    }
+
+    public void setCodAcceso(int codAcceso) {
+        this.codAcceso = codAcceso;
+    }
+
+    public String getNOMBRE_USUARIO() {
+        return NOMBRE_USUARIO;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 7;
@@ -129,7 +141,7 @@ public class Cliente extends Usuario {
         }
         return retrno;
     }
-
+    
     @Override
     public String toString() {
         String nCuentas = "";
