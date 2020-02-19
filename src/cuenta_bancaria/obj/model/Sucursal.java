@@ -57,24 +57,9 @@ public class Sucursal {
         return retorno;
     }
 
-    public static Cliente accederComoCliente(String nUsu, int pin) {
-        Cliente c = null;
-        for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : usuarios.entrySet()) {
-            if(entry.getKey() instanceof Cliente){
-                if(((Cliente)entry.getKey()).getNOMBRE_USUARIO().equals(nUsu)){  
-                    if(((Cliente)entry.getKey()).getCodAcceso() == pin){
-                        c = ((Cliente)entry.getKey());
-                    }
-                }
-            }
-        }
-        return c;
-    }
-
-    public static Operador accederComoOperador(){
-        Operador c = null;
-        return new Operador(null, null, null, 0, null,0,0);
-    }
+   public Usuario accederUsuario(){
+       return null;
+   }
     
     public static Cliente buscarCliente(Object dni) {
         Cliente u = null;
@@ -136,11 +121,11 @@ public class Sucursal {
         return c;
     }
 
-    private static Cuenta accederCuenta(Cuenta.CCC ccc) {
+    public static Cuenta accederCuenta(Object ccc) {
         Cuenta c = null;
         for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : usuarios.entrySet()) {
             for (Cuenta cuenta : entry.getValue()) {
-                if (cuenta.getCCC().equals(ccc)) {
+                if (cuenta.getCCC().equals((Cuenta.CCC)ccc)) {
                     c = cuenta;
                 }
             }

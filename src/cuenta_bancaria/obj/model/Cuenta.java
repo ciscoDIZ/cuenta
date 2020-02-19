@@ -29,7 +29,7 @@ public class Cuenta {
 
     private static class Movimiento {
 
-        protected enum Asunto {
+        private static enum Asunto {
             INGRESO,
             NOMINA,
             RETIRADA,
@@ -59,28 +59,7 @@ public class Cuenta {
             this.cuantia = cuantia;
             this.fecha = fecha;
         }
-        private static class Trasnferencia extends Movimiento{
-            CCC origen;
-            CCC destino;
 
-            public Trasnferencia(CCC origen, CCC destino) {
-                this.origen = origen;
-                this.destino = destino;
-            }
-
-            public Trasnferencia(CCC origen, CCC destino, Asunto asunto, String asuntoPers, double cuantia) {
-                super(asunto, asuntoPers, cuantia);
-                this.origen = origen;
-                this.destino = destino;
-            }
-
-            public Trasnferencia(CCC origen, CCC destino, Asunto asunto, String asuntoPers, double cuantia, Calendar fecha) {
-                super(asunto, asuntoPers, cuantia, fecha);
-                this.origen = origen;
-                this.destino = destino;
-            }
-            
-        }
         int getFechaKey() {
             int ret = fecha.get(Calendar.YEAR);
             if (fecha.get(Calendar.MONTH) > 9) {
@@ -123,6 +102,30 @@ public class Cuenta {
                     + "\n";
             return movimientosStr;
         }
+    }
+
+    private static class Trasnferencia extends Movimiento {
+
+        CCC origen;
+        CCC destino;
+
+        public Trasnferencia(CCC origen, CCC destino) {
+            this.origen = origen;
+            this.destino = destino;
+        }
+
+        public Trasnferencia(CCC origen, CCC destino, Movimiento.Asunto asunto, String asuntoPers, double cuantia) {
+            super(asunto, asuntoPers, cuantia);
+            this.origen = origen;
+            this.destino = destino;
+        }
+
+        public Trasnferencia(CCC origen, CCC destino, Movimiento.Asunto asunto, String asuntoPers, double cuantia, Calendar fecha) {
+            super(asunto, asuntoPers, cuantia, fecha);
+            this.origen = origen;
+            this.destino = destino;
+        }
+
     }
 
     static class CCC {
@@ -177,7 +180,6 @@ public class Cuenta {
 
         private boolean validarDC(int ENTIDAD, int OFICINA, byte DC, int CUENTA) {
             byte dc = genDC(ENTIDAD, OFICINA, CUENTA);
-
             return dc == DC;
         }
 
@@ -281,7 +283,7 @@ public class Cuenta {
     private static Movimiento.Asunto[] tipos;
     private static Estado[] estados = Estado.values();
     private Estado estado;
-
+    protected Usuario u;
     public Cuenta(Set<Cliente> titulares, double saldo) throws IllegalArgumentException {
         TITULARES = new HashSet<>(titulares);
         this.saldo = saldo;
@@ -330,7 +332,7 @@ public class Cuenta {
 
     @SuppressWarnings("NonPublicExported")
     public static Cuenta.CCC getCCC(String IBAN, int ENTIDAD, int OFICINA,
-             byte DC, int CUENTA) throws ExcepcionValidacionCCC {
+            byte DC, int CUENTA) throws ExcepcionValidacionCCC {
         return new CCC(IBAN, ENTIDAD, OFICINA, DC, CUENTA);
     }
 
@@ -401,9 +403,15 @@ public class Cuenta {
         return ret;
     }
 
+    private boolean transferirFondos(){
+        return false;
+    }
+    
     @SuppressWarnings("NonPublicExported")
-    public boolean setMovimiento(Movimiento.Asunto asunto, String asuntoPers, double cuantia,
-            Calendar fecha) throws IllegalArgumentException, NumberFormatException {
+    public boolean setMovimiento(Movimiento.Asunto asunto, String asuntoPers
+            , double cuantia, Object ccc) throws IllegalArgumentException
+            , NumberFormatException
+    {    
         boolean ret = false;
         if (estado.equals(Estado.INACTIVA) || estado.equals(Estado.BLOQUEADA)) {
             throw new IllegalArgumentException("Se debe inicializar la clase Cuenta");
@@ -411,11 +419,11 @@ public class Cuenta {
             switch (asunto) {
                 case INGRESO:
                 case NOMINA:
-                    ret = ingresar(cuantia, asuntoPers, asunto, fecha);
+                    ret = ingresar(cuantia, asuntoPers, asunto, Calendar.getInstance());
                     break;
                 case RETIRADA:
                 case PAGO:
-                    ret = retirar(cuantia, asuntoPers, asunto, fecha);
+                    ret = retirar(cuantia, asuntoPers, asunto, Calendar.getInstance());
                     break;
                 case TRANSFERENCIA:
                     
@@ -439,7 +447,7 @@ public class Cuenta {
         return ccc.getNumCuenta();
     }
 
-    public String mostrarDatos() {//necesario cambios
+    public String mostrarDatos() {
         String movimientosStr = mostrarMovimientos();
         String titulares = "";
         titulares = TITULARES.stream()

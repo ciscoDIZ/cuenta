@@ -9,12 +9,18 @@ package cuenta_bancaria.obj.model;
  *
  * @author tote
  */
-public class Operador extends Usuario{
+public class Operador extends Usuario<Integer>{
     private final int ID;
     
     public Operador(String nombre, String apellido1, String apellido2, int edad, Sexo sexo,int pin, int ID) {
         super(nombre, apellido1, apellido2, edad, sexo, pin);
         this.ID = ID;
+    }
+
+    @Override
+    public Cuenta accederCuenta(Integer numbreUsuario, int pin) {
+        
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

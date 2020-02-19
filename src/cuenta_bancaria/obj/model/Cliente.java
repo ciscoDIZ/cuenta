@@ -6,13 +6,16 @@
 package cuenta_bancaria.obj.model;
 
 import cuenta_bancaria.exc.ExcepcionValidacionDNI;
+import cuenta_bancaria.obj.model.Cliente.DNI;
 import java.util.HashSet;
 
 /**
  *
  * @author tote
  */
-public class Cliente extends Usuario {
+public class Cliente extends Usuario<DNI> {
+
+    
 
     static class DNI {
 
@@ -51,7 +54,7 @@ public class Cliente extends Usuario {
             }
 
         }
-
+ 
         private boolean validar(char letra, int num) {
             return LETRAS[num % LETRAS.length] == letra;
         }
@@ -93,6 +96,10 @@ public class Cliente extends Usuario {
         this.cuentas = new HashSet<>();
         this.dni = (Cliente.DNI)dni;
         NOMBRE_USUARIO = this.dni.toString();
+    }
+    @Override
+    public Cuenta accederCuenta(DNI numbreUsuario, int pin) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     @SuppressWarnings("NonPublicExported")
     public Cliente.DNI getDni(){

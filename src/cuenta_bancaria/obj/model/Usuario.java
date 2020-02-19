@@ -12,7 +12,7 @@ import java.util.Objects;
  *
  * @author tote
  */
-public abstract class Usuario {
+public abstract class Usuario<T> {
 
     public static enum Sexo {
         MUJER,
@@ -33,7 +33,13 @@ public abstract class Usuario {
         this.sexo = sexo;
         this.pin = pin;
     }
-
+    abstract public Cuenta accederCuenta(T numbreUsuario, int pin);
+    
+    public void cambiarPin(int nuevoPin){
+        //control excepciones
+        this.pin = nuevoPin;
+    }
+    
     public String getNombreCompleto() {
         return getNombre() + " " + getApellido1() + " " + getApellido2();
     }
@@ -77,7 +83,7 @@ public abstract class Usuario {
     public void setSexo(Sexo sexo) {
         this.sexo = sexo;
     }
-
+    
     @Override
     public int hashCode() {
         int hash = 5;
