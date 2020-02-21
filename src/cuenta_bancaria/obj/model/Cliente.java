@@ -86,7 +86,7 @@ public class Cliente extends Usuario<DNI> {
         }
 
     }
-    private HashSet<Cuenta> cuentas;
+    private HashSet<CuentaCliente> cuentas;
     private DNI dni;
     private int codAcceso;
     private final String NOMBRE_USUARIO;
@@ -98,7 +98,7 @@ public class Cliente extends Usuario<DNI> {
         NOMBRE_USUARIO = this.dni.toString();
     }
     @Override
-    public Cuenta accederCuenta(DNI numbreUsuario, int pin) {
+    public CuentaCliente accederCuenta(DNI numbreUsuario, int pin) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     @SuppressWarnings("NonPublicExported")
@@ -109,15 +109,15 @@ public class Cliente extends Usuario<DNI> {
     public static Cliente.DNI getDninstance(String dni) throws ExcepcionValidacionDNI{
         return new Cliente.DNI(dni);
     }
-    public boolean addCuenta(Cuenta c) {
+    public boolean addCuenta(CuentaCliente c) {
         return cuentas.add(c);
     }
 
-    public void setCuentas(HashSet<Cuenta> cuentas) {
+    public void setCuentas(HashSet<CuentaCliente> cuentas) {
         this.cuentas = cuentas;
     }
 
-    public HashSet<Cuenta> getCuentas() {
+    public HashSet<CuentaCliente> getCuentas() {
         return cuentas;
     }
 

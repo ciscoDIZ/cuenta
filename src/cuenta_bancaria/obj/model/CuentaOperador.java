@@ -9,13 +9,6 @@ package cuenta_bancaria.obj.model;
  *
  * @author tote
  */
-public abstract class Cuenta {
-    
-    protected Usuario u;
-    protected String contra;
-
-    public Cuenta(String contra) {
-        this.contra = contra;
-    }
+public class CuentaOperador{
     
 }

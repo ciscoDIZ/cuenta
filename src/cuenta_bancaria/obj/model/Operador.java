@@ -18,7 +18,7 @@ public class Operador extends Usuario<Integer>{
     }
 
     @Override
-    public Cuenta accederCuenta(Integer numbreUsuario, int pin) {
+    public CuentaCliente accederCuenta(Integer numbreUsuario, int pin) {
         
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

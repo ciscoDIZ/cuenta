@@ -33,7 +33,7 @@ public abstract class Usuario<T> {
         this.sexo = sexo;
         this.pin = pin;
     }
-    abstract public Cuenta accederCuenta(T numbreUsuario, int pin);
+    abstract public CuentaCliente accederCuenta(T numbreUsuario, int pin);
     
     public void cambiarPin(int nuevoPin){
         //control excepciones

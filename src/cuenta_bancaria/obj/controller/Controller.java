@@ -7,7 +7,7 @@ package cuenta_bancaria.obj.controller;
 
 import cuenta_bancaria.exc.ExcepcionValidacionDNI;
 import cuenta_bancaria.obj.model.Cliente;
-import cuenta_bancaria.obj.model.Cuenta;
+import cuenta_bancaria.obj.model.CuentaCliente;
 import cuenta_bancaria.obj.model.Usuario;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -22,11 +22,11 @@ public class Controller {
 
     /**
      * <h1>CLASE CONTROLLER</h1>
-     * Clase encargada de controlar todo lo que tenga que ver con el volcado de
-     * datos en terminal. Adicionalmente, en determinados casos, tambien crea
-     * instancias de la clase Cuenta. La forma de usarla es instanciandola en el
-     * metodo main de dicha clase y ejecutar cada método en en momento que se
-     * precise.
+ Clase encargada de controlar todo lo que tenga que ver con el volcado de
+ datos en terminal. Adicionalmente, en determinados casos, tambien crea
+ instancias de la clase CuentaCliente. La forma de usarla es instanciandola en el
+ metodo main de dicha clase y ejecutar cada método en en momento que se
+ precise.
      */
     private static final Pattern IBAN_PATRON = Pattern.compile("(ES[0-9]{2})");
     private static final Pattern ENTOF_PATRON = Pattern.compile("[0-9]{4}");
@@ -136,7 +136,7 @@ public class Controller {
         return retorno;
     }
 
-    public HashSet<Usuario> menuIniTitulares(Cuenta c) throws AssertionError,
+    public HashSet<Usuario> menuIniTitulares(CuentaCliente c) throws AssertionError,
             ExcepcionValidacionDNI {
         Pattern p = Pattern.compile("([X|Z]?[0-9]{8}[A-Z])"
                 + "|([X|Z]?[0-9]{8} [A-Z])"
