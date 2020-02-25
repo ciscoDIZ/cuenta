@@ -117,12 +117,13 @@ public class Sucursal {
         return retorno;
     }
 
-    public static CuentaCliente accederCuenta(Object dni, Object ccc) {
+    public static CuentaCliente accederCuenta(Object usuario, Object ccc) {
         CuentaCliente c = null;
         for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : usuarios.entrySet()) {
             for (Cuenta cuenta : entry.getValue()) {
                 if (entry.getKey() instanceof Cliente && cuenta instanceof CuentaCliente) {
-                    if (((Cliente) entry.getKey()).getDni().equals(dni) && ((CuentaCliente) cuenta).getCCC()
+                    if (((Cliente) entry.getKey()).getDni().equals(usuario) 
+                            && ((CuentaCliente) cuenta).getCCC()
                             .equals(((CuentaCliente.CCC) ccc))) {
                         c = ((CuentaCliente) cuenta);
                     }

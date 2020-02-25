@@ -25,11 +25,11 @@ import java.util.regex.Pattern;
  * @version 1.0
  * @author Francisco A Domínguez Iceta
  */
-public class CuentaCliente extends Cuenta {
+public class CuentaCliente extends Cuenta<Cliente> {
 
     private static class Movimiento {
 
-        private static enum Asunto {
+        protected static enum Asunto {
             INGRESO,
             NOMINA,
             RETIRADA,
@@ -51,6 +51,7 @@ public class CuentaCliente extends Cuenta {
             this.asuntoPers = asuntoPers;
             this.cuantia = cuantia;
             fecha = Calendar.getInstance();
+           
         }
 
         Movimiento(Asunto asunto, String asuntoPers, double cuantia, Calendar fecha) {
@@ -126,6 +127,12 @@ public class CuentaCliente extends Cuenta {
             this.destino = destino;
         }
 
+        @Override
+        public String toString() {
+            return super.toString(); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        
     }
 
     static class CCC {
@@ -295,6 +302,7 @@ public class CuentaCliente extends Cuenta {
         tipos = Movimiento.Asunto.values();
         estados = Estado.values();
         estado = estados[1];
+        
     }
 
     public CuentaCliente(Set<Cliente> titulares, String contra) {
@@ -327,7 +335,7 @@ public class CuentaCliente extends Cuenta {
         tipos = Movimiento.Asunto.values();
         estado = estados[0];
     }
-
+    
     public void vincularCuenta() {
         TITULARES.forEach((titular) -> {
             titular.addCuenta(this);

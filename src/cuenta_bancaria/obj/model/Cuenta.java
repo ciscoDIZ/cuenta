@@ -9,12 +9,31 @@ package cuenta_bancaria.obj.model;
  *
  * @author tote
  */
-public abstract class Cuenta {
+public abstract class Cuenta<T> {
     
-    protected Usuario u;
+    protected T user;
     protected String contra;
 
     public Cuenta(String contra) {
+        this.contra = contra;
+    }
+
+    
+    
+    
+    public T getU() {
+        return user;
+    }
+
+    public void setU(T u) {
+        this.user = u;
+    }
+
+    public String getContra() {
+        return contra;
+    }
+
+    public void setContra(String contra) {
         this.contra = contra;
     }
     

@@ -11,7 +11,7 @@ package cuenta_bancaria.obj.model;
  */
 public class Operador extends Usuario<Integer>{
     private final int ID;
-    
+    private CuentaOperador c;
     public Operador(String nombre, String apellido1, String apellido2, int edad, Sexo sexo,int pin, int ID) {
         super(nombre, apellido1, apellido2, edad, sexo, pin);
         this.ID = ID;
