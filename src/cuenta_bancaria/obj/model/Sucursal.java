@@ -23,7 +23,9 @@ public class Sucursal {
         OPERADOR,
         CLIENTE
     }
-    private static HashMap<Usuario, ArrayList<Cuenta>> usuarios = new HashMap<>();
+    private static HashMap<Usuario, ArrayList<CuentaBancaria>> usuarios = new HashMap<>();
+   
+    
 
     private static final UsuarioTipo[] TIPOS = UsuarioTipo.values();
     private UsuarioTipo tipo;
@@ -49,7 +51,7 @@ public class Sucursal {
                 });
             }
         }
-        CuentaCliente c = new CuentaCliente(titulares,"1234");
+        CuentaBancaria c = new CuentaBancaria(titulares, "1234");
         c.vincularCuenta();
         for (Object dni1 : dni) {
             usuarios.get(buscarCliente((Cliente.DNI) dni1)).add(c);
@@ -75,38 +77,26 @@ public class Sucursal {
 
     public static String consultCuenta(String nCuenta) {
         String retorno = "";
-        for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : usuarios.entrySet()) {
-            if (entry.getKey() instanceof Cliente) {
-                List<Cuenta> list = entry.getValue();
-                ArrayList<CuentaCliente> al = new ArrayList<>();
-                entry.getValue().stream()
-                        .filter((cuenta) -> (cuenta instanceof CuentaCliente))
-                        .forEach((cuenta) -> {
-                            al.add((CuentaCliente) cuenta);
-                        });
-                retorno = al.stream()
-                        .filter((c) -> c.getNumCuenta().equals(nCuenta))
-                        .findFirst()
-                        .get().mostrarDatos();
-            }
+        for (Map.Entry<Usuario, ArrayList<CuentaBancaria>> entry : usuarios.entrySet()) {
+            retorno = entry.getValue().stream()
+                    .filter((c) -> c.getNumCuenta().equals(nCuenta))
+                    .findFirst()
+                    .get().mostrarDatos();
         }
         return retorno;
     }
 
+    /*public static CuentaBancaria accederCuentaCliente(Object dni, int pin){
+        
+    }*/
     public static String consultCuenta(Object dni) {
         String retorno = "";
-        Cliente cliente = null;
-        for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : usuarios.entrySet()) {
+        
+        for (Map.Entry<Usuario, ArrayList<CuentaBancaria>> entry : usuarios.entrySet()) {
             if (entry.getKey() instanceof Cliente) {
                 if (((Cliente) entry.getKey()).getDni().equals(dni)) {
                     retorno = entry.getKey().getNombreCompleto() + "\n";
-                    ArrayList<CuentaCliente> al = new ArrayList<>();
-                    for (Cuenta cuenta : entry.getValue()) {
-                        if (cuenta instanceof CuentaCliente) {
-                            al.add((CuentaCliente) cuenta);
-                        }
-                    }
-                    retorno = al.stream()
+                    retorno = entry.getValue().stream()
                             .map((cuenta) -> cuenta
                             .getNumCuenta() + "\n")
                             .reduce(retorno, String::concat);
@@ -117,30 +107,29 @@ public class Sucursal {
         return retorno;
     }
 
-    public static CuentaCliente accederCuenta(Object usuario, Object ccc) {
-        CuentaCliente c = null;
-        for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : usuarios.entrySet()) {
-            for (Cuenta cuenta : entry.getValue()) {
-                if (entry.getKey() instanceof Cliente && cuenta instanceof CuentaCliente) {
-                    if (((Cliente) entry.getKey()).getDni().equals(usuario) 
-                            && ((CuentaCliente) cuenta).getCCC()
-                            .equals(((CuentaCliente.CCC) ccc))) {
-                        c = ((CuentaCliente) cuenta);
-                    }
-                }
+    public static CuentaBancaria accederCuenta(Object usuario, Object ccc) {
+        CuentaBancaria c = null;
+        for (Map.Entry<Usuario, ArrayList<CuentaBancaria>> entry : usuarios.entrySet()) {
+            for (CuentaBancaria cuenta : entry.getValue()) {
 
+                if (((Cliente) entry.getKey()).getDni().equals(usuario)
+                        && ((CuentaBancaria) cuenta).getCCC()
+                                .equals(((CuentaBancaria.CCC) ccc))) {
+                    c = ((CuentaBancaria) cuenta);
+                }
             }
+
         }
         return c;
     }
 
-    public static CuentaCliente accederCuenta(Object ccc) {
-        CuentaCliente c = null;
-        for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : usuarios.entrySet()) {
-            for (Cuenta cuenta : entry.getValue()) {
-                if (cuenta instanceof CuentaCliente) {
-                    if (((CuentaCliente)cuenta).getCCC().equals((CuentaCliente.CCC) ccc)) {
-                        c = (CuentaCliente)cuenta;
+    public static CuentaBancaria accederCuenta(Object ccc) {
+        CuentaBancaria c = null;
+        for (Map.Entry<Usuario, ArrayList<CuentaBancaria>> entry : usuarios.entrySet()) {
+            for (CuentaBancaria cuenta : entry.getValue()) {
+                if (cuenta instanceof CuentaBancaria) {
+                    if (((CuentaBancaria) cuenta).getCCC().equals((CuentaBancaria.CCC) ccc)) {
+                        c = (CuentaBancaria) cuenta;
                     }
                 }
             }
@@ -149,24 +138,24 @@ public class Sucursal {
 
     }
 
-    public static CuentaCliente cambiarTitularCuenta(Object antiguo, Object nuevo, Object ccc) {
+    public static CuentaBancaria cambiarTitularCuenta(Object antiguo, Object nuevo, Object ccc) {
         //TODO
-        CuentaCliente c = accederCuenta(antiguo, ccc);
+        CuentaBancaria c = accederCuenta(antiguo, ccc);
         return c;
     }
 
-    public static CuentaCliente cambiarCodigoCuenta(Object ccc) {
-        CuentaCliente c = null;
+    public static CuentaBancaria cambiarCodigoCuenta(Object ccc) {
+        CuentaBancaria c = null;
         //TODO
         return c;
     }
 
-    public static boolean transfererirFondos(Cliente.DNI titOrigen, CuentaCliente.CCC origen, Object destino, double cuantia) {
+    public static boolean transfererirFondos(Cliente.DNI titOrigen, CuentaBancaria.CCC origen, Object destino, double cuantia) {
         boolean retorno = false;
-        CuentaCliente cOrigen = accederCuenta(titOrigen, ((CuentaCliente.CCC) origen));
-        CuentaCliente cDestino = accederCuenta((CuentaCliente.CCC) destino);
-        cOrigen.setMovimiento(CuentaCliente.getAsunto(2), "transferencia", cuantia, null);
-        cDestino.setMovimiento(CuentaCliente.getAsunto(0), "transferencia", cuantia, null);
+        CuentaBancaria cOrigen = accederCuenta(titOrigen, ((CuentaBancaria.CCC) origen));
+        CuentaBancaria cDestino = accederCuenta((CuentaBancaria.CCC) destino);
+        cOrigen.setMovimiento(CuentaBancaria.getAsunto(2), "transferencia", cuantia, null);
+        cDestino.setMovimiento(CuentaBancaria.getAsunto(0), "transferencia", cuantia, null);
         return retorno;
     }
 
@@ -174,11 +163,11 @@ public class Sucursal {
         return true;
     }
 
-    public static HashMap<Usuario, ArrayList<Cuenta>> getClientes() {
+    public static HashMap<Usuario, ArrayList<CuentaBancaria>> getClientes() {
         return usuarios;
     }
 
-    public static void setClientes(HashMap<Usuario, ArrayList<Cuenta>> clientes) {
+    public static void setClientes(HashMap<Usuario, ArrayList<CuentaBancaria>> clientes) {
         Sucursal.usuarios = clientes;
     }
 

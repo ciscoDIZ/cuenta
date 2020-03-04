@@ -23,22 +23,21 @@ public abstract class Usuario<T> {
     protected String apellido2;
     protected int edad;
     protected Sexo sexo;
-    protected int pin;
+    protected String nombreUsuario;
+    protected String contra;
+    
+    
     public Usuario(String nombre, String apellido1, String apellido2, int edad,
-             Sexo sexo, int pin) {
+             Sexo sexo, String nombreUsuario, String contra) {
         this.nombre = nombre;
         this.apellido1 = apellido1;
         this.apellido2 = apellido2;
         this.edad = edad;
         this.sexo = sexo;
-        this.pin = pin;
+        this.nombreUsuario = nombreUsuario;
+        this.contra = contra;
     }
-    abstract public CuentaCliente accederCuenta(T numbreUsuario, int pin);
-    
-    public void cambiarPin(int nuevoPin){
-        //control excepciones
-        this.pin = nuevoPin;
-    }
+    public abstract T accedercuenta(String n, String c);
     
     public String getNombreCompleto() {
         return getNombre() + " " + getApellido1() + " " + getApellido2();

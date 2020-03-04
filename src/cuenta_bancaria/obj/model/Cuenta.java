@@ -9,32 +9,52 @@ package cuenta_bancaria.obj.model;
  *
  * @author tote
  */
-public abstract class Cuenta<T> {
+public abstract class Cuenta {
+    private static class Login{
+        String nombre;
+        String contra;
+        static Login l;
+        private Login(String n, String c){
+            nombre = n;
+            contra = c;
+        }
+        static Login login(String nombre, String contra){
+            if(l == null){
+                l = new Login(nombre, contra); 
+            }
+            return l;
+        }
+        static Login logout(){
+            if (l != null){
+                l = null;
+            }
+            return l;
+        }
+    }
     
-    protected T user;
-    protected String contra;
+    protected Usuario user;
+    protected Login login;
 
-    public Cuenta(String contra) {
-        this.contra = contra;
+    public Cuenta(Usuario user) {
+        this.user = user;
     }
 
-    
-    
-    
-    public T getU() {
+    /**
+     *
+     * @return
+     */
+    public Usuario getU() {
         return user;
     }
 
-    public void setU(T u) {
+    public void setU(Usuario u) {
         this.user = u;
     }
 
-    public String getContra() {
-        return contra;
+    public void login(String nombre, String contra){
+        login = Login.login(nombre, contra);
     }
-
-    public void setContra(String contra) {
-        this.contra = contra;
+    public void logout(){
+        login = Login.logout();
     }
-    
 }

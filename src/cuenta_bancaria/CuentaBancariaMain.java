@@ -11,7 +11,7 @@ import cuenta_bancaria.exc.TitularDuplicado;
 import cuenta_bancaria.obj.controller.Controller;
 import cuenta_bancaria.obj.model.Cliente;
 import cuenta_bancaria.obj.model.Sucursal;
-import cuenta_bancaria.obj.model.CuentaCliente;
+import cuenta_bancaria.obj.model.CuentaBancaria;
 import cuenta_bancaria.obj.model.Usuario;
 import java.util.Calendar;
 import java.util.InputMismatchException;
@@ -34,9 +34,9 @@ public class CuentaBancariaMain {
      */
     @SuppressWarnings({"null", "UnusedAssignment"})
     public static void main(String[] args) {
-        Controller controller = new Controller();
+        /*Controller controller = new Controller();
         Scanner sc = new Scanner(System.in);
-        CuentaCliente cuenta = null;
+        CuentaBancaria cuenta = null;
         String iban;
         int entidad;
         int oficina;
@@ -62,7 +62,7 @@ public class CuentaBancariaMain {
                             Object[] datos = controller.menuIniTitular();
                             Usuario u = new Cliente((String) datos[0], (String) datos[1],
                                     (String) datos[2], (int) datos[3],  datos[4],
-                                    (Usuario.Sexo) datos[5],0);
+                                    (Usuario.Sexo) datos[5],0,"");
                             Sucursal.darAltaUsuario((Cliente)u);
                             break;
                         case 2:
@@ -97,13 +97,13 @@ public class CuentaBancariaMain {
                             System.out.println("");
                             nCuenta = Integer.parseInt(nCuentaStr);
                             cuenta = Sucursal.accederCuenta(Cliente.getDninstance(dniStr),
-                                    CuentaCliente.getCCC(iban, entidad, oficina,dc, nCuenta));
-                            if (cuenta.getEstado().equals(CuentaCliente.Estado.ACTIVA)) {
+                                    CuentaBancaria.getCCC(iban, entidad, oficina,dc, nCuenta));
+                            if (cuenta.getEstado().equals(CuentaBancaria.Estado.ACTIVA)) {
                                 System.out.println("1)desactivar cuenta\n2)salir");
                                 opt = sc.nextInt();
                                 switch (opt) {
                                     case 1:
-                                        cuenta.setEstado(CuentaCliente.Estado.INACTIVA);
+                                        cuenta.setEstado(CuentaBancaria.Estado.INACTIVA);
                                         break;
                                     case 2:
                                         cuenta = null;
@@ -111,15 +111,15 @@ public class CuentaBancariaMain {
                                     default:
                                         throw new AssertionError();
                                 }
-                            } else if (cuenta.getEstado().equals(CuentaCliente.Estado.INACTIVA)) {
+                            } else if (cuenta.getEstado().equals(CuentaBancaria.Estado.INACTIVA)) {
                                 System.out.println("1)activar cuenta\n2)bloquear cuenta\n3)salir");
                                 opt = sc.nextInt();
                                 switch (opt) {
                                     case 1:
-                                        cuenta.setEstado(CuentaCliente.Estado.ACTIVA);
+                                        cuenta.setEstado(CuentaBancaria.Estado.ACTIVA);
                                         break;
                                     case 2:
-                                        cuenta.setEstado(CuentaCliente.Estado.BLOQUEADA);
+                                        cuenta.setEstado(CuentaBancaria.Estado.BLOQUEADA);
                                         break;
                                     case 3:
 
@@ -144,7 +144,7 @@ public class CuentaBancariaMain {
                             nCuentaStr = sc.nextLine();
                             System.out.println("");
                             nCuenta = Integer.parseInt(nCuentaStr);
-                            cuenta = Sucursal.accederCuenta(Cliente.getDninstance(dniStr), CuentaCliente.getCCC(iban, entidad, oficina,dc, nCuenta));
+                            cuenta = Sucursal.accederCuenta(Cliente.getDninstance(dniStr), CuentaBancaria.getCCC(iban, entidad, oficina,dc, nCuenta));
                             break;
                         case 6:
                             salir = true;
@@ -198,7 +198,7 @@ public class CuentaBancariaMain {
                                         case 1:
                                             System.out.println("introducir cuantia");
                                             double cuantia = sc.nextDouble();
-                                            cuenta.setMovimiento(CuentaCliente.getAsunto(opt), null, cuantia, fecha);
+                                            cuenta.setMovimiento(CuentaBancaria.getAsunto(opt), null, cuantia, fecha);
                                             break;
                                         default:
                                             throw new AssertionError();
@@ -232,7 +232,7 @@ public class CuentaBancariaMain {
                                         case 3:
                                             System.out.println("introducir cuantia");
                                             double cuantia = sc.nextDouble();
-                                            cuenta.setMovimiento(CuentaCliente.getAsunto(opt), null, cuantia, fecha);
+                                            cuenta.setMovimiento(CuentaBancaria.getAsunto(opt), null, cuantia, fecha);
                                             break;
                                         default:
                                             throw new AssertionError();
@@ -247,7 +247,7 @@ public class CuentaBancariaMain {
                                     System.out.println("introducir CCC destinatario");
                                     nCuentaStr = sc.nextLine();
                                     cccArray = nCuentaStr.split("-");
-                                    Object ccc = CuentaCliente.getCCC(cccArray[0],
+                                    Object ccc = CuentaBancaria.getCCC(cccArray[0],
                                             Integer.parseInt(cccArray[1]),
                                             Integer.parseInt(cccArray[2]),
                                             Byte.parseByte(cccArray[3]),
@@ -275,7 +275,7 @@ public class CuentaBancariaMain {
                                         case 1:
                                         case 2:
                                         case 3:
-                                            System.out.println(cuenta.movimientosPorAsunto(CuentaCliente.getAsunto(movimiento)));
+                                            System.out.println(cuenta.movimientosPorAsunto(CuentaBancaria.getAsunto(movimiento)));
                                             break;
                                         default:
                                             throw new AssertionError();
@@ -304,8 +304,9 @@ public class CuentaBancariaMain {
                             switch (opt) {
                                 case 1:
                                     try {
-                                        cuenta = new CuentaCliente((Set) controller.menuIniTitulares(cuenta), cuenta);
+                                        cuenta = new CuentaBancaria((Set) controller.menuIniTitulares(cuenta), cuenta);
                                     } catch (ExcepcionValidacionDNI | AssertionError e) {
+                                        System.out.println(e);
                                     }
 
                                     break;
@@ -317,7 +318,7 @@ public class CuentaBancariaMain {
                                     oficina = (Integer) data[3];
                                     dc = (Byte)data[4];
                                     nCuenta = (Integer) data[5];
-                                    cuenta = new CuentaCliente(iban, entidad, oficina
+                                    cuenta = new CuentaBancaria(iban, entidad, oficina
                                             , dc, nCuenta, cuenta);
                                     cuenta.vincularCuenta();
 
@@ -335,7 +336,7 @@ public class CuentaBancariaMain {
                             System.out.print(":");
                             opt = sc.nextInt();
                             if (cod == opt) {
-                                cuenta.setEstado(CuentaCliente.Estado.ACTIVA);
+                                cuenta.setEstado(CuentaBancaria.Estado.ACTIVA);
                                 System.out.println("Cuenta activa");
                             }
                         default:
@@ -367,7 +368,7 @@ public class CuentaBancariaMain {
                 }
 
             }
-        }
+        }*/
     }
 
 }

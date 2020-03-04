@@ -13,7 +13,7 @@ import java.util.HashSet;
  *
  * @author tote
  */
-public class Cliente extends Usuario<DNI> {
+public class Cliente extends Usuario<CuentaCliente> {
 
     
 
@@ -86,21 +86,17 @@ public class Cliente extends Usuario<DNI> {
         }
 
     }
-    private HashSet<CuentaCliente> cuentas;
+    private HashSet<CuentaBancaria> cuentas;
     private DNI dni;
     private int codAcceso;
-    private final String NOMBRE_USUARIO;
-
-    public Cliente(String nombre, String apellido1, String apellido2, int edad, Object dni, Sexo sexo, int pin) {
-        super(nombre, apellido1, apellido2, edad, sexo, pin);
+    private CuentaCliente cl;
+    public Cliente(String nombre, String apellido1, String apellido2, int edad, Object dni, Sexo sexo, int pin, String contra) {
+        super(nombre, apellido1, apellido2, edad, sexo,dni.toString(),contra );
         this.cuentas = new HashSet<>();
         this.dni = (Cliente.DNI)dni;
-        NOMBRE_USUARIO = this.dni.toString();
+        cl = new CuentaCliente(this);
     }
-    @Override
-    public CuentaCliente accederCuenta(DNI numbreUsuario, int pin) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    
     @SuppressWarnings("NonPublicExported")
     public Cliente.DNI getDni(){
         return dni;
@@ -109,15 +105,21 @@ public class Cliente extends Usuario<DNI> {
     public static Cliente.DNI getDninstance(String dni) throws ExcepcionValidacionDNI{
         return new Cliente.DNI(dni);
     }
-    public boolean addCuenta(CuentaCliente c) {
+
+    @Override
+    public CuentaCliente accedercuenta(String n, String c) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public boolean addCuenta(CuentaBancaria c) {
         return cuentas.add(c);
     }
 
-    public void setCuentas(HashSet<CuentaCliente> cuentas) {
+    public void setCuentas(HashSet<CuentaBancaria> cuentas) {
         this.cuentas = cuentas;
     }
 
-    public HashSet<CuentaCliente> getCuentas() {
+    public HashSet<CuentaBancaria> getCuentas() {
         return cuentas;
     }
 
@@ -127,10 +129,6 @@ public class Cliente extends Usuario<DNI> {
 
     public void setCodAcceso(int codAcceso) {
         this.codAcceso = codAcceso;
-    }
-
-    public String getNOMBRE_USUARIO() {
-        return NOMBRE_USUARIO;
     }
     
     @Override

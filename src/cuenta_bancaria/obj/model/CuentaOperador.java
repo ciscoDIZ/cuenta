@@ -9,12 +9,10 @@ package cuenta_bancaria.obj.model;
  *
  * @author tote
  */
-public class CuentaOperador extends Cuenta<Operador>{
+public class CuentaOperador extends Cuenta{
 
-    public CuentaOperador(String contra) {
-        super(contra);
+    public CuentaOperador(Operador op) {
+        super(op);
     }
-    
-    
     
 }
