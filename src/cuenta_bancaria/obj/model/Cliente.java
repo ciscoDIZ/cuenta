@@ -13,7 +13,7 @@ import java.util.HashSet;
  *
  * @author tote
  */
-public class Cliente extends Usuario<CuentaCliente> {
+public class Cliente extends Usuario<CuentaOnlineCliente> {
 
     
 
@@ -89,12 +89,13 @@ public class Cliente extends Usuario<CuentaCliente> {
     private HashSet<CuentaBancaria> cuentas;
     private DNI dni;
     private int codAcceso;
-    private CuentaCliente cl;
-    public Cliente(String nombre, String apellido1, String apellido2, int edad, Object dni, Sexo sexo, int pin, String contra) {
-        super(nombre, apellido1, apellido2, edad, sexo,dni.toString(),contra );
+    private CuentaOnlineCliente coc;
+    public Cliente(String nombre, String apellido1, String apellido2
+            , int edad, Object dni, Sexo sexo) {
+        super(nombre, apellido1, apellido2, edad, sexo);
         this.cuentas = new HashSet<>();
         this.dni = (Cliente.DNI)dni;
-        cl = new CuentaCliente(this);
+        coc = new CuentaOnlineCliente(this);
     }
     
     @SuppressWarnings("NonPublicExported")
@@ -107,8 +108,13 @@ public class Cliente extends Usuario<CuentaCliente> {
     }
 
     @Override
-    public CuentaCliente accedercuenta(String n, String c) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void salirCuenta() {
+        coc.logout();
+    }
+
+    @Override
+    public void accedercuenta(String nombre, String contra) {
+        coc.login(nombre, contra);
     }
     
     public boolean addCuenta(CuentaBancaria c) {
@@ -129,6 +135,10 @@ public class Cliente extends Usuario<CuentaCliente> {
 
     public void setCodAcceso(int codAcceso) {
         this.codAcceso = codAcceso;
+    }
+
+    public CuentaOnlineCliente getCl() {
+        return coc;
     }
     
     @Override

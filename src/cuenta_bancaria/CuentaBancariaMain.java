@@ -34,7 +34,7 @@ public class CuentaBancariaMain {
      */
     @SuppressWarnings({"null", "UnusedAssignment"})
     public static void main(String[] args) {
-        /*Controller controller = new Controller();
+        Controller controller = new Controller();
         Scanner sc = new Scanner(System.in);
         CuentaBancaria cuenta = null;
         String iban;
@@ -62,7 +62,7 @@ public class CuentaBancariaMain {
                             Object[] datos = controller.menuIniTitular();
                             Usuario u = new Cliente((String) datos[0], (String) datos[1],
                                     (String) datos[2], (int) datos[3],  datos[4],
-                                    (Usuario.Sexo) datos[5],0,"");
+                                    (Usuario.Sexo) datos[5]);
                             Sucursal.darAltaUsuario((Cliente)u);
                             break;
                         case 2:
@@ -349,9 +349,15 @@ public class CuentaBancariaMain {
 
                 }
 
-            } catch (AssertionError | ExcepcionValidacionDNI
-                    | IllegalArgumentException | InputMismatchException 
-                    | TitularDuplicado | ExcepcionValidacionCCC e) {
+            } catch (
+                    AssertionError 
+                    | ExcepcionValidacionDNI 
+                    | IllegalArgumentException 
+                    | InputMismatchException 
+                    | TitularDuplicado 
+                    | ExcepcionValidacionCCC 
+                    | ArrayIndexOutOfBoundsException e
+                    ) {
                 if (e instanceof AssertionError) {
                     System.out.println("opcion incorrecta");
                 } else if (e instanceof ExcepcionValidacionDNI) {
@@ -368,7 +374,7 @@ public class CuentaBancariaMain {
                 }
 
             }
-        }*/
+        }
     }
 
 }

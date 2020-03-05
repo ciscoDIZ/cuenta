@@ -24,8 +24,6 @@ public class Sucursal {
         CLIENTE
     }
     private static HashMap<Usuario, ArrayList<CuentaBancaria>> usuarios = new HashMap<>();
-   
-    
 
     private static final UsuarioTipo[] TIPOS = UsuarioTipo.values();
     private UsuarioTipo tipo;
@@ -34,6 +32,7 @@ public class Sucursal {
         boolean retorno = false;
         if (!usuarios.containsKey(c)) {
             usuarios.put(c, new ArrayList<>());
+
             retorno = true;
         } else {
             throw new TitularDuplicado("titular duplicado");
@@ -51,6 +50,7 @@ public class Sucursal {
                 });
             }
         }
+
         CuentaBancaria c = new CuentaBancaria(titulares, "1234");
         c.vincularCuenta();
         for (Object dni1 : dni) {
@@ -91,7 +91,7 @@ public class Sucursal {
     }*/
     public static String consultCuenta(Object dni) {
         String retorno = "";
-        
+
         for (Map.Entry<Usuario, ArrayList<CuentaBancaria>> entry : usuarios.entrySet()) {
             if (entry.getKey() instanceof Cliente) {
                 if (((Cliente) entry.getKey()).getDni().equals(dni)) {
@@ -136,6 +136,23 @@ public class Sucursal {
         }
         return c;
 
+    }
+
+    public static CuentaOnline accederCuentaOnline(String nombre, String contra) {
+
+        CuentaOnline co = null;
+        for (Usuario usuario : usuarios.keySet()) {
+            if (usuario instanceof Cliente
+                    && ((Cliente) usuario).getNombreUsuario().equals(nombre)) {
+                co = ((Cliente) usuario).getCl();
+
+            }
+
+        }
+        if (co != null) {
+            co.login(nombre, contra);
+        }
+        return co;
     }
 
     public static CuentaBancaria cambiarTitularCuenta(Object antiguo, Object nuevo, Object ccc) {

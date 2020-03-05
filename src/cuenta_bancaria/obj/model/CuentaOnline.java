@@ -9,7 +9,7 @@ package cuenta_bancaria.obj.model;
  *
  * @author tote
  */
-public abstract class Cuenta {
+public abstract class CuentaOnline<T,V> {
     private static class Login{
         String nombre;
         String contra;
@@ -31,30 +31,35 @@ public abstract class Cuenta {
             return l;
         }
     }
-    
-    protected Usuario user;
-    protected Login login;
-
-    public Cuenta(Usuario user) {
-        this.user = user;
+    protected static enum Estado{
+        ACTIVA,
+        INACTIVA
     }
-
+    protected T user;
+    protected V account;
+    protected Login login;
+    protected Estado estado;
+    
+    public CuentaOnline(T user) {
+        this.user = user;
+        login = null;
+        estado = Estado.INACTIVA;
+    }
+    
+    public abstract void activarCuentaOnline(String nombre, String contra);
+    
     /**
      *
      * @return
      */
-    public Usuario getU() {
+    public T getUser() {
         return user;
     }
 
-    public void setU(Usuario u) {
+    public void setU(T u) {
         this.user = u;
     }
 
-    public void login(String nombre, String contra){
-        login = Login.login(nombre, contra);
-    }
-    public void logout(){
-        login = Login.logout();
-    }
+    public abstract void login(String nombre, String contra);
+    public abstract void logout();
 }

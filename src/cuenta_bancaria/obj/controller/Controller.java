@@ -56,8 +56,9 @@ public class Controller {
         entidad = 0;
         oficina = 0;
         cuenta = 0l;
+        System.out.println("");
     }
-
+    
     /**
      * Método encargado e la inicializacion de la cuenenta y por motivos de
      * seguridad para evitar posibles cambios en el número de cuenta, la clase
@@ -70,7 +71,7 @@ public class Controller {
      * @throws IllegalArgumentException en caso de introducir un campo
      * incorrecto
      */
-    /*public Object[] menuIniCuenta() throws IllegalArgumentException {
+   public Object[] menuIniCuenta() throws IllegalArgumentException {
         Object[] retorno = new Object[5];
         HashSet<Usuario> titulares = new HashSet<>();
         retorno[0] = titulares;
@@ -176,7 +177,7 @@ public class Controller {
                 default:
                     throw new AssertionError();
             }
-            retorno.add(new Cliente(nombre, apellido1, apellido2, edad, dni, sexo,0,""));
+            retorno.add(new Cliente(nombre, apellido1, apellido2, edad, dni, sexo));
             System.out.println("¿Desea agregar otro titular?\nS/n");
             String respuesta = sc.nextLine();
             salir = !(respuesta.equals("s") || respuesta.equals(""));
@@ -230,6 +231,6 @@ public class Controller {
             retorno[5] = sexo;
         
         return retorno;
-    }*/
+    }
 
 }

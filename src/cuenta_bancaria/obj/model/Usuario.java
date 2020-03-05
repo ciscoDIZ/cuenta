@@ -28,17 +28,16 @@ public abstract class Usuario<T> {
     
     
     public Usuario(String nombre, String apellido1, String apellido2, int edad,
-             Sexo sexo, String nombreUsuario, String contra) {
+             Sexo sexo) {
         this.nombre = nombre;
         this.apellido1 = apellido1;
         this.apellido2 = apellido2;
         this.edad = edad;
         this.sexo = sexo;
-        this.nombreUsuario = nombreUsuario;
-        this.contra = contra;
+     
     }
-    public abstract T accedercuenta(String n, String c);
-    
+    public abstract void accedercuenta(String n, String c);
+    public abstract void salirCuenta();
     public String getNombreCompleto() {
         return getNombre() + " " + getApellido1() + " " + getApellido2();
     }
@@ -81,6 +80,22 @@ public abstract class Usuario<T> {
 
     public void setSexo(Sexo sexo) {
         this.sexo = sexo;
+    }
+
+    public String getNombreUsuario() {
+        return nombreUsuario;
+    }
+
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
+    }
+
+    public String getContra() {
+        return contra;
+    }
+
+    public void setContra(String contra) {
+        this.contra = contra;
     }
     
     @Override
