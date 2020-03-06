@@ -95,7 +95,7 @@ public abstract class Usuario {
         if(obj instanceof Usuario){
             retorno = ((Usuario)obj).hashCode() == this.hashCode();
         }
-        return true;
+        return retorno;
     }
 
 }
