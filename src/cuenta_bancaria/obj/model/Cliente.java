@@ -103,7 +103,7 @@ public class Cliente extends Usuario<CuentaOnlineCliente> {
         return dni;
     }
     @SuppressWarnings("NonPublicExported")
-    public static Cliente.DNI getDninstance(String dni) throws ExcepcionValidacionDNI{
+    public static Cliente.DNI getDnInstance(String dni) throws ExcepcionValidacionDNI{
         return new Cliente.DNI(dni);
     }
 

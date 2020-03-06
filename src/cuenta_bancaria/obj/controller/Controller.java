@@ -162,7 +162,7 @@ public class Controller {
             while (m.find()) {
                 dniStr = m.group();
             }
-            this.dni = Cliente.getDninstance(dniStr);
+            this.dni = Cliente.getDnInstance(dniStr);
 
             System.out.println("1)Mujer\n2)Hombre");
             int opt = sc.nextInt();
@@ -213,7 +213,7 @@ public class Controller {
             while (m.find()) {
                 dniStr = m.group();
             }
-            this.dni = Cliente.getDninstance(dniStr);
+            this.dni = Cliente.getDnInstance(dniStr);
             retorno[4] = dni;
             System.out.println("1)Mujer\n2)Hombre");
             int opt = sc.nextInt();

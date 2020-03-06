@@ -35,15 +35,17 @@ public class CuentaOnlineCliente extends CuentaOnline<Cliente, CuentaOnlineClien
     
     public CuentaBancaria accederCBN(String nCuenta){
         return cuentasBancarias.stream()
-                .filter(c -> c.getNumCuenta().equals(nCuenta))
+                .filter(c -> String.valueOf(c.getCCC().getCUENTA()).equals(nCuenta))
                 .findFirst().get();
     }
-
+    public void crearCBN(){
+        Sucursal.darAltaCuenta(user.getDni());
+    }
     @Override
     public void activarCuentaOnline(String nombre, String contra) {
         user.nombreUsuario = nombre;
         user.contra = contra;
-        
+        user.getCl().estado = Estado.ACTIVA;
     }
     
     @Override

@@ -46,7 +46,7 @@ public abstract class CuentaOnline<T,V> {
         estado = Estado.INACTIVA;
     }
     
-    public abstract void activarCuentaOnline(String nombre, String contra);
+    
     
     /**
      *
@@ -62,4 +62,5 @@ public abstract class CuentaOnline<T,V> {
 
     public abstract void login(String nombre, String contra);
     public abstract void logout();
+    public abstract void activarCuentaOnline(String nombre, String contra);
 }

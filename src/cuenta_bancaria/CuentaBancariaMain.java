@@ -69,14 +69,14 @@ public class CuentaBancariaMain {
                             sc.nextLine();
                             System.out.println("introducir dni");
                             dniStr = sc.nextLine();
-                            dni = Cliente.getDninstance(dniStr);
+                            dni = Cliente.getDnInstance(dniStr);
                             Sucursal.darAltaCuenta(dni);
                             break;
                         case 3:
                             sc.nextLine();
                             System.out.println("introducir dni");
                             dniStr = sc.nextLine();
-                            dni = Cliente.getDninstance(dniStr);
+                            dni = Cliente.getDnInstance(dniStr);
                             System.out.println(Sucursal.consultCuenta(dni));
 
                             break;
@@ -96,7 +96,7 @@ public class CuentaBancariaMain {
                             nCuentaStr = sc.nextLine();
                             System.out.println("");
                             nCuenta = Integer.parseInt(nCuentaStr);
-                            cuenta = Sucursal.accederCuenta(Cliente.getDninstance(dniStr),
+                            cuenta = Sucursal.accederCuenta(Cliente.getDnInstance(dniStr),
                                     CuentaBancaria.getCCC(iban, entidad, oficina,dc, nCuenta));
                             if (cuenta.getEstado().equals(CuentaBancaria.Estado.ACTIVA)) {
                                 System.out.println("1)desactivar cuenta\n2)salir");
@@ -139,12 +139,16 @@ public class CuentaBancariaMain {
                             iban = "ES25";
                             entidad = 3321;
                             oficina = 2020;
+                            System.out.println("introducir dc");
+                            System.out.print(iban+"-"+entidad+"-"+oficina+"-");
+                            dc = sc.nextByte();
+                            sc.nextLine();
                             System.out.println("intoducir nº cuenta");
-                            System.out.print(iban+"-"+entidad+"-"+oficina+"-00-");
+                            System.out.print(iban+"-"+entidad+"-"+oficina+"-"+dc+"-");
                             nCuentaStr = sc.nextLine();
                             System.out.println("");
                             nCuenta = Integer.parseInt(nCuentaStr);
-                            cuenta = Sucursal.accederCuenta(Cliente.getDninstance(dniStr), CuentaBancaria.getCCC(iban, entidad, oficina,dc, nCuenta));
+                            cuenta = Sucursal.accederCuenta(Cliente.getDnInstance(dniStr), CuentaBancaria.getCCC(iban, entidad, oficina,dc, nCuenta));
                             break;
                         case 6:
                             salir = true;
@@ -254,7 +258,7 @@ public class CuentaBancariaMain {
                                             Integer.parseInt(cccArray[4]));
                                     System.out.println("introducir cuantia");
                                     int cuantia = sc.nextInt();
-                                    Sucursal.transfererirFondos(Cliente.getDninstance(dniStr), cuenta
+                                    Sucursal.transfererirFondos(Cliente.getDnInstance(dniStr), cuenta
                                             .getCCC(), ccc, cuantia);
                                     break;
                                 case 4:
