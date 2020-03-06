@@ -6,13 +6,16 @@
 package cuenta_bancaria.obj.model;
 
 import cuenta_bancaria.exc.ExcepcionValidacionDNI;
+import cuenta_bancaria.obj.model.Cliente.DNI;
 import java.util.HashSet;
 
 /**
  *
  * @author tote
  */
-public class Cliente extends Usuario {
+public class Cliente extends Usuario<CuentaOnlineCliente> {
+
+    
 
     static class DNI {
 
@@ -51,7 +54,7 @@ public class Cliente extends Usuario {
             }
 
         }
-
+ 
         private boolean validar(char letra, int num) {
             return LETRAS[num % LETRAS.length] == letra;
         }
@@ -83,34 +86,46 @@ public class Cliente extends Usuario {
         }
 
     }
-    private HashSet<Cuenta> cuentas;
+    private HashSet<CuentaBancaria> cuentas;
     private DNI dni;
     private int codAcceso;
-    private final String NOMBRE_USUARIO;
-
-    public Cliente(String nombre, String apellido1, String apellido2, int edad, Object dni, Sexo sexo, int pin) {
-        super(nombre, apellido1, apellido2, edad, sexo, pin);
+    private CuentaOnlineCliente coc;
+    public Cliente(String nombre, String apellido1, String apellido2
+            , int edad, Object dni, Sexo sexo) {
+        super(nombre, apellido1, apellido2, edad, sexo);
         this.cuentas = new HashSet<>();
         this.dni = (Cliente.DNI)dni;
-        NOMBRE_USUARIO = this.dni.toString();
+        coc = new CuentaOnlineCliente(this);
     }
+    
     @SuppressWarnings("NonPublicExported")
     public Cliente.DNI getDni(){
         return dni;
     }
     @SuppressWarnings("NonPublicExported")
-    public static Cliente.DNI getDninstance(String dni) throws ExcepcionValidacionDNI{
+    public static Cliente.DNI getDnInstance(String dni) throws ExcepcionValidacionDNI{
         return new Cliente.DNI(dni);
     }
-    public boolean addCuenta(Cuenta c) {
+
+    @Override
+    public void salirCuenta() {
+        coc.logout();
+    }
+
+    @Override
+    public void accedercuenta(String nombre, String contra) {
+        coc.login(nombre, contra);
+    }
+    
+    public boolean addCuenta(CuentaBancaria c) {
         return cuentas.add(c);
     }
 
-    public void setCuentas(HashSet<Cuenta> cuentas) {
+    public void setCuentas(HashSet<CuentaBancaria> cuentas) {
         this.cuentas = cuentas;
     }
 
-    public HashSet<Cuenta> getCuentas() {
+    public HashSet<CuentaBancaria> getCuentas() {
         return cuentas;
     }
 
@@ -122,8 +137,8 @@ public class Cliente extends Usuario {
         this.codAcceso = codAcceso;
     }
 
-    public String getNOMBRE_USUARIO() {
-        return NOMBRE_USUARIO;
+    public CuentaOnlineCliente getCl() {
+        return coc;
     }
     
     @Override

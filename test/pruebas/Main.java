@@ -10,7 +10,7 @@ import cuenta_bancaria.exc.ExcepcionValidacionDNI;
 import cuenta_bancaria.exc.TitularDuplicado;
 import cuenta_bancaria.obj.model.Cliente;
 import cuenta_bancaria.obj.model.Sucursal;
-import cuenta_bancaria.obj.model.Cuenta;
+import cuenta_bancaria.obj.model.CuentaBancaria;
 
 import cuenta_bancaria.obj.model.Usuario;
 import java.util.HashMap;
@@ -33,10 +33,10 @@ public class Main {
             HashSet<Cliente> titulares = new HashSet();
             titulares.add(new Cliente("Juanito", "de los palotes", "AAAAAAAA", 12, dni2, Usuario.Sexo.HOMBRE));
             titulares.add(new Cliente("Pepito", "de los palotes", "AAAAAAAA", 12, dni1, Usuario.Sexo.HOMBRE));
-            Cuenta c = new Cuenta(titulares);
-            Cuenta c1 = new Cuenta(titulares, 0);
+            CuentaBancaria c = new CuentaBancaria(titulares);
+            CuentaBancaria c1 = new CuentaBancaria(titulares, 0);
             
-            //System.out.println("salida de Sucursal.accederCuenta: "+Sucursal.accederCuenta(dni2,Cuenta.getCCC("ES23",1234,1234,123457890)));
+            //System.out.println("salida de Sucursal.accederCuenta: "+Sucursal.accederCuenta(dni2,CuentaBancaria.getCCC("ES23",1234,1234,123457890)));
             Sucursal.darAltaCliente(new Cliente("Pepito", "de los palotes", "AAAAAAAA", 12, dni2, Usuario.Sexo.HOMBRE));
             Sucursal.darAltaCliente(new Cliente("Juanito", "de los palotes", "AAAAAAAA", 12, dni1, Usuario.Sexo.HOMBRE));
             //DNI[] array = {dni1,dni2};
@@ -52,16 +52,16 @@ public class Main {
             String[] ncArray = nCuenta.split("-");
             System.out.println("intro dni");
             String dniStr = sc.nextLine();
-            Cuenta cuenta = Sucursal.accederCuenta(new DNI(dniStr), Cuenta.getCCC(ncArray[0]
+            CuentaBancaria cuenta = Sucursal.accederCuenta(new DNI(dniStr), CuentaBancaria.getCCC(ncArray[0]
                     , Integer.parseInt(ncArray[1]), Integer.parseInt(ncArray[2])
                     ,Byte.parseByte(ncArray[3]), Integer.parseInt(ncArray[4])));
-            cuenta.setEstado(Cuenta.Estado.ACTIVA);
+            cuenta.setEstado(CuentaBancaria.Estado.ACTIVA);
             System.out.println(cuenta.mostrarDatos());
-            cuenta.setMovimiento(Cuenta.getAsunto(0), null, 100, null);
+            cuenta.setMovimiento(CuentaBancaria.getAsunto(0), null, 100, null);
             System.out.println("volcado cuenta: "+cuenta.mostrarMovimientos());
             
             System.out.println("volcado de ccc.soloNumString: "+cuenta.getCCC());
-            Cuenta cuenta1 = Sucursal.accederCuenta(new DNI(dniStr), Cuenta.getCCC(ncArray[0]
+            CuentaBancaria cuenta1 = Sucursal.accederCuenta(new DNI(dniStr), CuentaBancaria.getCCC(ncArray[0]
                     , Integer.parseInt(ncArray[1]), Integer.parseInt(ncArray[2])
                     ,Byte.parseByte(ncArray[3]), Integer.parseInt(ncArray[4])));
             

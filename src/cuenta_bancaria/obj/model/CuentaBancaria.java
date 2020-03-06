@@ -19,17 +19,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * La clase Cuenta genera almacena y hace consultas sobre una estructuta de
- * datos
+ * La clase CuentaBancaria genera almacena y hace consultas sobre una estructuta de
+ datos
  *
  * @version 1.0
  * @author Francisco A Domínguez Iceta
  */
-public class Cuenta {
+public class CuentaBancaria {
 
     private static class Movimiento {
 
-        protected enum Asunto {
+        protected static enum Asunto {
             INGRESO,
             NOMINA,
             RETIRADA,
@@ -51,6 +51,7 @@ public class Cuenta {
             this.asuntoPers = asuntoPers;
             this.cuantia = cuantia;
             fecha = Calendar.getInstance();
+           
         }
 
         Movimiento(Asunto asunto, String asuntoPers, double cuantia, Calendar fecha) {
@@ -59,28 +60,7 @@ public class Cuenta {
             this.cuantia = cuantia;
             this.fecha = fecha;
         }
-        private static class Trasnferencia extends Movimiento{
-            CCC origen;
-            CCC destino;
 
-            public Trasnferencia(CCC origen, CCC destino) {
-                this.origen = origen;
-                this.destino = destino;
-            }
-
-            public Trasnferencia(CCC origen, CCC destino, Asunto asunto, String asuntoPers, double cuantia) {
-                super(asunto, asuntoPers, cuantia);
-                this.origen = origen;
-                this.destino = destino;
-            }
-
-            public Trasnferencia(CCC origen, CCC destino, Asunto asunto, String asuntoPers, double cuantia, Calendar fecha) {
-                super(asunto, asuntoPers, cuantia, fecha);
-                this.origen = origen;
-                this.destino = destino;
-            }
-            
-        }
         int getFechaKey() {
             int ret = fecha.get(Calendar.YEAR);
             if (fecha.get(Calendar.MONTH) > 9) {
@@ -123,6 +103,36 @@ public class Cuenta {
                     + "\n";
             return movimientosStr;
         }
+    }
+
+    private static class Trasnferencia extends Movimiento {
+
+        CCC origen;
+        CCC destino;
+
+        public Trasnferencia(CCC origen, CCC destino) {
+            this.origen = origen;
+            this.destino = destino;
+        }
+
+        public Trasnferencia(CCC origen, CCC destino, Movimiento.Asunto asunto, String asuntoPers, double cuantia) {
+            super(asunto, asuntoPers, cuantia);
+            this.origen = origen;
+            this.destino = destino;
+        }
+
+        public Trasnferencia(CCC origen, CCC destino, Movimiento.Asunto asunto, String asuntoPers, double cuantia, Calendar fecha) {
+            super(asunto, asuntoPers, cuantia, fecha);
+            this.origen = origen;
+            this.destino = destino;
+        }
+
+        @Override
+        public String toString() {
+            return super.toString(); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        
     }
 
     static class CCC {
@@ -177,7 +187,6 @@ public class Cuenta {
 
         private boolean validarDC(int ENTIDAD, int OFICINA, byte DC, int CUENTA) {
             byte dc = genDC(ENTIDAD, OFICINA, CUENTA);
-
             return dc == DC;
         }
 
@@ -271,7 +280,8 @@ public class Cuenta {
         RETENIDA,
         BLOQUEADA
     }
-
+    
+    
     private HashMap<Integer, ArrayList<Movimiento>> movimientos;
     private final HashSet<Cliente> TITULARES;
     private double saldo;
@@ -281,8 +291,7 @@ public class Cuenta {
     private static Movimiento.Asunto[] tipos;
     private static Estado[] estados = Estado.values();
     private Estado estado;
-
-    public Cuenta(Set<Cliente> titulares, double saldo) throws IllegalArgumentException {
+    public CuentaBancaria(Set<Cliente> titulares, double saldo, String contra) throws IllegalArgumentException {
         TITULARES = new HashSet<>(titulares);
         this.saldo = saldo;
         disponible = saldo;
@@ -292,9 +301,10 @@ public class Cuenta {
         tipos = Movimiento.Asunto.values();
         estados = Estado.values();
         estado = estados[1];
+        
     }
 
-    public Cuenta(Set<Cliente> titulares) {
+    public CuentaBancaria(Set<Cliente> titulares, String contra) {
         Random rnd = new Random();
         TITULARES = new HashSet(titulares);
         movimientos = new HashMap<>();
@@ -304,8 +314,8 @@ public class Cuenta {
         estado = estados[0];
     }
 
-    public Cuenta(String IBAN, int ENTIDAD, int OFICINA, byte DC, int CUENTA,
-            Cuenta toCopy) throws ExcepcionValidacionCCC {
+    public CuentaBancaria(String IBAN, int ENTIDAD, int OFICINA, byte DC, int CUENTA,
+            CuentaBancaria toCopy) throws ExcepcionValidacionCCC {
         TITULARES = new HashSet(toCopy.TITULARES);
         ccc = new CCC(IBAN, ENTIDAD, OFICINA, DC, CUENTA);
         estados = Estado.values();
@@ -313,7 +323,7 @@ public class Cuenta {
         estado = estados[0];
     }
 
-    public Cuenta(Set<Cliente> titulares, Cuenta toCopy)
+    public CuentaBancaria(Set<Cliente> titulares, CuentaBancaria toCopy)
             throws ExcepcionValidacionCCC {
         TITULARES = new HashSet<>(titulares);
         ccc = new CCC(toCopy.ccc.IBAN, toCopy.ccc.ENTIDAD, toCopy.ccc.OFICINA, toCopy.ccc.DC, toCopy.ccc.OFICINA);
@@ -321,7 +331,7 @@ public class Cuenta {
         tipos = Movimiento.Asunto.values();
         estado = estados[0];
     }
-
+    
     public void vincularCuenta() {
         TITULARES.forEach((titular) -> {
             titular.addCuenta(this);
@@ -329,13 +339,13 @@ public class Cuenta {
     }
 
     @SuppressWarnings("NonPublicExported")
-    public static Cuenta.CCC getCCC(String IBAN, int ENTIDAD, int OFICINA,
-             byte DC, int CUENTA) throws ExcepcionValidacionCCC {
+    public static CuentaBancaria.CCC getCCC(String IBAN, int ENTIDAD, int OFICINA,
+            byte DC, int CUENTA) throws ExcepcionValidacionCCC {
         return new CCC(IBAN, ENTIDAD, OFICINA, DC, CUENTA);
     }
 
     @SuppressWarnings("NonPublicExported")
-    public Cuenta.CCC getCCC() {
+    public CuentaBancaria.CCC getCCC() {
         return ccc;
     }
 
@@ -401,9 +411,15 @@ public class Cuenta {
         return ret;
     }
 
+    private boolean transferirFondos(){
+        return false;
+    }
+    
     @SuppressWarnings("NonPublicExported")
-    public boolean setMovimiento(Movimiento.Asunto asunto, String asuntoPers, double cuantia,
-            Calendar fecha) throws IllegalArgumentException, NumberFormatException {
+    public boolean setMovimiento(Movimiento.Asunto asunto, String asuntoPers
+            , double cuantia, Object ccc) throws IllegalArgumentException
+            , NumberFormatException
+    {    
         boolean ret = false;
         if (estado.equals(Estado.INACTIVA) || estado.equals(Estado.BLOQUEADA)) {
             throw new IllegalArgumentException("Se debe inicializar la clase Cuenta");
@@ -411,11 +427,11 @@ public class Cuenta {
             switch (asunto) {
                 case INGRESO:
                 case NOMINA:
-                    ret = ingresar(cuantia, asuntoPers, asunto, fecha);
+                    ret = ingresar(cuantia, asuntoPers, asunto, Calendar.getInstance());
                     break;
                 case RETIRADA:
                 case PAGO:
-                    ret = retirar(cuantia, asuntoPers, asunto, fecha);
+                    ret = retirar(cuantia, asuntoPers, asunto, Calendar.getInstance());
                     break;
                 case TRANSFERENCIA:
                     
@@ -439,7 +455,7 @@ public class Cuenta {
         return ccc.getNumCuenta();
     }
 
-    public String mostrarDatos() {//necesario cambios
+    public String mostrarDatos() {
         String movimientosStr = mostrarMovimientos();
         String titulares = "";
         titulares = TITULARES.stream()
@@ -579,8 +595,8 @@ public class Cuenta {
     @Override
     public boolean equals(Object obj) {
         boolean retorno = false;
-        if (obj instanceof Cuenta) {
-            retorno = this.hashCode() == ((Cuenta) obj).hashCode();
+        if (obj instanceof CuentaBancaria) {
+            retorno = this.hashCode() == ((CuentaBancaria) obj).hashCode();
         }
         return retorno;
     }

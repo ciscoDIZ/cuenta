@@ -9,7 +9,9 @@ import cuenta_bancaria.exc.TitularDuplicado;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -21,7 +23,7 @@ public class Sucursal {
         OPERADOR,
         CLIENTE
     }
-    private static HashMap<Usuario, ArrayList<Cuenta>> usuarios = new HashMap<>();
+    private static HashMap<Usuario, ArrayList<CuentaBancaria>> usuarios = new HashMap<>();
 
     private static final UsuarioTipo[] TIPOS = UsuarioTipo.values();
     private UsuarioTipo tipo;
@@ -30,14 +32,13 @@ public class Sucursal {
         boolean retorno = false;
         if (!usuarios.containsKey(c)) {
             usuarios.put(c, new ArrayList<>());
+
             retorno = true;
         } else {
             throw new TitularDuplicado("titular duplicado");
         }
         return retorno;
     }
-
-   
 
     public static boolean darAltaCuenta(Object... dni) {
         boolean retorno = false;
@@ -49,7 +50,8 @@ public class Sucursal {
                 });
             }
         }
-        Cuenta c = new Cuenta(titulares);
+
+        CuentaBancaria c = new CuentaBancaria(titulares, "1234");
         c.vincularCuenta();
         for (Object dni1 : dni) {
             usuarios.get(buscarCliente((Cliente.DNI) dni1)).add(c);
@@ -57,25 +59,10 @@ public class Sucursal {
         return retorno;
     }
 
-    public static Cliente accederComoCliente(String nUsu, int pin) {
-        Cliente c = null;
-        for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : usuarios.entrySet()) {
-            if(entry.getKey() instanceof Cliente){
-                if(((Cliente)entry.getKey()).getNOMBRE_USUARIO().equals(nUsu)){  
-                    if(((Cliente)entry.getKey()).getCodAcceso() == pin){
-                        c = ((Cliente)entry.getKey());
-                    }
-                }
-            }
-        }
-        return c;
+    public Usuario accederUsuario() {
+        return null;
     }
 
-    public static Operador accederComoOperador(){
-        Operador c = null;
-        return new Operador(null, null, null, 0, null,0,0);
-    }
-    
     public static Cliente buscarCliente(Object dni) {
         Cliente u = null;
         for (Usuario usuario : usuarios.keySet()) {
@@ -90,22 +77,22 @@ public class Sucursal {
 
     public static String consultCuenta(String nCuenta) {
         String retorno = "";
-        for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : usuarios.entrySet()) {
-            if (entry.getKey() instanceof Cliente) {
-                retorno = entry.getValue().stream()
-                        .filter((c) -> c.getNumCuenta().equals(nCuenta))
-                        .findFirst()
-                        .get().mostrarDatos();
-            }
-
+        for (Map.Entry<Usuario, ArrayList<CuentaBancaria>> entry : usuarios.entrySet()) {
+            retorno = entry.getValue().stream()
+                    .filter((c) -> c.getNumCuenta().equals(nCuenta))
+                    .findFirst()
+                    .get().mostrarDatos();
         }
         return retorno;
     }
 
+    /*public static CuentaBancaria accederCuentaCliente(Object dni, int pin){
+        
+    }*/
     public static String consultCuenta(Object dni) {
         String retorno = "";
-        Cliente cliente = null;
-        for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : usuarios.entrySet()) {
+
+        for (Map.Entry<Usuario, ArrayList<CuentaBancaria>> entry : usuarios.entrySet()) {
             if (entry.getKey() instanceof Cliente) {
                 if (((Cliente) entry.getKey()).getDni().equals(dni)) {
                     retorno = entry.getKey().getNombreCompleto() + "\n";
@@ -120,53 +107,72 @@ public class Sucursal {
         return retorno;
     }
 
-    public static Cuenta accederCuenta(Object dni, Object ccc) {
-        Cuenta c = null;
-        for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : usuarios.entrySet()) {
-            for (Cuenta cuenta : entry.getValue()) {
-                if (entry.getKey() instanceof Cliente) {
-                    if (((Cliente) entry.getKey()).getDni().equals(dni) && cuenta.getCCC()
-                            .equals(((Cuenta.CCC) ccc))) {
-                        c = cuenta;
+    public static CuentaBancaria accederCuenta(Object usuario, Object ccc) {
+        CuentaBancaria c = null;
+        for (Map.Entry<Usuario, ArrayList<CuentaBancaria>> entry : usuarios.entrySet()) {
+            for (CuentaBancaria cuenta : entry.getValue()) {
+
+                if (((Cliente) entry.getKey()).getDni().equals(usuario)
+                        && ((CuentaBancaria) cuenta).getCCC()
+                                .equals(((CuentaBancaria.CCC) ccc))) {
+                    c = ((CuentaBancaria) cuenta);
+                }
+            }
+
+        }
+        return c;
+    }
+
+    public static CuentaBancaria accederCuenta(Object ccc) {
+        CuentaBancaria c = null;
+        for (Map.Entry<Usuario, ArrayList<CuentaBancaria>> entry : usuarios.entrySet()) {
+            for (CuentaBancaria cuenta : entry.getValue()) {
+                if (cuenta instanceof CuentaBancaria) {
+                    if (((CuentaBancaria) cuenta).getCCC().equals((CuentaBancaria.CCC) ccc)) {
+                        c = (CuentaBancaria) cuenta;
                     }
                 }
-
-            }
-        }
-        return c;
-    }
-
-    private static Cuenta accederCuenta(Cuenta.CCC ccc) {
-        Cuenta c = null;
-        for (Map.Entry<Usuario, ArrayList<Cuenta>> entry : usuarios.entrySet()) {
-            for (Cuenta cuenta : entry.getValue()) {
-                if (cuenta.getCCC().equals(ccc)) {
-                    c = cuenta;
-                }
             }
         }
         return c;
 
     }
 
-    public static Cuenta cambiarTitularCuenta(Object antiguo, Object nuevo, Object ccc) {
+    public static CuentaOnline accederCuentaOnline(String nombre, String contra) {
+
+        CuentaOnline co = null;
+        for (Usuario usuario : usuarios.keySet()) {
+            if (usuario instanceof Cliente
+                    && ((Cliente) usuario).getNombreUsuario().equals(nombre)) {
+                co = ((Cliente) usuario).getCl();
+
+            }
+
+        }
+        if (co != null) {
+            co.login(nombre, contra);
+        }
+        return co;
+    }
+
+    public static CuentaBancaria cambiarTitularCuenta(Object antiguo, Object nuevo, Object ccc) {
         //TODO
-        Cuenta c = accederCuenta(antiguo, ccc);
+        CuentaBancaria c = accederCuenta(antiguo, ccc);
         return c;
     }
 
-    public static Cuenta cambiarCodigoCuenta(Object ccc) {
-        Cuenta c = null;
+    public static CuentaBancaria cambiarCodigoCuenta(Object ccc) {
+        CuentaBancaria c = null;
         //TODO
         return c;
     }
 
-    public static boolean transfererirFondos(Cliente.DNI titOrigen, Cuenta.CCC origen, Object destino, double cuantia) {
+    public static boolean transfererirFondos(Cliente.DNI titOrigen, CuentaBancaria.CCC origen, Object destino, double cuantia) {
         boolean retorno = false;
-        Cuenta cOrigen = accederCuenta(titOrigen, ((Cuenta.CCC) origen));
-        Cuenta cDestino = accederCuenta((Cuenta.CCC) destino);
-        cOrigen.setMovimiento(Cuenta.getAsunto(2), "transferencia", cuantia, null);
-        cDestino.setMovimiento(Cuenta.getAsunto(0), "transferencia", cuantia, null);
+        CuentaBancaria cOrigen = accederCuenta(titOrigen, ((CuentaBancaria.CCC) origen));
+        CuentaBancaria cDestino = accederCuenta((CuentaBancaria.CCC) destino);
+        cOrigen.setMovimiento(CuentaBancaria.getAsunto(2), "transferencia", cuantia, null);
+        cDestino.setMovimiento(CuentaBancaria.getAsunto(0), "transferencia", cuantia, null);
         return retorno;
     }
 
@@ -174,11 +180,11 @@ public class Sucursal {
         return true;
     }
 
-    public static HashMap<Usuario, ArrayList<Cuenta>> getClientes() {
+    public static HashMap<Usuario, ArrayList<CuentaBancaria>> getClientes() {
         return usuarios;
     }
 
-    public static void setClientes(HashMap<Usuario, ArrayList<Cuenta>> clientes) {
+    public static void setClientes(HashMap<Usuario, ArrayList<CuentaBancaria>> clientes) {
         Sucursal.usuarios = clientes;
     }
 
