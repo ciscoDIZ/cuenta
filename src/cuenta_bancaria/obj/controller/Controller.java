@@ -5,9 +5,13 @@
  */
 package cuenta_bancaria.obj.controller;
 
+import cuenta_bancaria.CuentaBancariaMain;
+import cuenta_bancaria.exc.ExcepcionValidacionCCC;
 import cuenta_bancaria.exc.ExcepcionValidacionDNI;
+import cuenta_bancaria.exc.TitularDuplicado;
 import cuenta_bancaria.obj.model.Cliente;
 import cuenta_bancaria.obj.model.CuentaBancaria;
+import cuenta_bancaria.obj.model.Sucursal;
 import cuenta_bancaria.obj.model.Usuario;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -18,15 +22,15 @@ import java.util.regex.Pattern;
  *
  * @author tote
  */
-public class Controller {
+public class Controller{
 
     /**
      * <h1>CLASE CONTROLLER</h1>
- Clase encargada de controlar todo lo que tenga que ver con el volcado de
- datos en terminal. Adicionalmente, en determinados casos, tambien crea
- instancias de la clase CuentaBancaria. La forma de usarla es instanciandola en el
- metodo main de dicha clase y ejecutar cada método en en momento que se
- precise.
+     * Clase encargada de controlar todo lo que tenga que ver con el volcado de
+     * datos en terminal. Adicionalmente, en determinados casos, tambien crea
+     * instancias de la clase CuentaBancaria. La forma de usarla es
+     * instanciandola en el metodo main de dicha clase y ejecutar cada método en
+     * en momento que se precise.
      */
     private static final Pattern IBAN_PATRON = Pattern.compile("(ES[0-9]{2})");
     private static final Pattern ENTOF_PATRON = Pattern.compile("[0-9]{4}");
@@ -44,9 +48,12 @@ public class Controller {
     private String apellido1;
     private String apellido2;
     private int edad;
+    int opt;
     private Object dni;
     private Usuario.Sexo sexo;
 
+    
+    
     /**
      * constructor unico y sin parámetros
      */
@@ -58,7 +65,7 @@ public class Controller {
         cuenta = 0l;
         System.out.println("");
     }
-    
+
     /**
      * Método encargado e la inicializacion de la cuenenta y por motivos de
      * seguridad para evitar posibles cambios en el número de cuenta, la clase
@@ -71,7 +78,7 @@ public class Controller {
      * @throws IllegalArgumentException en caso de introducir un campo
      * incorrecto
      */
-   public Object[] menuIniCuenta() throws IllegalArgumentException {
+    public Object[] menuIniCuenta() throws IllegalArgumentException {
         Object[] retorno = new Object[5];
         HashSet<Usuario> titulares = new HashSet<>();
         retorno[0] = titulares;
@@ -112,12 +119,12 @@ public class Controller {
             }
 
         }
-        if(!DC_PATRON.matcher(String.valueOf(dc)).matches()){
+        if (!DC_PATRON.matcher(String.valueOf(dc)).matches()) {
             System.out.println("introducir dc");
-            if(DC_PATRON.matcher(String.valueOf(dc = sc.nextByte())).matches()){
+            if (DC_PATRON.matcher(String.valueOf(dc = sc.nextByte())).matches()) {
                 System.out.println("OK");
-                retorno[4] = (Byte)dc;
-            }else{
+                retorno[4] = (Byte) dc;
+            } else {
                 System.out.println("dc incorrecto");
 
                 throw new IllegalArgumentException("dc incorrecto");
@@ -165,7 +172,7 @@ public class Controller {
             this.dni = Cliente.getDnInstance(dniStr);
 
             System.out.println("1)Mujer\n2)Hombre");
-            int opt = sc.nextInt();
+            opt = sc.nextInt();
             sc.nextLine();
             switch (opt) {
                 case 1:
@@ -191,46 +198,174 @@ public class Controller {
                 + "|([X|Z]?[0-9]{8} [A-Z])"
                 + "|([X|Z]?[0-9]{8}-[A-Z])");
         Object[] retorno = new Object[6];
-        
-       
-            System.out.println("introducir nombre");
-            nombre = sc.nextLine();
-            retorno[0] = nombre;
-            System.out.println("introducir primer apellido");
-            apellido1 = sc.nextLine();
-            retorno[1] = apellido1;
-            System.out.println("introducir segundo apellido");
-            apellido2 = sc.nextLine();
-            retorno[2] = apellido2;
-            System.out.println("introducir edad");
-            edad = sc.nextInt();
-            retorno[3] = edad;
-            sc.nextLine();
-            System.out.println("introducir dni");
-            String dniStr = sc.nextLine();
-            
-            Matcher m = p.matcher(dniStr);
-            while (m.find()) {
-                dniStr = m.group();
-            }
-            this.dni = Cliente.getDnInstance(dniStr);
-            retorno[4] = dni;
-            System.out.println("1)Mujer\n2)Hombre");
-            int opt = sc.nextInt();
-            sc.nextLine();
-            switch (opt) {
-                case 1:
-                    sexo = Usuario.Sexo.MUJER;
-                    break;
-                case 2:
-                    sexo = Usuario.Sexo.HOMBRE;
-                    break;
-                default:
-                    throw new AssertionError();
-            }
-            retorno[5] = sexo;
-        
+
+        System.out.println("introducir nombre");
+        nombre = sc.nextLine();
+        retorno[0] = nombre;
+        System.out.println("introducir primer apellido");
+        apellido1 = sc.nextLine();
+        retorno[1] = apellido1;
+        System.out.println("introducir segundo apellido");
+        apellido2 = sc.nextLine();
+        retorno[2] = apellido2;
+        System.out.println("introducir edad");
+        edad = sc.nextInt();
+        retorno[3] = edad;
+        sc.nextLine();
+        System.out.println("introducir dni");
+        String dniStr = sc.nextLine();
+
+        Matcher m = p.matcher(dniStr);
+        while (m.find()) {
+            dniStr = m.group();
+        }
+        this.dni = Cliente.getDnInstance(dniStr);
+        retorno[4] = dni;
+        System.out.println("1)Mujer\n2)Hombre");
+        int opt = sc.nextInt();
+        sc.nextLine();
+        switch (opt) {
+            case 1:
+                sexo = Usuario.Sexo.MUJER;
+                break;
+            case 2:
+                sexo = Usuario.Sexo.HOMBRE;
+                break;
+            default:
+                throw new AssertionError();
+        }
+        retorno[5] = sexo;
+
         return retorno;
     }
-    
+
+    public CuentaBancaria accederCuentaBancaria() throws ExcepcionValidacionCCC,
+            ExcepcionValidacionDNI, NumberFormatException {
+        String dniStr = null;
+        String nCuentaStr = null;
+        int nCuenta = 0;
+        CuentaBancaria cbn = null;
+        System.out.println("introducir dni");
+        dniStr = sc.nextLine();
+        iban = "ES25";
+        entidad = 3321;
+        oficina = 2020;
+        System.out.println("intoducir digito de control");
+        System.out.print(iban + "-" + entidad + "-" + oficina + "-");
+        dc = sc.nextByte();
+        sc.nextLine();
+        System.out.println("intoducir nº cuenta");
+        System.out.print(iban + "-" + entidad + "-" + oficina + "-" + dc + "-");
+        nCuentaStr = sc.nextLine();
+        System.out.println("");
+        nCuenta = Integer.parseInt(nCuentaStr);
+        return Sucursal.accederCuenta(Cliente.getDnInstance(dniStr),
+                CuentaBancaria.getCCC(iban, entidad, oficina, dc, nCuenta));
+    }
+
+    public void menuCuentaBloqueada(CuentaBancaria cuenta) {
+        int cod = 1234;
+        System.out.println("Su cuenta esta bloqueada, para desbloquearla ponga el codigo de deabloqueo");
+        System.out.print(":");
+        opt = sc.nextInt();
+        if (cod == opt) {
+            cuenta.setEstado(CuentaBancaria.Estado.ACTIVA);
+            System.out.println("Cuenta activa");
+        }
+    }
+
+    public CuentaBancaria menuCambiarNumCuenta(CuentaBancaria cuenta)
+            throws IllegalArgumentException, ExcepcionValidacionCCC {
+        Object[] data;
+        int nCuenta;
+        data = menuIniCuenta();
+        iban = (String) data[1];
+        entidad = (Integer) data[2];
+        oficina = (Integer) data[3];
+        dc = (Byte) data[4];
+        nCuenta = (Integer) data[5];
+        cuenta = new CuentaBancaria(iban, entidad, oficina,
+                dc, nCuenta, cuenta);
+        cuenta.vincularCuenta();
+        return cuenta;
+    }
+
+    public CuentaBancaria menuInterfazEscritorio(CuentaBancaria cuenta, boolean salir)
+            throws TitularDuplicado, ExcepcionValidacionCCC, ExcepcionValidacionDNI
+            , AssertionError, NumberFormatException {
+        String dniStr;
+        System.out.println("1)dar de alta cliente\n2)dar de alta cuenta"
+                + "\n3)consultar cuenta\n4)gestionar cuenta\n5)acceder cuenta\n6)salir");
+        opt = sc.nextInt();
+        sc.nextLine();
+        switch (opt) {
+            case 1:
+                Object[] datos = menuIniTitular();
+                Usuario u = new Cliente((String) datos[0], (String) datos[1],
+                        (String) datos[2], (int) datos[3], datos[4],
+                        (Usuario.Sexo) datos[5]);
+                Sucursal.darAltaUsuario((Cliente) u);
+                break;
+            case 2:
+                sc.nextLine();
+                System.out.println("introducir dni");
+                dniStr = sc.nextLine();
+                dni = Cliente.getDnInstance(dniStr);
+                Sucursal.darAltaCuenta(dni);
+                break;
+            case 3:
+                sc.nextLine();
+                System.out.println("introducir dni");
+                dniStr = sc.nextLine();
+                dni = Cliente.getDnInstance(dniStr);
+                System.out.println(Sucursal.consultCuenta(dni));
+
+                break;
+            case 4:
+                cuenta = accederCuentaBancaria();
+                if (cuenta.getEstado().equals(CuentaBancaria.Estado.ACTIVA)) {
+                    System.out.println("1)desactivar cuenta\n2)salir");
+                    opt = sc.nextInt();
+                    switch (opt) {
+                        case 1:
+                            cuenta.setEstado(CuentaBancaria.Estado.INACTIVA);
+                            break;
+                        case 2:
+                            //cuenta = null;
+                            break;
+                        default:
+                            throw new AssertionError();
+                    }
+                } else if (cuenta.getEstado().equals(CuentaBancaria.Estado.INACTIVA)) {
+                    System.out.println("1)activar cuenta\n2)bloquear cuenta\n3)salir");
+                    opt = sc.nextInt();
+                    switch (opt) {
+                        case 1:
+                            cuenta.setEstado(CuentaBancaria.Estado.ACTIVA);
+                            break;
+                        case 2:
+                            cuenta.setEstado(CuentaBancaria.Estado.BLOQUEADA);
+                            break;
+                        case 3:
+
+                            //cuenta = null;
+                            break;
+                        default:
+                            throw new AssertionError();
+                    }
+                }
+                cuenta = null;
+                break;
+            case 5:
+
+                cuenta = accederCuentaBancaria();
+                break;
+            case 6:
+                salir = true;
+                break;
+            default:
+                throw new AssertionError();
+        }
+        return cuenta;
+    }
 }

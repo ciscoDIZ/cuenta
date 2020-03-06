@@ -301,11 +301,9 @@ public class CuentaBancaria {
         tipos = Movimiento.Asunto.values();
         estados = Estado.values();
         estado = estados[1];
-        
     }
 
     public CuentaBancaria(Set<Cliente> titulares, String contra) {
-        Random rnd = new Random();
         TITULARES = new HashSet(titulares);
         movimientos = new HashMap<>();
         ccc = new CCC();
