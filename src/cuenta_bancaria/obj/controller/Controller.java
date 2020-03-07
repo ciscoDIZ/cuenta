@@ -44,7 +44,7 @@ public class Controller {
     private int entidad;
     private int oficina;
     private byte dc;
-    private long cuenta;
+    private int cuenta;
     private String nombre;
     private String apellido1;
     private String apellido2;
@@ -61,7 +61,7 @@ public class Controller {
         iban = "";
         entidad = 0;
         oficina = 0;
-        cuenta = 0l;
+        cuenta = 0;
         System.out.println("");
     }
 
@@ -131,10 +131,10 @@ public class Controller {
         }
         if (!CUENTA_PATRON.matcher(String.valueOf(cuenta)).matches()) {
             System.out.println("introducir cuenta");
-            if (CUENTA_PATRON.matcher(String.valueOf(cuenta = sc.nextLong()))
+            if (CUENTA_PATRON.matcher(String.valueOf(cuenta = sc.nextInt()))
                     .matches()) {
                 System.out.println("OK");
-                retorno[5] = (Long) cuenta;
+                retorno[5] =  cuenta;
             } else {
                 System.out.println("cuenta incorrecta");
                 throw new IllegalArgumentException("cuenta erronea");
