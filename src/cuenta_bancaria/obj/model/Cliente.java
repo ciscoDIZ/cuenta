@@ -137,7 +137,7 @@ public class Cliente extends Usuario<CuentaOnlineCliente> {
         this.codAcceso = codAcceso;
     }
 
-    public CuentaOnlineCliente getCl() {
+    public CuentaOnlineCliente getCoc() {
         return coc;
     }
     

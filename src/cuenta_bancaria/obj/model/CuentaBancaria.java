@@ -335,7 +335,7 @@ public class CuentaBancaria {
             titular.addCuenta(this);
         });
     }
-
+    
     @SuppressWarnings("NonPublicExported")
     public static CuentaBancaria.CCC getCCC(String IBAN, int ENTIDAD, int OFICINA,
             byte DC, int CUENTA) throws ExcepcionValidacionCCC {

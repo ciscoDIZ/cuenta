@@ -10,6 +10,9 @@ import cuenta_bancaria.exc.ExcepcionValidacionDNI;
 import cuenta_bancaria.exc.TitularDuplicado;
 import cuenta_bancaria.obj.model.Cliente;
 import cuenta_bancaria.obj.model.CuentaBancaria;
+import cuenta_bancaria.obj.model.CuentaOnline;
+import cuenta_bancaria.obj.model.CuentaOnlineCliente;
+import cuenta_bancaria.obj.model.CuentaOnlineOperador;
 import cuenta_bancaria.obj.model.Sucursal;
 import cuenta_bancaria.obj.model.Usuario;
 import java.util.Calendar;
@@ -25,6 +28,10 @@ import java.util.regex.Pattern;
  */
 public class Controller {
 
+    public enum Interfaz {
+        WEB,
+        ESCRITORIO
+    }
     /**
      * <h1>CLASE CONTROLLER</h1>
      * Clase encargada de controlar todo lo que tenga que ver con el volcado de
@@ -52,6 +59,8 @@ public class Controller {
     int opt;
     private Object dni;
     private Usuario.Sexo sexo;
+    private static Interfaz[] interfaces = Interfaz.values();
+    private Interfaz interfaz;
 
     /**
      * constructor unico y sin parámetros
@@ -141,6 +150,18 @@ public class Controller {
             }
         }
         return retorno;
+    }
+
+    public void seleccionarInterfaz(int index) {
+        interfaz = interfaces[index];
+    }
+
+    private void salirDeInterfaz() {
+        interfaz = null;
+    }
+
+    public Interfaz getInterfaz() {
+        return interfaz;
     }
 
     public HashSet<Usuario> menuIniTitulares(CuentaBancaria c) throws AssertionError,
@@ -330,7 +351,7 @@ public class Controller {
                 cuenta = accederCuentaBancaria();
                 break;
             case 6:
-                salir = true;
+                salirDeInterfaz();
                 break;
             default:
                 throw new AssertionError();
@@ -383,6 +404,62 @@ public class Controller {
         }
     }
 
+    public CuentaOnline menuIniciarSesion(CuentaOnline cuentaOnline) {
+        System.out.print("nombre: ");
+        nombre = sc.nextLine();
+        System.out.print("\ncontraseña: ");
+        String contra = sc.nextLine();
+        cuentaOnline = Sucursal.accederCuentaOnline(nombre, contra);
+        return cuentaOnline;
+    }
+
+    public CuentaOnline registroCOC(CuentaOnline cuentaOnline) {
+        
+        System.out.println("introducir nombre de usuario");
+        nombre = sc.nextLine();
+        System.out.println("introducir contraseña");
+        String contra = sc.nextLine();
+        
+        cuentaOnline.activarCuentaOnline(nombre, contra);
+        return cuentaOnline;
+    }
+
+    public CuentaOnline menuLOG_REG(CuentaOnline cuentaOnline) throws ExcepcionValidacionDNI{
+        System.out.println("introducir dni");
+        dni = Cliente.getDnInstance(sc.nextLine());
+        cuentaOnline = Sucursal.buscarCliente(dni).getCoc();
+        switch ((cuentaOnline).getEstado()) {
+            case ACTIVA:
+                cuentaOnline = menuIniciarSesion(cuentaOnline);
+                break;
+            case INACTIVA:
+                cuentaOnline = registroCOC(cuentaOnline);
+                break;
+            default:
+                throw new AssertionError();
+        }
+        return cuentaOnline;
+    }
+
+    public CuentaOnline interfazOnline(CuentaOnline cuentaOnline) {
+        if (cuentaOnline instanceof CuentaOnlineCliente) {
+            System.out.println("1)ver movimientos\n2)listar cuentas bancarias"
+                    + "\n3)acceder cuenta bancaria");
+            switch (opt) {
+                case 1:
+                    String listarCuentas
+                            = ((CuentaOnlineCliente) cuentaOnline).listarCuentas();
+                    System.out.println(listarCuentas);
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+        } else if (cuentaOnline instanceof CuentaOnlineOperador) {
+
+        }
+        return null;
+    }
+
     public CuentaBancaria interfazCuentaBancaria(CuentaBancaria cuenta)
             throws AssertionError, ExcepcionValidacionCCC, ExcepcionValidacionDNI,
             IllegalArgumentException {
@@ -392,7 +469,7 @@ public class Controller {
         Object dni;
         Calendar fecha;
         String[] cccArray;
-         double cuantia;
+        double cuantia;
         switch (cuenta.getEstado()) {
             case ACTIVA:
                 String opciones = "1)realizar ingreso\n2)realizar retirada\n3)transferencias"
@@ -411,14 +488,14 @@ public class Controller {
                 opt = sc.nextInt();
                 switch (opt) {
                     case 1:
-                         System.out.println("introducir cuantia");
-                              cuantia  = sc.nextDouble();
-                         cuenta.setMovimiento(CuentaBancaria.getAsunto(opt), null, cuantia, null);
+                        System.out.println("introducir cuantia");
+                        cuantia = sc.nextDouble();
+                        cuenta.setMovimiento(CuentaBancaria.getAsunto(opt), null, cuantia, null);
                         break;
                     case 2:
-                           System.out.println("introducir cuantia");
-                                cuantia = sc.nextDouble();
-                                cuenta.setMovimiento(CuentaBancaria.getAsunto(2), null, cuantia, null);
+                        System.out.println("introducir cuantia");
+                        cuantia = sc.nextDouble();
+                        cuenta.setMovimiento(CuentaBancaria.getAsunto(2), null, cuantia, null);
                         break;
                     case 3:
                         sc.nextLine();
@@ -479,20 +556,24 @@ public class Controller {
         return cuenta;
     }
 
-    private void seleccionarMovimiento(int movimiento, CuentaBancaria cuenta) throws AssertionError {
+    private void seleccionarMovimiento(int movimiento, CuentaBancaria cuenta)
+            throws AssertionError {
         switch (movimiento) {
             case 0:
             case 1:
             case 2:
             case 3:
-                System.out.println(cuenta.movimientosPorAsunto(CuentaBancaria.getAsunto(movimiento)));
+                System.out.println(cuenta.movimientosPorAsunto(CuentaBancaria
+                        .getAsunto(movimiento)));
                 break;
             default:
                 throw new AssertionError();
         }
     }
 
-    private CuentaBancaria menuCuentaInactiva(CuentaBancaria cuenta) throws ExcepcionValidacionCCC, ExcepcionValidacionDNI, IllegalArgumentException, AssertionError {
+    private CuentaBancaria menuCuentaInactiva(CuentaBancaria cuenta)
+            throws ExcepcionValidacionCCC, ExcepcionValidacionDNI,
+            IllegalArgumentException, AssertionError {
         switch (opt) {
             case 1:
                 cuenta = new CuentaBancaria((Set) menuIniTitulares(cuenta), cuenta);

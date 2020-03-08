@@ -8,6 +8,8 @@ package cuenta_bancaria.obj.model;
 /**
  *
  * @author tote
+ * @param <T>
+ * @param <V>
  */
 public abstract class CuentaOnline<T,V> {
     private static class Login{
@@ -37,6 +39,7 @@ public abstract class CuentaOnline<T,V> {
     }
     protected T user;
     protected V account;
+    @SuppressWarnings("NonPublicExported")
     protected Login login;
     protected Estado estado;
     
@@ -60,6 +63,19 @@ public abstract class CuentaOnline<T,V> {
         this.user = u;
     }
 
+    public V getAccount() {
+        return account;
+    }
+
+    @SuppressWarnings("NonPublicExported")
+    public Login getLogin() {
+        return login;
+    }
+
+    public Estado getEstado() {
+        return estado;
+    }
+    
     public abstract void login(String nombre, String contra);
     public abstract void logout();
     public abstract void activarCuentaOnline(String nombre, String contra);

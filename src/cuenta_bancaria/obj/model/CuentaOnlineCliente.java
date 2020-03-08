@@ -18,7 +18,7 @@ public class CuentaOnlineCliente extends CuentaOnline<Cliente, CuentaOnlineClien
 
     public CuentaOnlineCliente(Cliente user) {
         super(user);
-        account = this.user.getCl();
+        account = this.user.getCoc();
         cuentasBancarias = new HashSet<>(user.getCuentas());
     }
 
@@ -45,7 +45,7 @@ public class CuentaOnlineCliente extends CuentaOnline<Cliente, CuentaOnlineClien
     public void activarCuentaOnline(String nombre, String contra) {
         user.nombreUsuario = nombre;
         user.contra = contra;
-        user.getCl().estado = Estado.ACTIVA;
+        user.getCoc().estado = Estado.ACTIVA;
     }
     
     @Override

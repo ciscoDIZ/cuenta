@@ -39,73 +39,59 @@ public class CuentaBancariaMain {
         Controller controller = new Controller();
         Scanner sc = new Scanner(System.in);
         CuentaBancaria cuenta = null;
-        String iban;
-        int entidad;
-        int oficina;
-        int nCuenta;
-        byte dc = 0;
-        Calendar fecha;
-        Object[] data;
         int opt;
         boolean salir = false;
-        String mensajeBienvenida = null;
-        String dniStr;
-        String nCuentaStr;
-        Object dni;
         CuentaOnline cuentaOnline = null;
-
-        String[] cccArray = new String[5];
         while (!salir) {
-            try {
+            if (controller.getInterfaz() != null) {
+                try {
+                    switch (controller.getInterfaz()) {
+                        case WEB:
+                            if (cuentaOnline == null) {
+                                cuentaOnline = controller.menuLOG_REG(cuentaOnline);
+                            }else{
+                                cuentaOnline = controller.interfazOnline(cuentaOnline);
+                            }
+                            break;
+                        case ESCRITORIO:
+                            if (cuenta == null) {
+                                cuenta = controller.menuInterfazEscritorio(cuenta, salir);
+                            } else {
+                                cuenta = controller.interfazCuentaBancaria(cuenta);
+                            }
+                            break;
+                        default:
+                            throw new AssertionError();
+                    }
+                } catch (AssertionError
+                        | ExcepcionValidacionDNI
+                        | IllegalArgumentException
+                        | InputMismatchException
+                        | TitularDuplicado
+                        | ExcepcionValidacionCCC
+                        | ArrayIndexOutOfBoundsException e) {
+                    if (e instanceof AssertionError) {
+                        System.out.println("opcion incorrecta");
+                    } else if (e instanceof ExcepcionValidacionDNI) {
+                        System.out.println("DNI incorrecto");
+                    } else if (e instanceof IllegalArgumentException) {
+                        System.out.println("Campo incorrecto");
+                    } else if (e instanceof InputMismatchException) {
+                        System.out.println("tipo incorrecto");
+                        sc.nextLine();
+                    } else if (e instanceof TitularDuplicado) {
+                        System.out.println("este titular ya existe");
+                    } else if (e instanceof ExcepcionValidacionCCC) {
+                        System.out.println("ccc no válido");
+                    }
+
+                }
+            } else {
                 System.out.println("1)interfaz web\n2)interfaz de escritorio");
                 opt = sc.nextInt();
                 sc.nextLine();
-                switch (opt) {
-                    case 1:
-                        if (cuentaOnline == null) {
-                            System.out.print("nombre: ");
-                            String nombre = sc.nextLine();
-                            System.out.print("\ncontraseña: ");
-                            String contra = sc.nextLine();
-                            cuentaOnline = Sucursal.accederCuentaOnline(nombre, contra);
-
-                        }
-                        break;
-                    case 2:
-                        if (cuenta == null) {
-                            cuenta = controller.menuInterfazEscritorio(cuenta, salir);
-                        } else if ((cuenta != null)) {
-                            cuenta = controller.interfazCuentaBancaria(cuenta);
-                        }
-                        break;
-                    default:
-                        throw new AssertionError();
-                }
-
-            } catch (AssertionError
-                    | ExcepcionValidacionDNI
-                    | IllegalArgumentException
-                    | InputMismatchException
-                    | TitularDuplicado
-                    | ExcepcionValidacionCCC
-                    | ArrayIndexOutOfBoundsException e) {
-                if (e instanceof AssertionError) {
-                    System.out.println("opcion incorrecta");
-                } else if (e instanceof ExcepcionValidacionDNI) {
-                    System.out.println("DNI incorrecto");
-                } else if (e instanceof IllegalArgumentException) {
-                    System.out.println("Campo incorrecto");
-                } else if (e instanceof InputMismatchException) {
-                    System.out.println("tipo incorrecto");
-                    sc.nextLine();
-                } else if (e instanceof TitularDuplicado) {
-                    System.out.println("este titular ya existe");
-                } else if (e instanceof ExcepcionValidacionCCC) {
-                    System.out.println("ccc no válido");
-                }
-
+                controller.seleccionarInterfaz(opt - 1);
             }
         }
     }
-
 }
