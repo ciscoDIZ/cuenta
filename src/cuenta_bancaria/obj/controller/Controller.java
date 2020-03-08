@@ -134,7 +134,7 @@ public class Controller {
             if (CUENTA_PATRON.matcher(String.valueOf(cuenta = sc.nextInt()))
                     .matches()) {
                 System.out.println("OK");
-                retorno[5] =  cuenta;
+                retorno[5] = cuenta;
             } else {
                 System.out.println("cuenta incorrecta");
                 throw new IllegalArgumentException("cuenta erronea");
@@ -291,7 +291,7 @@ public class Controller {
 
     public CuentaBancaria menuInterfazEscritorio(CuentaBancaria cuenta, boolean salir)
             throws TitularDuplicado, ExcepcionValidacionCCC, ExcepcionValidacionDNI,
-             AssertionError, NumberFormatException {
+            AssertionError, NumberFormatException {
         String dniStr;
         System.out.println("1)dar de alta cliente\n2)dar de alta cuenta"
                 + "\n3)consultar cuenta\n4)gestionar cuenta\n5)acceder cuenta\n6)salir");
@@ -322,38 +322,7 @@ public class Controller {
                 break;
             case 4:
                 cuenta = accederCuentaBancaria();
-                if (cuenta.getEstado().equals(CuentaBancaria.Estado.ACTIVA)) {
-                    System.out.println("1)desactivar cuenta\n2)salir");
-                    opt = sc.nextInt();
-                    switch (opt) {
-                        case 1:
-                            cuenta.setEstado(CuentaBancaria.Estado.INACTIVA);
-                            break;
-                        case 2:
-                            //cuenta = null;
-                            break;
-                        default:
-                            throw new AssertionError();
-                    }
-                } else if (cuenta.getEstado().equals(CuentaBancaria.Estado.INACTIVA)) {
-                    System.out.println("1)activar cuenta\n2)bloquear cuenta\n3)salir");
-                    opt = sc.nextInt();
-                    switch (opt) {
-                        case 1:
-                            cuenta.setEstado(CuentaBancaria.Estado.ACTIVA);
-                            cuenta = null;
-                            break;
-                        case 2:
-                            cuenta.setEstado(CuentaBancaria.Estado.BLOQUEADA);
-                            cuenta = null;
-                            break;
-                        case 3:
-                            cuenta = null;
-                            break;
-                        default:
-                            throw new AssertionError();
-                    }
-                }
+                cuenta = gesrionarCuenta(cuenta);
                 //cuenta = null;
                 break;
             case 5:
@@ -369,15 +338,61 @@ public class Controller {
         return cuenta;
     }
 
-    public CuentaBancaria interfazCuentaBancaria(CuentaBancaria cuenta) 
-            throws AssertionError, ExcepcionValidacionCCC, ExcepcionValidacionDNI
-            , IllegalArgumentException{
+    private CuentaBancaria gesrionarCuenta(CuentaBancaria cuenta) throws AssertionError {
+        if (cuenta.getEstado().equals(CuentaBancaria.Estado.ACTIVA)) {
+            System.out.println("1)desactivar cuenta\n2)salir");
+            opt = sc.nextInt();
+            gestionarCuentaActiva(cuenta);
+        } else if (cuenta.getEstado().equals(CuentaBancaria.Estado.INACTIVA)) {
+            System.out.println("1)activar cuenta\n2)bloquear cuenta\n3)salir");
+            opt = sc.nextInt();
+            cuenta = gestionarCuentaInactiva(cuenta);
+        }
+        return cuenta;
+    }
+
+    private CuentaBancaria gestionarCuentaInactiva(CuentaBancaria cuenta) throws AssertionError {
+        switch (opt) {
+            case 1:
+                cuenta.setEstado(CuentaBancaria.Estado.ACTIVA);
+                cuenta = null;
+                break;
+            case 2:
+                cuenta.setEstado(CuentaBancaria.Estado.BLOQUEADA);
+                cuenta = null;
+                break;
+            case 3:
+                cuenta = null;
+                break;
+            default:
+                throw new AssertionError();
+        }
+        return cuenta;
+    }
+
+    private void gestionarCuentaActiva(CuentaBancaria cuenta) throws AssertionError {
+        switch (opt) {
+            case 1:
+                cuenta.setEstado(CuentaBancaria.Estado.INACTIVA);
+                break;
+            case 2:
+                //cuenta = null;
+                break;
+            default:
+                throw new AssertionError();
+        }
+    }
+
+    public CuentaBancaria interfazCuentaBancaria(CuentaBancaria cuenta)
+            throws AssertionError, ExcepcionValidacionCCC, ExcepcionValidacionDNI,
+            IllegalArgumentException {
         String mensajeBienvenida = null;
         String dniStr;
         String nCuentaStr;
         Object dni;
         Calendar fecha;
         String[] cccArray;
+         double cuantia;
         switch (cuenta.getEstado()) {
             case ACTIVA:
                 String opciones = "1)realizar ingreso\n2)realizar retirada\n3)transferencias"
@@ -396,72 +411,14 @@ public class Controller {
                 opt = sc.nextInt();
                 switch (opt) {
                     case 1:
-                        System.out.println("1)ingreso manual\n2)ingreso automatico");
-                        opt = sc.nextInt();
-                        switch (opt) {
-                            case 2:
-                                fecha = null;
-                                break;
-                            case 1:
-                                System.out.println("introducir dia");
-                                int dia = sc.nextInt();
-                                System.out.println("introducir mes");
-                                int mes = sc.nextInt();
-                                System.out.println("año");
-                                int anio = sc.nextInt();
-                                fecha = Calendar.getInstance();
-                                fecha.set(anio, mes - 1, dia);
-                                break;
-                            default:
-                                fecha = null;
-                        }
-                        System.out.println("seleccionar asunto");
-                        System.out.println("0)ingreso\n1)nomina");
-                        opt = sc.nextInt();
-                        switch (opt) {
-                            case 0:
-                            case 1:
-                                System.out.println("introducir cuantia");
-                                double cuantia = sc.nextDouble();
-                                cuenta.setMovimiento(CuentaBancaria.getAsunto(opt), null, cuantia, fecha);
-                                break;
-                            default:
-                                throw new AssertionError();
-                        }
+                         System.out.println("introducir cuantia");
+                              cuantia  = sc.nextDouble();
+                         cuenta.setMovimiento(CuentaBancaria.getAsunto(opt), null, cuantia, null);
                         break;
                     case 2:
-                        System.out.println("1)retirada manual\n2)retirada automatico");
-                        opt = sc.nextInt();
-                        switch (opt) {
-                            case 2:
-                                fecha = null;
-                                break;
-                            case 1:
-                                System.out.println("introducir dia");
-                                int dia = sc.nextInt();
-                                System.out.println("introducir mes");
-                                int mes = sc.nextInt();
-                                System.out.println("año");
-                                int anio = sc.nextInt();
-                                fecha = Calendar.getInstance();
-                                fecha.set(anio, mes - 1, dia);
-                                break;
-                            default:
-                                fecha = null;
-                        }
-                        System.out.println("seleccionar asunto");
-                        System.out.println("2)retirada\n1)pago");
-                        opt = sc.nextInt();
-                        switch (opt) {
-                            case 2:
-                            case 3:
-                                System.out.println("introducir cuantia");
-                                double cuantia = sc.nextDouble();
-                                cuenta.setMovimiento(CuentaBancaria.getAsunto(opt), null, cuantia, fecha);
-                                break;
-                            default:
-                                throw new AssertionError();
-                        }
+                           System.out.println("introducir cuantia");
+                                cuantia = sc.nextDouble();
+                                cuenta.setMovimiento(CuentaBancaria.getAsunto(2), null, cuantia, null);
                         break;
                     case 3:
                         sc.nextLine();
@@ -476,7 +433,7 @@ public class Controller {
                                 Byte.parseByte(cccArray[3]),
                                 Integer.parseInt(cccArray[4]));
                         System.out.println("introducir cuantia");
-                        int cuantia = sc.nextInt();
+                        cuantia = sc.nextInt();
                         Sucursal.transfererirFondos(Cliente.getDnInstance(dniStr), cuenta
                                 .getCCC(), ccc, cuantia);
                         break;
@@ -493,17 +450,7 @@ public class Controller {
                         System.out.println("seleccionar asunto");
                         System.out.println("0)ingreso\n1)nomina\n2)retirada\n3)pago");
                         int movimiento = sc.nextInt();
-                        switch (movimiento) {
-                            case 0:
-                            case 1:
-                            case 2:
-                            case 3:
-                                System.out.println(cuenta.movimientosPorAsunto(CuentaBancaria.getAsunto(movimiento)));
-                                break;
-                            default:
-                                throw new AssertionError();
-                        }
-
+                        seleccionarMovimiento(movimiento, cuenta);
                         break;
                     case 7:
                         System.out.println(cuenta.mostrarTitular());
@@ -522,22 +469,40 @@ public class Controller {
             case INACTIVA:
                 System.out.println("1)cambiar titular/es\n2)cambiar número cuenta\n3)salir");
                 opt = sc.nextInt();
-                switch (opt) {
-                    case 1:
-                        cuenta = new CuentaBancaria((Set) menuIniTitulares(cuenta), cuenta);
-                        break;
-                    case 2:
-                        cuenta = menuCambiarNumCuenta(cuenta);
-                        break;
-                    case 3:
-                        cuenta = null;
-                        break;
-                    default:
-                        break;
-                }
+                cuenta = menuCuentaInactiva(cuenta);
                 break;
             case BLOQUEADA:
                 menuCuentaBloqueada(cuenta);
+            default:
+                break;
+        }
+        return cuenta;
+    }
+
+    private void seleccionarMovimiento(int movimiento, CuentaBancaria cuenta) throws AssertionError {
+        switch (movimiento) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+                System.out.println(cuenta.movimientosPorAsunto(CuentaBancaria.getAsunto(movimiento)));
+                break;
+            default:
+                throw new AssertionError();
+        }
+    }
+
+    private CuentaBancaria menuCuentaInactiva(CuentaBancaria cuenta) throws ExcepcionValidacionCCC, ExcepcionValidacionDNI, IllegalArgumentException, AssertionError {
+        switch (opt) {
+            case 1:
+                cuenta = new CuentaBancaria((Set) menuIniTitulares(cuenta), cuenta);
+                break;
+            case 2:
+                cuenta = menuCambiarNumCuenta(cuenta);
+                break;
+            case 3:
+                cuenta = null;
+                break;
             default:
                 break;
         }
