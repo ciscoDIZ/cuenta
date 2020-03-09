@@ -189,7 +189,7 @@ public class Controller {
             while (m.find()) {
                 dniStr = m.group();
             }
-            this.dni = Cliente.getDnInstance(dniStr);
+            this.dni = Cliente.getDNInstance(dniStr);
 
             System.out.println("1)Mujer\n2)Hombre");
             opt = sc.nextInt();
@@ -239,7 +239,7 @@ public class Controller {
         while (m.find()) {
             dniStr = m.group();
         }
-        this.dni = Cliente.getDnInstance(dniStr);
+        this.dni = Cliente.getDNInstance(dniStr);
         retorno[4] = dni;
         System.out.println("1)Mujer\n2)Hombre");
         int opt = sc.nextInt();
@@ -279,7 +279,7 @@ public class Controller {
         nCuentaStr = sc.nextLine();
         System.out.println("");
         nCuenta = Integer.parseInt(nCuentaStr);
-        return Sucursal.accederCuenta(Cliente.getDnInstance(dniStr),
+        return Sucursal.accederCuenta(Cliente.getDNInstance(dniStr),
                 CuentaBancaria.getCCC(iban, entidad, oficina, dc, nCuenta));
     }
 
@@ -330,14 +330,14 @@ public class Controller {
 
                 System.out.println("introducir dni");
                 dniStr = sc.nextLine();
-                dni = Cliente.getDnInstance(dniStr);
+                dni = Cliente.getDNInstance(dniStr);
                 Sucursal.darAltaCuenta(dni);
                 break;
             case 3:
 
                 System.out.println("introducir dni");
                 dniStr = sc.nextLine();
-                dni = Cliente.getDnInstance(dniStr);
+                dni = Cliente.getDNInstance(dniStr);
                 System.out.println(Sucursal.consultCuenta(dni));
 
                 break;
@@ -414,50 +414,87 @@ public class Controller {
     }
 
     public CuentaOnline registroCOC(CuentaOnline cuentaOnline) {
-        
+
         System.out.println("introducir nombre de usuario");
         nombre = sc.nextLine();
         System.out.println("introducir contraseña");
         String contra = sc.nextLine();
-        
+
         cuentaOnline.activarCuentaOnline(nombre, contra);
         return cuentaOnline;
     }
 
-    public CuentaOnline menuLOG_REG(CuentaOnline cuentaOnline) throws ExcepcionValidacionDNI{
+    public CuentaOnline menuLOG_REG(CuentaOnline cuentaOnline) throws ExcepcionValidacionDNI {
         System.out.println("introducir dni");
-        dni = Cliente.getDnInstance(sc.nextLine());
+
+        dni = Cliente.getDNInstance(sc.nextLine());
+
         cuentaOnline = Sucursal.buscarCliente(dni).getCoc();
-        switch ((cuentaOnline).getEstado()) {
+        CuentaOnlineCliente coc = (CuentaOnlineCliente) cuentaOnline;
+        switch (coc.getEstado()) {
             case ACTIVA:
-                cuentaOnline = menuIniciarSesion(cuentaOnline);
+                System.out.println("1) iniciar sesion\n2) salir");
+                switch (opt) {
+                    case 1:
+                        cuentaOnline = menuIniciarSesion(cuentaOnline);
+                        break;
+                    case 2:
+                        interfaz = null;
+                        break;
+
+                    default:
+                        throw new AssertionError();
+                }
+
                 break;
             case INACTIVA:
-                cuentaOnline = registroCOC(cuentaOnline);
+                System.out.println("1) registrarse\n2) salir");
+                switch (opt) {
+                    case 1:
+                       cuentaOnline = registroCOC(cuentaOnline);
+                        break;
+                    case 2:
+                        interfaz = null;
+                        break;
+
+                    default:
+                        throw new AssertionError();
+                }
+                
                 break;
             default:
                 throw new AssertionError();
         }
+
         return cuentaOnline;
     }
 
-    public CuentaOnline interfazOnline(CuentaOnline cuentaOnline) {
+    public CuentaOnline interfazOnline(CuentaOnline cuentaOnline) throws ExcepcionValidacionDNI {
+
         if (cuentaOnline instanceof CuentaOnlineCliente) {
-            System.out.println("1)ver movimientos\n2)listar cuentas bancarias"
-                    + "\n3)acceder cuenta bancaria");
-            switch (opt) {
-                case 1:
-                    String listarCuentas
-                            = ((CuentaOnlineCliente) cuentaOnline).listarCuentas();
-                    System.out.println(listarCuentas);
-                    break;
-                default:
-                    throw new AssertionError();
+            if (cuentaOnline.getLogin() != null) {
+                System.out.println("1)ver movimientos\n2)listar cuentas bancarias"
+                        + "\n3)acceder cuenta bancaria\n4logout");
+                opt = sc.nextInt();
+                switch (opt) {
+                    case 1:
+                        String listarCuentas
+                                = ((CuentaOnlineCliente) cuentaOnline).listarCuentas();
+                        System.out.println(listarCuentas);
+                        break;
+                    case 4:
+                        ((CuentaOnlineCliente)cuentaOnline).logout();
+                        break;
+                    default:
+                        throw new AssertionError();
+                }
+            } else {
+                cuentaOnline = menuLOG_REG(cuentaOnline);
             }
         } else if (cuentaOnline instanceof CuentaOnlineOperador) {
 
         }
-        return null;
+        return cuentaOnline;
     }
 
     public CuentaBancaria interfazCuentaBancaria(CuentaBancaria cuenta)
@@ -511,7 +548,7 @@ public class Controller {
                                 Integer.parseInt(cccArray[4]));
                         System.out.println("introducir cuantia");
                         cuantia = sc.nextInt();
-                        Sucursal.transfererirFondos(Cliente.getDnInstance(dniStr), cuenta
+                        Sucursal.transfererirFondos(Cliente.getDNInstance(dniStr), cuenta
                                 .getCCC(), ccc, cuantia);
                         break;
                     case 4:

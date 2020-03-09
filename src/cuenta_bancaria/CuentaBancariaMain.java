@@ -47,9 +47,9 @@ public class CuentaBancariaMain {
                 try {
                     switch (controller.getInterfaz()) {
                         case WEB:
-                            if (cuentaOnline == null) {
+                            if (cuentaOnline.getLogin() == null) {
                                 cuentaOnline = controller.menuLOG_REG(cuentaOnline);
-                            }else{
+                            } else {
                                 cuentaOnline = controller.interfazOnline(cuentaOnline);
                             }
                             break;

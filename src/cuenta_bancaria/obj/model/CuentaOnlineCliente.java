@@ -18,17 +18,18 @@ public class CuentaOnlineCliente extends CuentaOnline<Cliente, CuentaOnlineClien
 
     public CuentaOnlineCliente(Cliente user) {
         super(user);
-        account = this.user.getCoc();
+        account = user.getCoc();
         cuentasBancarias = new HashSet<>(user.getCuentas());
     }
 
     public String listarCuentas() {
         String lista = "";
         int i = 1;
-        if (account.login != null) {
-            lista = cuentasBancarias.stream()
-                    .map(c -> c.getNumCuenta())
-                    .reduce((i++) + lista + "\n", String::concat);
+        if (login != null) {
+            for (CuentaBancaria cuentasBancaria : user.getCuentas()) {
+                lista += (i++)+cuentasBancaria.getNumCuenta()+"\n";
+            }
+                    
         }
         return lista;
     }
@@ -45,14 +46,17 @@ public class CuentaOnlineCliente extends CuentaOnline<Cliente, CuentaOnlineClien
     public void activarCuentaOnline(String nombre, String contra) {
         user.nombreUsuario = nombre;
         user.contra = contra;
+        user.getCuentas().forEach((cuenta) -> {
+            cuentasBancarias.add(cuenta);
+        });
         user.getCoc().estado = Estado.ACTIVA;
     }
     
     @Override
     public void login(String nombre, String contra) throws Error{
-        if (account.user.nombre.equals(nombre) 
-                && account.user.contra.equals(contra)) {
-            account.login(nombre, contra);
+        if (user.nombre.equals(nombre) 
+                && user.contra.equals(contra)) {
+            login = CuentaOnline.getLoginInstace(nombre, contra);
         }else{
             throw new Error();
         }
@@ -61,8 +65,8 @@ public class CuentaOnlineCliente extends CuentaOnline<Cliente, CuentaOnlineClien
 
     @Override
     public void logout() throws Error{
-        if (account.login != null) {
-            account.logout();
+        if (login != null) {
+            login = null;
         }else{
             throw new Error();
         }

@@ -33,7 +33,7 @@ public abstract class CuentaOnline<T,V> {
             return l;
         }
     }
-    protected static enum Estado{
+    public static enum Estado{
         ACTIVA,
         INACTIVA
     }
@@ -41,7 +41,7 @@ public abstract class CuentaOnline<T,V> {
     protected V account;
     @SuppressWarnings("NonPublicExported")
     protected Login login;
-    protected Estado estado;
+    public Estado estado;
     
     public CuentaOnline(T user) {
         this.user = user;
@@ -75,7 +75,9 @@ public abstract class CuentaOnline<T,V> {
     public Estado getEstado() {
         return estado;
     }
-    
+    public static Login getLoginInstace(String nombre, String contra){
+        return Login.login(nombre, contra);
+    }
     public abstract void login(String nombre, String contra);
     public abstract void logout();
     public abstract void activarCuentaOnline(String nombre, String contra);

@@ -21,10 +21,9 @@ public class Sucursal {
         OPERADOR,
         CLIENTE
     }
-    private static HashMap<Usuario, ArrayList<CuentaBancaria>> usuarios 
+    private static HashMap<Usuario, ArrayList<CuentaBancaria>> usuarios
             = new HashMap<>();
 
-    
     private UsuarioTipo tipo;
 
     public static boolean darAltaUsuario(Usuario c) throws TitularDuplicado {
@@ -42,7 +41,7 @@ public class Sucursal {
     public static boolean darAltaCuenta(Object... dni) {
         boolean retorno = false;
         HashSet<Cliente> titulares = new HashSet<>();
-        for (Object dni1 : dni) { 
+        for (Object dni1 : dni) {
             if (usuarios.containsKey(buscarCliente((Cliente.DNI) dni1))) {
                 usuarios.keySet().forEach((usuario) -> {
                     titulares.add((Cliente) usuario);
@@ -55,16 +54,28 @@ public class Sucursal {
         for (Object dni1 : dni) {
             usuarios.get(buscarCliente((Cliente.DNI) dni1)).add(c);
         }
+        for (Usuario usuario : usuarios.keySet()) {
+            if (usuario instanceof Cliente) {
+                for (Object object : dni) {
+                    if(((Cliente)usuario).getDni().equals((Cliente.DNI)object)){
+                        ((Cliente)usuario).addCuenta(c);
+                    }
+                }
+            }
+        }
+
         return retorno;
     }
 
     public Usuario accederUsuario() {
         return null;
     }
-    public static Usuario buscarUsuarioOnline(String nombre){
+
+    public static Usuario buscarUsuarioOnline(String nombre) {
         return usuarios.keySet().stream()
                 .filter(u -> u.nombreUsuario.equals(nombre)).findFirst().get();
-    } 
+    }
+
     public static Cliente buscarCliente(Object dni) {
         Cliente u = null;
         for (Usuario usuario : usuarios.keySet()) {
@@ -145,7 +156,7 @@ public class Sucursal {
 
     }
 
-    public static CuentaOnline accederCuentaOnline(String nombre, String contra) {
+ public static CuentaOnline accederCuentaOnline(String nombre, String contra) {
 
         CuentaOnline co = null;
         for (Usuario usuario : usuarios.keySet()) {
@@ -162,8 +173,8 @@ public class Sucursal {
         return co;
     }
 
-    public static CuentaBancaria cambiarTitularCuenta(Object antiguo
-            , Object nuevo, Object ccc) {
+    public static CuentaBancaria cambiarTitularCuenta(Object antiguo,
+             Object nuevo, Object ccc) {
         //TODO
         CuentaBancaria c = accederCuenta(antiguo, ccc);
         return c;
@@ -176,16 +187,16 @@ public class Sucursal {
     }
 
     @SuppressWarnings("NonPublicExported")
-    public static boolean transfererirFondos(Cliente.DNI titOrigen
-            , CuentaBancaria.CCC origen, Object destino, double cuantia) {
+    public static boolean transfererirFondos(Cliente.DNI titOrigen,
+             CuentaBancaria.CCC origen, Object destino, double cuantia) {
         boolean retorno = false;
-        CuentaBancaria cOrigen = accederCuenta(titOrigen
-                , ((CuentaBancaria.CCC) origen));
+        CuentaBancaria cOrigen = accederCuenta(titOrigen,
+                 ((CuentaBancaria.CCC) origen));
         CuentaBancaria cDestino = accederCuenta((CuentaBancaria.CCC) destino);
-        cOrigen.setMovimiento(CuentaBancaria.getAsunto(2), "transferencia"
-                , cuantia, null);
-        cDestino.setMovimiento(CuentaBancaria.getAsunto(0), "transferencia"
-                , cuantia, null);
+        cOrigen.setMovimiento(CuentaBancaria.getAsunto(2), "transferencia",
+                 cuantia, null);
+        cDestino.setMovimiento(CuentaBancaria.getAsunto(0), "transferencia",
+                 cuantia, null);
         return retorno;
     }
 
@@ -197,8 +208,7 @@ public class Sucursal {
         return usuarios;
     }
 
-    public static void setClientes(HashMap<Usuario
-            , ArrayList<CuentaBancaria>> clientes) {
+    public static void setClientes(HashMap<Usuario, ArrayList<CuentaBancaria>> clientes) {
         Sucursal.usuarios = clientes;
     }
 
